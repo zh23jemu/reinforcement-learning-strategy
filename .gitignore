@@ -1,0 +1,25 @@
+# Python 缓存与虚拟环境
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+
+# 训练产物、过程数据与模型文件
+artifacts/
+runs/
+logs/
+*.zip
+*.pt
+*.pth
+
+# 本地环境与编辑器文件
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+
