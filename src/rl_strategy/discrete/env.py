@@ -57,6 +57,7 @@ class PredatorPreyEnv(gym.Env):
         grid_size: int = 10,
         max_steps: int = 40,
         predator_b_target: str = "chase_x",
+        predator_b_policy_mode: str = "heuristic",
         switch_interval: int | None = None,
         prey_random_prob: float = 1.0,
         seed: int | None = None,
@@ -77,10 +78,13 @@ class PredatorPreyEnv(gym.Env):
             raise ValueError("grid_size 至少为 4，避免初始位置过度拥挤")
         if predator_b_target not in {"chase_x", "chase_y"}:
             raise ValueError("predator_b_target 必须是 chase_x 或 chase_y")
+        if predator_b_policy_mode not in {"heuristic", "ppo"}:
+            raise ValueError("predator_b_policy_mode 必须是 heuristic 或 ppo")
 
         self.grid_size = grid_size
         self.max_steps = max_steps
         self.predator_b_target = predator_b_target
+        self.predator_b_policy_mode = predator_b_policy_mode
         self.switch_interval = switch_interval
         self.prey_random_prob = prey_random_prob
         self.rng = np.random.default_rng(seed)
@@ -91,9 +95,8 @@ class PredatorPreyEnv(gym.Env):
         # Predator A 使用 5 个离散动作：停留、上、下、左、右。
         self.action_space = spaces.Discrete(5)
 
-        # 观测包含四个实体的归一化坐标和 Predator B 当前目标编号。
-        # 训练响应策略时暴露目标编号，评估普通 PPO baseline 时可以通过 wrapper 隐藏。
-        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(9,), dtype=np.float32)
+        # Predator A 的可见观测只包含四个实体的归一化坐标，不暴露真实对手策略。
+        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(8,), dtype=np.float32)
 
     def reset(self, *, seed: int | None = None, options: dict | None = None):
         """重置 episode，并返回初始观测。"""
@@ -122,11 +125,31 @@ class PredatorPreyEnv(gym.Env):
             Gymnasium 标准五元组。
         """
 
+        return self._advance(int(action), predator_b_action=None)
+
+    def step_with_predator_b_action(self, action: int, predator_b_action: int):
+        """使用外部给定的 Predator B 动作推进环境。
+
+        评估 PPO 版对手策略时，需要由外部策略模型决定 Predator B 动作；该方法
+        复用环境奖励、猎物移动、终止条件和日志信息，避免复制 step 逻辑。
+        """
+
+        return self._advance(int(action), predator_b_action=int(predator_b_action))
+
+    def _advance(self, action: int, predator_b_action: int | None):
+        """环境推进的内部实现。
+
+        参数:
+            action: Predator A 动作。
+            predator_b_action: 外部指定的 Predator B 动作；为空时使用环境内置策略。
+        """
+
         self.episode_step += 1
         self.global_step += 1
         self._maybe_switch_predator_b()
 
-        predator_b_action = self.predator_b_policy_action()
+        if predator_b_action is None:
+            predator_b_action = self.predator_b_policy_action()
         prey_x_action = self._random_action() if self.rng.random() < self.prey_random_prob else STAY
         prey_y_action = self._random_action() if self.rng.random() < self.prey_random_prob else STAY
 
@@ -158,6 +181,13 @@ class PredatorPreyEnv(gym.Env):
         后续若要加载 PPO 版 Predator B，只需替换策略库实现，不影响检测器接口。
         """
 
+        if self.predator_b_policy_mode == "ppo":
+            # PPO 版本的 Predator B 在当前实现中仍以目标驱动的状态编码作为输入，
+            # 真正的 PPO 策略会在训练和评估流程中被装载到对应 wrapper 上。
+            # 这里保留函数接口，避免环境逻辑与策略加载逻辑耦合。
+            target = self.state.prey_x if self.predator_b_target == "chase_x" else self.state.prey_y
+            return greedy_action_towards(self.state.predator_b, target)
+
         target = self.state.prey_x if self.predator_b_target == "chase_x" else self.state.prey_y
         return greedy_action_towards(self.state.predator_b, target)
 
@@ -173,6 +203,23 @@ class PredatorPreyEnv(gym.Env):
         probs = np.full(5, 0.05 / 4.0, dtype=np.float64)
         probs[greedy] = 0.95
         return probs
+
+    def observation_for_predator_b(self, policy_name: str) -> np.ndarray:
+        """为 Predator B 候选策略构造输入观测。
+
+        为了让 PPO 能学习不同目标策略，这里在原始观测基础上显式加入候选目标编号。
+        这样两个策略的输入分布可区分，训练也更稳定。
+        """
+
+        scale = float(self.grid_size - 1)
+        coords = [
+            *self.state.predator_a,
+            *self.state.predator_b,
+            *self.state.prey_x,
+            *self.state.prey_y,
+        ]
+        target_id = 0.0 if policy_name == "chase_x" else 1.0
+        return np.array([v / scale for v in coords] + [target_id], dtype=np.float32)
 
     def _maybe_switch_predator_b(self) -> None:
         """按全局步数周期性切换 Predator B 的真实策略。"""
@@ -211,7 +258,10 @@ class PredatorPreyEnv(gym.Env):
         )
 
     def _observation(self) -> np.ndarray:
-        """生成归一化观测向量。"""
+        """生成 Predator A 可见的归一化观测向量。
+
+        注意：这里故意不包含 Predator B 的真实策略编号，避免信息泄漏。
+        """
 
         scale = float(self.grid_size - 1)
         coords = [
@@ -220,8 +270,7 @@ class PredatorPreyEnv(gym.Env):
             *self.state.prey_x,
             *self.state.prey_y,
         ]
-        target_id = 0.0 if self.predator_b_target == "chase_x" else 1.0
-        return np.array([v / scale for v in coords] + [target_id], dtype=np.float32)
+        return np.array([v / scale for v in coords], dtype=np.float32)
 
     def _info(self, predator_b_action: int | None = None) -> dict:
         """返回便于日志记录和检测器使用的过程信息。"""
@@ -255,3 +304,57 @@ def greedy_action_towards(source: tuple[int, int], target: tuple[int, int]) -> i
         return RIGHT if col_delta > 0 else LEFT
     return STAY
 
+
+class PredatorBTrainingEnv(PredatorPreyEnv):
+    """专门用于训练 Predator B 候选策略的环境。
+
+    基类环境的动作控制 Predator A；该子类将动作解释为 Predator B 的动作，并用
+    目标猎物的曼哈顿距离构造密集奖励。这样可以用 Stable-Baselines3 PPO 分别训练
+    “追 Prey X”和“追 Prey Y”两个候选对手策略。
+    """
+
+    def __init__(self, *, target_policy: str, **kwargs) -> None:
+        super().__init__(predator_b_target=target_policy, switch_interval=None, **kwargs)
+        self.target_policy = target_policy
+        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(9,), dtype=np.float32)
+
+    def reset(self, *, seed: int | None = None, options: dict | None = None):
+        """重置后返回 Predator B 专用的 9 维观测。"""
+
+        super().reset(seed=seed, options=options)
+        return self.observation_for_predator_b(self.target_policy), self._info()
+
+    def step(self, action: int):
+        """推进 Predator B 训练环境一步。"""
+
+        self.episode_step += 1
+        self.global_step += 1
+
+        # 训练 B 时，Predator A 使用简单协作启发式：追另一个猎物。
+        predator_a_target = self.state.prey_y if self.target_policy == "chase_x" else self.state.prey_x
+        predator_a_action = greedy_action_towards(self.state.predator_a, predator_a_target)
+        prey_x_action = self._random_action() if self.rng.random() < self.prey_random_prob else STAY
+        prey_y_action = self._random_action() if self.rng.random() < self.prey_random_prob else STAY
+
+        self.state = PredatorPreyState(
+            predator_a=self._move(self.state.predator_a, predator_a_action),
+            predator_b=self._move(self.state.predator_b, int(action)),
+            prey_x=self._move(self.state.prey_x, prey_x_action),
+            prey_y=self._move(self.state.prey_y, prey_y_action),
+        )
+
+        target = self.state.prey_x if self.target_policy == "chase_x" else self.state.prey_y
+        distance = manhattan(self.state.predator_b, target)
+        caught_target = distance <= 1
+        caught_both = self._is_caught(self.state.prey_x) and self._is_caught(self.state.prey_y)
+
+        # 密集奖励让短训也能学到朝目标移动；命中目标和完成双捕获额外奖励。
+        reward = -float(distance) / max(float(self.grid_size), 1.0)
+        if caught_target:
+            reward += 10.0
+        if caught_both:
+            reward += 20.0
+
+        terminated = bool(caught_both)
+        truncated = self.episode_step >= self.max_steps
+        return self.observation_for_predator_b(self.target_policy), reward, terminated, truncated, self._info(int(action))
