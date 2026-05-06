@@ -85,7 +85,7 @@ def train_discrete(config: dict[str, Any]) -> None:
     baseline_model.save(artifact_dir / "baseline_switching_ppo.zip")
 
 
-def evaluate_discrete(config: dict[str, Any]) -> None:
+def evaluate_discrete(config: dict[str, Any]) -> Path:
     """评估 OPS-DeMo + PPO，并保存每一步过程数据。"""
 
     run_dir = _create_run_dir(config)
@@ -190,6 +190,7 @@ def evaluate_discrete(config: dict[str, Any]) -> None:
     _save_json(run_dir / "summary.json", summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     print(f"过程数据已保存到: {run_dir}")
+    return run_dir
 
 
 def _make_env(

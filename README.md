@@ -54,3 +54,20 @@
 - `reward_comparison.png`：OPS-DeMo + PPO 与 standalone PPO 的回报对比。
 - `policy_timeline.png`：真实对手策略与检测器假设策略时间线。
 - `episode_metrics.csv` / `analysis_summary.json`：可继续处理的结构化汇总。
+
+## Slurm 长训与参数扫描
+
+已按当前集群账号 `mfk-gsr2`、分区 `plcyf-com`、QOS `normal` 提供脚本：
+
+```bash
+# 1. 先训练 PPO 策略库，只需跑一次
+sbatch slurm/train_discrete_plcyf.sbatch
+
+# 2. 训练完成后，批量扫描 OPS-DeMo 参数
+sbatch slurm/sweep_discrete_plcyf.sbatch
+
+# 3. 所有 array 任务完成后汇总结果
+sbatch slurm/aggregate_discrete_plcyf.sbatch
+```
+
+默认 sweep 组合为 `alpha={0.80,0.90,0.95,0.99}`、`threshold={4.0,6.0,8.0}`、`seed={42,43}`，共 24 个 array 任务。每个任务会自动执行 `evaluate` 和 `analyze`，最终汇总到 `runs/discrete_sweep_summary.csv`。
