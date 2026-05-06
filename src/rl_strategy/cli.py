@@ -14,6 +14,7 @@ import argparse
 from pathlib import Path
 
 from rl_strategy.config import load_config
+from rl_strategy.discrete.analysis import analyze_discrete_run
 from rl_strategy.discrete.experiment import evaluate_discrete, train_discrete
 
 
@@ -32,6 +33,20 @@ def build_parser() -> argparse.ArgumentParser:
             help="YAML 配置文件路径，例如 configs/discrete_smoke.yaml",
         )
 
+    analyze = subparsers.add_parser("analyze")
+    analyze.add_argument(
+        "--run-dir",
+        type=Path,
+        required=True,
+        help="evaluate 生成的运行目录，例如 runs/discrete_smoke/20260506_064331",
+    )
+    analyze.add_argument(
+        "--output-dir",
+        type=Path,
+        default=None,
+        help="分析结果输出目录；默认写入 run-dir/analysis",
+    )
+
     return parser
 
 
@@ -39,16 +54,18 @@ def main() -> None:
     """根据子命令启动训练或评估流程。"""
 
     args = build_parser().parse_args()
-    config = load_config(args.config)
-
     if args.command == "train":
+        config = load_config(args.config)
         train_discrete(config)
     elif args.command == "evaluate":
+        config = load_config(args.config)
         evaluate_discrete(config)
+    elif args.command == "analyze":
+        summary = analyze_discrete_run(args.run_dir, args.output_dir)
+        print(f"分析完成，生成 {len(summary['figures'])} 张图。")
     else:  # pragma: no cover - argparse 已保证不会进入该分支
         raise ValueError(f"未知命令: {args.command}")
 
 
 if __name__ == "__main__":
     main()
-

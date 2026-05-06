@@ -17,6 +17,7 @@
 ```powershell
 .venv\Scripts\python.exe -m rl_strategy.cli train --config configs/discrete_smoke.yaml
 .venv\Scripts\python.exe -m rl_strategy.cli evaluate --config configs/discrete_smoke.yaml
+.venv\Scripts\python.exe -m rl_strategy.cli analyze --run-dir runs\discrete_smoke\<运行目录>
 ```
 
 `discrete_smoke.yaml` 只用于验证工程链路，训练步数很短，指标不代表论文效果。
@@ -43,3 +44,13 @@
 - `switch_events.csv`：检测到的策略切换事件。
 - `baseline_step_trace.csv`：普通 PPO baseline 的逐步过程数据。
 - `summary.json`：平均回报、策略识别准确率等汇总指标。
+
+## 分析图表
+
+`analyze` 命令会在运行目录下创建 `analysis/`，包含：
+
+- `running_errors.png`：两个候选对手策略的 running error 曲线。
+- `aop_accuracy.png`：按 episode 汇总的 AOP 识别准确率。
+- `reward_comparison.png`：OPS-DeMo + PPO 与 standalone PPO 的回报对比。
+- `policy_timeline.png`：真实对手策略与检测器假设策略时间线。
+- `episode_metrics.csv` / `analysis_summary.json`：可继续处理的结构化汇总。
