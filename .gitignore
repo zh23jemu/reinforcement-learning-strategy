@@ -9,7 +9,6 @@ __pycache__/
 # 训练产物、过程数据与模型文件
 artifacts/
 runs/
-logs/
 *.zip
 *.pt
 *.pth
