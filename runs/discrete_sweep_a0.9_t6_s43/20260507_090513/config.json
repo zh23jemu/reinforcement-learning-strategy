@@ -1,0 +1,30 @@
+{
+  "experiment": {
+    "name": "discrete_sweep_a0.9_t6_s43",
+    "seed": 43,
+    "run_dir": "runs",
+    "artifact_dir": "artifacts/discrete"
+  },
+  "environment": {
+    "grid_size": 10,
+    "max_steps": 40,
+    "switch_interval": 100,
+    "prey_random_prob": 1.0
+  },
+  "ppo": {
+    "total_timesteps": 1000000,
+    "n_steps": 2048,
+    "batch_size": 256,
+    "learning_rate": 0.0003,
+    "gamma": 0.99
+  },
+  "detector": {
+    "alpha": 0.9,
+    "threshold": 6.0,
+    "initial_policy": "chase_x"
+  },
+  "evaluation": {
+    "episodes": 1000,
+    "deterministic": false
+  }
+}
