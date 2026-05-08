@@ -48,6 +48,9 @@ def analyze_discrete_run(run_dir: Path, output_dir: Path | None = None) -> dict[
         "aop_accuracy": float(step_trace["assumption_correct"].mean())
         if "assumption_correct" in step_trace
         else float("nan"),
+        "response_policy_accuracy": float(step_trace["response_policy_correct"].mean())
+        if "response_policy_correct" in step_trace
+        else float("nan"),
         "switch_count": int(len(switch_events)),
         "baseline_mean_episode_reward": _safe_mean(episode_metrics.get("baseline_reward")),
         "baseline_std_episode_reward": _safe_std(episode_metrics.get("baseline_reward")),
@@ -105,6 +108,13 @@ def _episode_metrics(step_trace: pd.DataFrame, baseline_trace: pd.DataFrame) -> 
         .sum()
         .rename(columns={"reward": "opsdemo_reward"})
     )
+    if "response_policy_correct" in step_trace:
+        response_accuracy = (
+            step_trace.groupby("episode", as_index=False)["response_policy_correct"]
+            .mean()
+            .rename(columns={"response_policy_correct": "response_policy_accuracy"})
+        )
+        opsdemo = opsdemo.merge(response_accuracy, on="episode", how="left")
     if baseline_trace.empty:
         opsdemo["baseline_reward"] = np.nan
         return opsdemo

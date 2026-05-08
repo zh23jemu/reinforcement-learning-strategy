@@ -127,26 +127,61 @@ class PredatorPreyEnv(gym.Env):
 
         return self._advance(int(action), predator_b_action=None)
 
-    def step_with_predator_b_action(self, action: int, predator_b_action: int):
+    def step_with_predator_b_action(
+        self,
+        action: int,
+        predator_b_action: int,
+        *,
+        policy_already_advanced: bool = False,
+    ):
         """使用外部给定的 Predator B 动作推进环境。
 
         评估 PPO 版对手策略时，需要由外部策略模型决定 Predator B 动作；该方法
         复用环境奖励、猎物移动、终止条件和日志信息，避免复制 step 逻辑。
+
+        参数:
+            action: Predator A 的动作。
+            predator_b_action: 外部策略在当前状态下采样出的 Predator B 动作。
+            policy_already_advanced: 外部调用方是否已经按下一步编号处理过隐藏
+                策略切换。评估 PPO 对手时需要先切换再选动作，避免动作来自旧策略
+                但日志记录为新策略。
         """
 
-        return self._advance(int(action), predator_b_action=int(predator_b_action))
+        return self._advance(
+            int(action),
+            predator_b_action=int(predator_b_action),
+            policy_already_advanced=policy_already_advanced,
+        )
 
-    def _advance(self, action: int, predator_b_action: int | None):
+    def prepare_predator_b_policy_for_next_step(self) -> None:
+        """在外部策略选动作前，按下一步编号推进 Predator B 隐藏策略。
+
+        环境内部 `step` 会自己处理切换；但评估 PPO 对手时，Predator B 的动作由
+        环境外部模型先生成。如果不在生成动作前处理切换，就会出现“动作来自旧
+        真实策略，info 却记录新真实策略”的一拍错位。
+        """
+
+        self._maybe_switch_predator_b(self.global_step + 1)
+
+    def _advance(
+        self,
+        action: int,
+        predator_b_action: int | None,
+        *,
+        policy_already_advanced: bool = False,
+    ):
         """环境推进的内部实现。
 
         参数:
             action: Predator A 动作。
             predator_b_action: 外部指定的 Predator B 动作；为空时使用环境内置策略。
+            policy_already_advanced: 是否已经在动作选择前处理过隐藏策略切换。
         """
 
         self.episode_step += 1
         self.global_step += 1
-        self._maybe_switch_predator_b()
+        if not policy_already_advanced:
+            self._maybe_switch_predator_b(self.global_step)
 
         if predator_b_action is None:
             predator_b_action = self.predator_b_policy_action()
@@ -221,12 +256,18 @@ class PredatorPreyEnv(gym.Env):
         target_id = 0.0 if policy_name == "chase_x" else 1.0
         return np.array([v / scale for v in coords] + [target_id], dtype=np.float32)
 
-    def _maybe_switch_predator_b(self) -> None:
-        """按全局步数周期性切换 Predator B 的真实策略。"""
+    def _maybe_switch_predator_b(self, step_number: int) -> None:
+        """按全局步数周期性切换 Predator B 的真实策略。
+
+        参数:
+            step_number: 即将执行或正在执行的全局步数。外部 PPO 对手会在动作选择
+                前用下一步编号调用该方法，环境内置策略则在 `_advance` 增加步数后
+                调用，两种路径都保持同一个切换时刻。
+        """
 
         if not self.switch_interval:
             return
-        if self.global_step > 0 and self.global_step % self.switch_interval == 0:
+        if step_number > 0 and step_number % self.switch_interval == 0:
             self.predator_b_target = "chase_y" if self.predator_b_target == "chase_x" else "chase_x"
 
     def _sample_unique_positions(self, count: int) -> list[tuple[int, int]]:

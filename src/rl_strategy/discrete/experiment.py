@@ -109,6 +109,7 @@ def evaluate_discrete(config: dict[str, Any]) -> Path:
     switch_rows: list[dict[str, Any]] = []
     episode_rewards: list[float] = []
     correct_assumptions = 0
+    correct_response_policies = 0
     total_steps = 0
 
     for episode in range(int(config["evaluation"]["episodes"])):
@@ -128,22 +129,27 @@ def evaluate_discrete(config: dict[str, Any]) -> Path:
                 )
                 action = int(action)
 
-            predator_b_action = _predator_b_action(env, opponent_policies)
-            observation, reward, terminated, truncated, info = env.step_with_predator_b_action(
-                action, predator_b_action
-            )
-            done = bool(terminated or truncated)
-            episode_reward += float(reward)
-
+            env.prepare_predator_b_policy_for_next_step()
             probabilities = {
                 name: _predator_b_action_probabilities(env, name, opponent_policies)
                 for name in POLICY_NAMES
             }
+            predator_b_action = _predator_b_action(env, opponent_policies)
+            observation, reward, terminated, truncated, info = env.step_with_predator_b_action(
+                action,
+                predator_b_action,
+                policy_already_advanced=True,
+            )
+            done = bool(terminated or truncated)
+            episode_reward += float(reward)
+
             result = detector.update(probabilities, predator_b_action)
 
             total_steps += 1
             is_correct = result.assumed_policy == info["predator_b_policy"]
+            response_policy_correct = assumed == info["predator_b_policy"]
             correct_assumptions += int(is_correct)
+            correct_response_policies += int(response_policy_correct)
 
             if result.switched:
                 switch_rows.append(
@@ -163,6 +169,8 @@ def evaluate_discrete(config: dict[str, Any]) -> Path:
                 "reward": reward,
                 "episode_reward_so_far": episode_reward,
                 "true_policy": info["predator_b_policy"],
+                "response_policy": assumed,
+                "response_policy_correct": response_policy_correct,
                 "assumed_policy": result.assumed_policy,
                 "assumption_correct": is_correct,
                 "predator_a_action": action,
@@ -183,6 +191,7 @@ def evaluate_discrete(config: dict[str, Any]) -> Path:
         "mean_episode_reward": float(np.mean(episode_rewards)),
         "std_episode_reward": float(np.std(episode_rewards)),
         "aop_accuracy": float(correct_assumptions / max(total_steps, 1)),
+        "response_policy_accuracy": float(correct_response_policies / max(total_steps, 1)),
         "switch_count": len(switch_rows),
         "baseline_mean_episode_reward": baseline_rewards["mean"],
         "baseline_std_episode_reward": baseline_rewards["std"],
@@ -315,13 +324,16 @@ def _evaluate_baseline(
         done = False
         episode_reward = 0.0
         while not done:
+            env.prepare_predator_b_policy_for_next_step()
             action, _ = model.predict(
                 observation,
                 deterministic=bool(config["evaluation"]["deterministic"]),
             )
             predator_b_action = _predator_b_action(env, opponent_policies)
             observation, reward, terminated, truncated, info = env.step_with_predator_b_action(
-                int(action), predator_b_action
+                int(action),
+                predator_b_action,
+                policy_already_advanced=True,
             )
             done = bool(terminated or truncated)
             episode_reward += float(reward)

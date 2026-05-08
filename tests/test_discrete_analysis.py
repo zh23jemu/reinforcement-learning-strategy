@@ -17,6 +17,8 @@ def test_analyze_discrete_run_generates_figures_with_empty_switch_file(tmp_path)
                 "episode_step": 1,
                 "reward": -1.0,
                 "true_policy": "chase_x",
+                "response_policy": "chase_x",
+                "response_policy_correct": True,
                 "assumed_policy": "chase_x",
                 "assumption_correct": True,
                 "running_error_chase_x": 0.1,
@@ -28,6 +30,8 @@ def test_analyze_discrete_run_generates_figures_with_empty_switch_file(tmp_path)
                 "episode_step": 2,
                 "reward": 2.0,
                 "true_policy": "chase_y",
+                "response_policy": "chase_x",
+                "response_policy_correct": False,
                 "assumed_policy": "chase_x",
                 "assumption_correct": False,
                 "running_error_chase_x": 0.4,
@@ -54,6 +58,7 @@ def test_analyze_discrete_run_generates_figures_with_empty_switch_file(tmp_path)
     analysis_dir = run_dir / "analysis"
     assert summary["episodes"] == 1
     assert summary["switch_count"] == 0
+    assert summary["response_policy_accuracy"] == 0.5
     assert (analysis_dir / "analysis_summary.json").exists()
     assert (analysis_dir / "episode_metrics.csv").exists()
     assert (analysis_dir / "running_errors.png").exists()

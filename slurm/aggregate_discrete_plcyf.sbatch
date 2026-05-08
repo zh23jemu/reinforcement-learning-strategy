@@ -17,6 +17,12 @@ set -euo pipefail
 
 cd "${SLURM_SUBMIT_DIR:-$(pwd)}"
 
+if [ ! -x ".venv/bin/python" ]; then
+  python3 -m venv .venv
+fi
+
+# 汇总阶段也固定走项目本地虚拟环境，避免服务器环境差异影响结果读取。
+.venv/bin/python -m pip install -e ".[dev]"
 .venv/bin/python scripts/aggregate_discrete_sweep.py \
   --runs-root runs \
   --output runs/discrete_sweep_summary.csv
