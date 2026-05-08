@@ -1,0 +1,17 @@
+{
+  "run_dir": "/net/8k3/e0fs01/users/xj62kv/reinforcement-learning-strategy/runs/discrete_sweep_a0.99_t4_s43/20260508_042150",
+  "episodes": 1000,
+  "mean_episode_reward": 91.794,
+  "std_episode_reward": 3.991436332950834,
+  "aop_accuracy": 0.9644626052501238,
+  "response_policy_accuracy": 0.9545567112431897,
+  "switch_count": 86,
+  "baseline_mean_episode_reward": 91.117,
+  "baseline_std_episode_reward": 4.17651900510461,
+  "figures": [
+    "/net/8k3/e0fs01/users/xj62kv/reinforcement-learning-strategy/runs/discrete_sweep_a0.99_t4_s43/20260508_042150/analysis/running_errors.png",
+    "/net/8k3/e0fs01/users/xj62kv/reinforcement-learning-strategy/runs/discrete_sweep_a0.99_t4_s43/20260508_042150/analysis/aop_accuracy.png",
+    "/net/8k3/e0fs01/users/xj62kv/reinforcement-learning-strategy/runs/discrete_sweep_a0.99_t4_s43/20260508_042150/analysis/reward_comparison.png",
+    "/net/8k3/e0fs01/users/xj62kv/reinforcement-learning-strategy/runs/discrete_sweep_a0.99_t4_s43/20260508_042150/analysis/policy_timeline.png"
+  ]
+}

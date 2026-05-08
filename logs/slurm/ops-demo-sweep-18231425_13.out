@@ -1,0 +1,12 @@
+运行 sweep: alpha=0.95, threshold=4.0, seed=43
+{
+  "episodes": 1000,
+  "mean_episode_reward": 91.484,
+  "std_episode_reward": 4.126468708229835,
+  "aop_accuracy": 0.948385547953427,
+  "response_policy_accuracy": 0.9384227583723442,
+  "switch_count": 83,
+  "baseline_mean_episode_reward": 91.117,
+  "baseline_std_episode_reward": 4.17651900510461
+}
+过程数据已保存到: runs/discrete_sweep_a0.95_t4_s43/20260508_042122

@@ -1,0 +1,10 @@
+{
+  "episodes": 1000,
+  "mean_episode_reward": 91.284,
+  "std_episode_reward": 5.239784728402494,
+  "aop_accuracy": 0.9112138454243718,
+  "response_policy_accuracy": 0.9012565196775723,
+  "switch_count": 84,
+  "baseline_mean_episode_reward": 91.233,
+  "baseline_std_episode_reward": 4.075624001303359
+}
