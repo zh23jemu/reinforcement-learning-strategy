@@ -1,0 +1,7 @@
+{
+  "episodes": 10,
+  "mean_episode_reward": -30.7,
+  "std_episode_reward": 33.01227044600235,
+  "aop_accuracy": 0.5089514066496164,
+  "switch_count": 0
+}
