@@ -1,0 +1,68 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_confirm_is0p03_us0p016_cr0p1_ts1500000_s43/20260513_090216/analysis",
+  "episodes": 800,
+  "total_steps": 30386,
+  "baseline_total_steps": 31707,
+  "mean_episode_length": 37.9825,
+  "baseline_mean_episode_length": 39.63375,
+  "mean_episode_reward": -37.39324191442777,
+  "baseline_mean_episode_reward": -71.15730914131747,
+  "reward_improvement": 33.7640672268897,
+  "interceptor_win_rate": 0.33,
+  "baseline_interceptor_win_rate": 0.15875,
+  "win_rate_improvement": 0.17125,
+  "response_policy_accuracy": 0.9937800302771013,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.993839233326814
+  },
+  "intruder_policy_step_counts": {
+    "attack": 10080,
+    "detour": 10080,
+    "direct": 10226
+  },
+  "ops_winner_counts": {
+    "interceptor": 264,
+    "intruder": 536
+  },
+  "baseline_winner_counts": {
+    "interceptor": 127,
+    "intruder": 673
+  },
+  "ops_reason_counts": {
+    "active_collision": 15,
+    "entered_big_circle": 518,
+    "entered_small_circle": 3,
+    "intercepted_before_small_circle": 262,
+    "intercepted_in_big_circle": 2
+  },
+  "baseline_reason_counts": {
+    "active_collision": 27,
+    "entered_big_circle": 646,
+    "intercepted_before_small_circle": 126,
+    "intercepted_in_big_circle": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -133.55524143874644,
+    "q25": -102.82070141494275,
+    "median": -101.35062574207782,
+    "q75": 96.40763814531269,
+    "max": 98.89236322432755,
+    "std": 94.40416387553091
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -114.09529410451651,
+    "q25": -103.54571098193526,
+    "median": -102.13551765024661,
+    "q75": -100.87902211546898,
+    "max": 99.36703513994813,
+    "std": 73.01419356383623
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  }
+}

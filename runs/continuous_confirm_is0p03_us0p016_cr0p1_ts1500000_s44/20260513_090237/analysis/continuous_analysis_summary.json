@@ -1,0 +1,70 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_confirm_is0p03_us0p016_cr0p1_ts1500000_s44/20260513_090237/analysis",
+  "episodes": 800,
+  "total_steps": 28359,
+  "baseline_total_steps": 29006,
+  "mean_episode_length": 35.44875,
+  "baseline_mean_episode_length": 36.2575,
+  "mean_episode_reward": -40.73066584156333,
+  "baseline_mean_episode_reward": -55.547444330956594,
+  "reward_improvement": 14.816778489393265,
+  "interceptor_win_rate": 0.315,
+  "baseline_interceptor_win_rate": 0.23625,
+  "win_rate_improvement": 0.07875000000000001,
+  "response_policy_accuracy": 0.9937585951549772,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.9937757147378415
+  },
+  "intruder_policy_step_counts": {
+    "attack": 9440,
+    "detour": 9440,
+    "direct": 9479
+  },
+  "ops_winner_counts": {
+    "interceptor": 252,
+    "intruder": 548
+  },
+  "baseline_winner_counts": {
+    "interceptor": 189,
+    "intruder": 611
+  },
+  "ops_reason_counts": {
+    "active_collision": 16,
+    "entered_big_circle": 522,
+    "entered_small_circle": 10,
+    "intercepted_before_small_circle": 247,
+    "intercepted_in_big_circle": 5
+  },
+  "baseline_reason_counts": {
+    "active_collision": 45,
+    "entered_big_circle": 564,
+    "entered_small_circle": 2,
+    "intercepted_before_small_circle": 186,
+    "intercepted_in_big_circle": 2,
+    "passive_intercept": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -137.98346612483263,
+    "q25": -103.14332541316747,
+    "median": -101.58851987421514,
+    "q75": 96.36193874292076,
+    "max": 98.74104451864956,
+    "std": 93.52928761519357
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -110.87459533959627,
+    "q25": -103.17295821517706,
+    "median": -101.94633383274078,
+    "q75": -100.47977124631404,
+    "max": 98.66446991309523,
+    "std": 84.77544654274554
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  }
+}

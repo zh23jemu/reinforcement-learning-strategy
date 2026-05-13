@@ -1,0 +1,68 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_confirm_is0p03_us0p016_cr0p1_ts1500000_s42/20260513_100037/analysis",
+  "episodes": 800,
+  "total_steps": 30788,
+  "baseline_total_steps": 30298,
+  "mean_episode_length": 38.485,
+  "baseline_mean_episode_length": 37.8725,
+  "mean_episode_reward": -38.0060266652267,
+  "baseline_mean_episode_reward": -61.18849071837231,
+  "reward_improvement": 23.18246405314561,
+  "interceptor_win_rate": 0.3325,
+  "baseline_interceptor_win_rate": 0.2075,
+  "win_rate_improvement": 0.12500000000000003,
+  "response_policy_accuracy": 0.9937638040795115,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.993791230112534
+  },
+  "intruder_policy_step_counts": {
+    "attack": 10240,
+    "detour": 10240,
+    "direct": 10308
+  },
+  "ops_winner_counts": {
+    "interceptor": 266,
+    "intruder": 534
+  },
+  "baseline_winner_counts": {
+    "interceptor": 166,
+    "intruder": 634
+  },
+  "ops_reason_counts": {
+    "active_collision": 17,
+    "entered_big_circle": 517,
+    "intercepted_before_small_circle": 264,
+    "intercepted_in_big_circle": 2
+  },
+  "baseline_reason_counts": {
+    "active_collision": 29,
+    "entered_big_circle": 604,
+    "entered_small_circle": 1,
+    "intercepted_before_small_circle": 163,
+    "intercepted_in_big_circle": 3
+  },
+  "episode_reward_quantiles": {
+    "min": -135.13147949516775,
+    "q25": -103.50949430406094,
+    "median": -101.55365841507911,
+    "q75": 96.33100351981818,
+    "max": 98.9137747424841,
+    "std": 95.2983979367591
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -115.03552690595387,
+    "q25": -103.18582947671413,
+    "median": -101.90035757541656,
+    "q75": -100.64080964505672,
+    "max": 99.0477927969396,
+    "std": 80.9977350130913
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  }
+}
