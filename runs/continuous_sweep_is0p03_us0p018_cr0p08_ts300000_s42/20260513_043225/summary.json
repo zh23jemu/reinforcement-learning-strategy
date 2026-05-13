@@ -1,0 +1,10 @@
+{
+  "episodes": 300,
+  "mean_episode_reward": -103.57524019251665,
+  "std_episode_reward": 25.235972301255185,
+  "interceptor_win_rate": 0.013333333333333334,
+  "response_policy_accuracy": 0.9937947846642535,
+  "baseline_mean_episode_reward": -81.6166285523211,
+  "baseline_std_episode_reward": 62.967620958016454,
+  "baseline_interceptor_win_rate": 0.11333333333333333
+}
