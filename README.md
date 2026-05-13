@@ -2,7 +2,7 @@
 
 本项目当前优先复现离散动作空间论文 `2406.06500v1.pdf` 中的 OPS-DeMo 框架：在 Predator-Prey 网格环境中，使用 PPO 训练对手策略库与响应策略库，并用运行误差检测对手策略切换。
 
-连续动作空间 SAM 复现会作为后续模块加入，当前不会影响离散环境代码。
+连续动作空间场景已加入初版工程链路：使用 Stable-Baselines3 PPO 训练三类入侵策略对应的响应策略，并评估相对普通 PPO baseline 的收益。当前连续模块定位为工程可复现初版，暂不声明达到论文效果级。
 
 ## 快速开始
 
@@ -26,6 +26,22 @@
 ```powershell
 .venv\Scripts\python.exe -m rl_strategy.cli train --config configs/discrete_paper_like.yaml
 .venv\Scripts\python.exe -m rl_strategy.cli evaluate --config configs/discrete_paper_like.yaml
+```
+
+连续场景 smoke 与 paper-like 配置：
+
+```powershell
+.venv\Scripts\python.exe -m rl_strategy.cli train --config configs/continuous_smoke.yaml
+.venv\Scripts\python.exe -m rl_strategy.cli evaluate --config configs/continuous_smoke.yaml
+.venv\Scripts\python.exe scripts\analyze_continuous_run.py --run-dir runs\continuous_smoke\<运行目录>
+```
+
+接近论文设置时使用：
+
+```powershell
+.venv\Scripts\python.exe -m rl_strategy.cli train --config configs/continuous_paper_like.yaml
+.venv\Scripts\python.exe -m rl_strategy.cli evaluate --config configs/continuous_paper_like.yaml
+.venv\Scripts\python.exe scripts\analyze_continuous_run.py --run-dir runs\continuous_paper_like\<运行目录>
 ```
 
 ## 离散模块模型
@@ -55,9 +71,34 @@
 - `policy_timeline.png`：真实对手策略与检测器假设策略时间线。
 - `episode_metrics.csv` / `analysis_summary.json`：可继续处理的结构化汇总。
 
+## 连续模块验收与分析
+
+连续环境验收标准见 `docs/continuous_acceptance_checklist.md`。当前分为三档：
+
+- 流程过关：训练、评估、日志、模型产物、过程数据完整。
+- 工程复现过关：响应策略准确率高于 0.95，平均回报和拦截胜率均优于 baseline。
+- 接近论文效果：需要多 seed 稳定优于 baseline，且绝对拦截胜率达到明确目标。
+
+连续评估会在 `runs/continuous_*` 下生成：
+
+- `summary.json`：平均回报、拦截胜率、响应策略准确率、baseline 对照指标。
+- `step_trace.csv`：OPS-DeMo 响应策略库逐步过程数据。
+- `baseline_step_trace.csv`：普通 PPO baseline 逐步过程数据。
+
+可使用以下脚本生成连续诊断结果：
+
+```powershell
+.venv\Scripts\python.exe scripts\analyze_continuous_run.py --run-dir runs\continuous_paper_like\<运行目录>
+```
+
+脚本会写出：
+
+- `analysis/continuous_analysis_summary.json`：核心指标、胜负分布、终止原因、验收判断。
+- `analysis/episode_metrics.csv`：episode 级 OPS-DeMo 与 baseline 对比表。
+
 ## Slurm 长训与参数扫描
 
-已按当前集群账号 `mfk-gsr2`、分区 `plcyf-com`、QOS `normal` 提供脚本：
+已按当前集群账号 `gpo-ifv7xx`、本地 CPU 分区 `defq`、QOS `normal` 提供脚本。`defq` 优先使用本地 com 节点，`aws-com` 仅建议在本地 CPU 队列不可用时手动切换：
 
 ```bash
 # 1. 先训练 PPO 策略库，只需跑一次
@@ -71,3 +112,34 @@ sbatch slurm/aggregate_discrete_plcyf.sbatch
 ```
 
 默认 sweep 组合为 `alpha={0.80,0.90,0.95,0.99}`、`threshold={4.0,6.0,8.0}`、`seed={42,43}`，共 24 个 array 任务。每个任务会自动执行 `evaluate` 和 `analyze`，最终汇总到 `runs/discrete_sweep_summary.csv`。
+
+连续长训：
+
+```bash
+sbatch slurm/train_continuous_plcyf.sbatch
+```
+
+训练完成后，在服务器或拉回本地执行连续评估和分析：
+
+```bash
+.venv/bin/python -m rl_strategy.cli evaluate --config configs/continuous_paper_like.yaml
+.venv/bin/python scripts/analyze_continuous_run.py --run-dir runs/continuous_paper_like/<运行目录>
+```
+
+连续参数 sweep：
+
+```bash
+# 1. 默认跑 12 组中训参数，每组独立训练、评估并分析
+sbatch slurm/sweep_continuous_plcyf.sbatch
+
+# 2. 所有 array 任务完成后汇总结果
+sbatch slurm/aggregate_continuous_plcyf.sbatch
+```
+
+默认连续 sweep 组合为 `interceptor_max_speed={0.022,0.026,0.030}`、`intruder_max_speed={0.016,0.018}`、`collision_radius={0.08,0.10}`、`seed={42}`，共 12 个 array 任务。每个任务默认训练 `300000` timesteps、评估 `300` episodes；如需临时覆盖，可在提交时使用：
+
+```bash
+sbatch --export=ALL,TIMESTEPS=500000,EPISODES=500 slurm/sweep_continuous_plcyf.sbatch
+```
+
+聚合结果会写入 `runs/continuous_sweep_summary.csv`，建议优先查看 `engineering_pass`、`reward_improvement`、`win_rate_improvement` 排名靠前的参数组，再把最优 2-3 组提升到 `1M+` timesteps 做确认。

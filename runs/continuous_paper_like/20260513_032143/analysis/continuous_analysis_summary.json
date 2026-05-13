@@ -1,0 +1,66 @@
+{
+  "output_dir": "C:\\Coding\\reinforcement-learning-strategy\\runs\\continuous_paper_like\\20260513_032143\\analysis",
+  "episodes": 1000,
+  "total_steps": 49953,
+  "baseline_total_steps": 42294,
+  "mean_episode_length": 49.953,
+  "baseline_mean_episode_length": 42.294,
+  "mean_episode_reward": -98.87475545722816,
+  "baseline_mean_episode_reward": -106.04205432963013,
+  "reward_improvement": 7.167298872401972,
+  "interceptor_win_rate": 0.034,
+  "baseline_interceptor_win_rate": 0.005,
+  "win_rate_improvement": 0.029,
+  "response_policy_accuracy": 0.9937541288811482,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.9937623702992863
+  },
+  "intruder_policy_step_counts": {
+    "attack": 16640,
+    "detour": 16640,
+    "direct": 16673
+  },
+  "ops_winner_counts": {
+    "interceptor": 34,
+    "intruder": 966
+  },
+  "baseline_winner_counts": {
+    "interceptor": 5,
+    "intruder": 995
+  },
+  "ops_reason_counts": {
+    "active_collision": 2,
+    "entered_big_circle": 964,
+    "intercepted_before_small_circle": 34
+  },
+  "baseline_reason_counts": {
+    "active_collision": 76,
+    "entered_big_circle": 906,
+    "entered_small_circle": 13,
+    "intercepted_before_small_circle": 5
+  },
+  "episode_reward_quantiles": {
+    "min": -158.8730077844857,
+    "q25": -103.84794781476259,
+    "median": -102.41916249394416,
+    "q75": -101.28771564304827,
+    "max": 98.13845759242771,
+    "std": 37.601704593094944
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -172.91168648600578,
+    "q25": -104.74089212149381,
+    "median": -102.97388240695,
+    "q75": -101.54293802648783,
+    "max": 97.28619243770838,
+    "std": 19.681067494020283
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": false,
+    "judgement": "达到工程复现主要标准：机制有效且优于 baseline，但绝对拦截胜率仍需优化。"
+  }
+}
