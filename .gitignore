@@ -7,9 +7,6 @@ __pycache__/
 .venv/
 
 # 训练产物、过程数据与模型文件
-artifacts/
-runs/
-*.zip
 *.pt
 *.pth
 
