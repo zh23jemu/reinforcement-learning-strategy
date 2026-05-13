@@ -1,0 +1,10 @@
+============================================================
+连续二维拦截捕猎 PPO 长训练
+Host:       usmidet-com-prod-com006.aptiv.com
+Job ID:     32945108
+Python:     .venv/bin/python
+Submit dir: /mnt/users/xj62kv/reinforcement-learning-strategy
+Start time: 2026-05-13 01:50:14
+============================================================
+错误：找不到可执行 Python：.venv/bin/python
+请先在服务器创建 .venv，或用 --export=ALL,PYTHON_BIN=/path/to/python 指定解释器。
