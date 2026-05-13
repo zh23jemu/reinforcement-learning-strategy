@@ -1,0 +1,66 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_sweep_is0p026_us0p018_cr0p1_ts300000_s42/20260513_072727/analysis",
+  "episodes": 300,
+  "total_steps": 10560,
+  "baseline_total_steps": 13525,
+  "mean_episode_length": 35.2,
+  "baseline_mean_episode_length": 45.083333333333336,
+  "mean_episode_reward": -52.93726517578712,
+  "baseline_mean_episode_reward": -105.95117657473436,
+  "reward_improvement": 53.01391139894724,
+  "interceptor_win_rate": 0.25333333333333335,
+  "baseline_interceptor_win_rate": 0.006666666666666667,
+  "win_rate_improvement": 0.2466666666666667,
+  "response_policy_accuracy": 0.99375,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.99375
+  },
+  "intruder_policy_step_counts": {
+    "attack": 3520,
+    "detour": 3520,
+    "direct": 3520
+  },
+  "ops_winner_counts": {
+    "interceptor": 76,
+    "intruder": 224
+  },
+  "baseline_winner_counts": {
+    "interceptor": 2,
+    "intruder": 298
+  },
+  "ops_reason_counts": {
+    "active_collision": 17,
+    "entered_big_circle": 207,
+    "intercepted_before_small_circle": 76
+  },
+  "baseline_reason_counts": {
+    "active_collision": 20,
+    "entered_big_circle": 276,
+    "entered_small_circle": 2,
+    "intercepted_before_small_circle": 2
+  },
+  "episode_reward_quantiles": {
+    "min": -123.93675627887252,
+    "q25": -103.51410372048616,
+    "median": -101.84895681202411,
+    "q75": 93.52725197218359,
+    "max": 98.34317389428617,
+    "std": 87.11487819926084
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -176.06148225903513,
+    "q25": -105.1318578785658,
+    "median": -103.22881352901459,
+    "q75": -101.82168872535229,
+    "max": 97.26939868748188,
+    "std": 20.910189006811702
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_sweep_is0p03_us0p018_cr0p1_ts300000_s42/20260513_072729/analysis",
+  "episodes": 300,
+  "total_steps": 11325,
+  "baseline_total_steps": 11053,
+  "mean_episode_length": 37.75,
+  "baseline_mean_episode_length": 36.843333333333334,
+  "mean_episode_reward": -68.80927738044412,
+  "baseline_mean_episode_reward": -69.18574595857014,
+  "reward_improvement": 0.37646857812602263,
+  "interceptor_win_rate": 0.17666666666666667,
+  "baseline_interceptor_win_rate": 0.17,
+  "win_rate_improvement": 0.006666666666666654,
+  "response_policy_accuracy": 0.9938189845474613,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.9936941671045717,
+    "direct": 0.9940088564730398
+  },
+  "intruder_policy_step_counts": {
+    "attack": 3680,
+    "detour": 3806,
+    "direct": 3839
+  },
+  "ops_winner_counts": {
+    "interceptor": 53,
+    "intruder": 247
+  },
+  "baseline_winner_counts": {
+    "interceptor": 51,
+    "intruder": 249
+  },
+  "ops_reason_counts": {
+    "active_collision": 18,
+    "entered_big_circle": 226,
+    "entered_small_circle": 3,
+    "intercepted_before_small_circle": 53
+  },
+  "baseline_reason_counts": {
+    "active_collision": 26,
+    "entered_big_circle": 221,
+    "entered_small_circle": 2,
+    "intercepted_before_small_circle": 50,
+    "intercepted_in_big_circle": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -126.87974580883984,
+    "q25": -103.84844098269939,
+    "median": -102.25987812817098,
+    "q75": -100.91522676229478,
+    "max": 98.53535454809666,
+    "std": 76.35090165617429
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -120.58325988858937,
+    "q25": -103.54880209743976,
+    "median": -102.20882448583842,
+    "q75": -100.9600645801425,
+    "max": 98.14578745245933,
+    "std": 74.92585894338251
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": false,
+    "judgement": "达到工程复现主要标准：机制有效且优于 baseline，但绝对拦截胜率仍需优化。"
+  }
+}

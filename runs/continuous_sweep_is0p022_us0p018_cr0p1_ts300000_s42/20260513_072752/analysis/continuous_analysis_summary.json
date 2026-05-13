@@ -1,0 +1,67 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_sweep_is0p022_us0p018_cr0p1_ts300000_s42/20260513_072752/analysis",
+  "episodes": 300,
+  "total_steps": 10815,
+  "baseline_total_steps": 12572,
+  "mean_episode_length": 36.05,
+  "baseline_mean_episode_length": 41.906666666666666,
+  "mean_episode_reward": -57.738785142908505,
+  "baseline_mean_episode_reward": -103.25688265707741,
+  "reward_improvement": 45.51809751416891,
+  "interceptor_win_rate": 0.23,
+  "baseline_interceptor_win_rate": 0.013333333333333334,
+  "win_rate_improvement": 0.21666666666666667,
+  "response_policy_accuracy": 0.9938049006010171,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.9936393805309734,
+    "direct": 0.994020114161457
+  },
+  "intruder_policy_step_counts": {
+    "attack": 3520,
+    "detour": 3616,
+    "direct": 3679
+  },
+  "ops_winner_counts": {
+    "interceptor": 69,
+    "intruder": 231
+  },
+  "baseline_winner_counts": {
+    "interceptor": 4,
+    "intruder": 296
+  },
+  "ops_reason_counts": {
+    "active_collision": 14,
+    "entered_big_circle": 209,
+    "entered_small_circle": 8,
+    "intercepted_before_small_circle": 69
+  },
+  "baseline_reason_counts": {
+    "active_collision": 26,
+    "entered_big_circle": 269,
+    "entered_small_circle": 1,
+    "intercepted_before_small_circle": 4
+  },
+  "episode_reward_quantiles": {
+    "min": -124.47753619462252,
+    "q25": -103.93323416143654,
+    "median": -102.32169817626476,
+    "q75": -100.65116842865945,
+    "max": 97.8311018845439,
+    "std": 83.98927012916717
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -144.35617161452768,
+    "q25": -105.01234280169011,
+    "median": -103.15836134433746,
+    "q75": -101.8305882051587,
+    "max": 97.37786661505699,
+    "std": 24.868641593260993
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  }
+}

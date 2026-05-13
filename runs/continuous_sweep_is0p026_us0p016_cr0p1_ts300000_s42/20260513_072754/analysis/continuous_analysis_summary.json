@@ -1,0 +1,67 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_sweep_is0p026_us0p016_cr0p1_ts300000_s42/20260513_072754/analysis",
+  "episodes": 300,
+  "total_steps": 12151,
+  "baseline_total_steps": 12265,
+  "mean_episode_length": 40.50333333333333,
+  "baseline_mean_episode_length": 40.88333333333333,
+  "mean_episode_reward": -49.32381270578951,
+  "baseline_mean_episode_reward": -88.78061861067451,
+  "reward_improvement": 39.456805904885,
+  "interceptor_win_rate": 0.27666666666666667,
+  "baseline_interceptor_win_rate": 0.07666666666666666,
+  "win_rate_improvement": 0.2,
+  "response_policy_accuracy": 0.9938276685046499,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.993977354854252
+  },
+  "intruder_policy_step_counts": {
+    "attack": 4000,
+    "detour": 4000,
+    "direct": 4151
+  },
+  "ops_winner_counts": {
+    "interceptor": 83,
+    "intruder": 217
+  },
+  "baseline_winner_counts": {
+    "interceptor": 23,
+    "intruder": 277
+  },
+  "ops_reason_counts": {
+    "active_collision": 7,
+    "entered_big_circle": 206,
+    "entered_small_circle": 4,
+    "intercepted_before_small_circle": 83
+  },
+  "baseline_reason_counts": {
+    "active_collision": 38,
+    "entered_big_circle": 235,
+    "entered_small_circle": 4,
+    "intercepted_before_small_circle": 23
+  },
+  "episode_reward_quantiles": {
+    "min": -139.79266700476407,
+    "q25": -104.39853021472692,
+    "median": -102.28308819770814,
+    "q75": 93.68835195824505,
+    "max": 98.31641392737627,
+    "std": 90.03830916162221
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -121.07240051090717,
+    "q25": -104.87917876809836,
+    "median": -103.12713274776937,
+    "q75": -101.63427594542503,
+    "max": 97.23808518111706,
+    "std": 52.950651630937614
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_sweep_is0p022_us0p016_cr0p1_ts300000_s42/20260513_072801/analysis",
+  "episodes": 300,
+  "total_steps": 15456,
+  "baseline_total_steps": 13440,
+  "mean_episode_length": 51.52,
+  "baseline_mean_episode_length": 44.8,
+  "mean_episode_reward": -84.78503440616727,
+  "baseline_mean_episode_reward": -107.48216440117359,
+  "reward_improvement": 22.69712999500632,
+  "interceptor_win_rate": 0.10333333333333333,
+  "baseline_interceptor_win_rate": 0.0033333333333333335,
+  "win_rate_improvement": 0.1,
+  "response_policy_accuracy": 0.9937888198757764,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.9938650306748467
+  },
+  "intruder_policy_step_counts": {
+    "attack": 5120,
+    "detour": 5120,
+    "direct": 5216
+  },
+  "ops_winner_counts": {
+    "interceptor": 31,
+    "intruder": 269
+  },
+  "baseline_winner_counts": {
+    "interceptor": 1,
+    "intruder": 299
+  },
+  "ops_reason_counts": {
+    "active_collision": 12,
+    "entered_big_circle": 257,
+    "intercepted_before_small_circle": 31
+  },
+  "baseline_reason_counts": {
+    "active_collision": 25,
+    "entered_big_circle": 256,
+    "entered_small_circle": 18,
+    "intercepted_before_small_circle": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -149.7916964673995,
+    "q25": -105.06101284384728,
+    "median": -102.89620101153851,
+    "q75": -101.38646852046251,
+    "max": 97.16132646232845,
+    "std": 60.9604134431224
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -177.8574201580882,
+    "q25": -106.46886986225843,
+    "median": -103.77454231619835,
+    "q75": -102.25711547762155,
+    "max": 96.8837482097745,
+    "std": 18.34714760499392
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": false,
+    "judgement": "达到工程复现主要标准：机制有效且优于 baseline，但绝对拦截胜率仍需优化。"
+  }
+}

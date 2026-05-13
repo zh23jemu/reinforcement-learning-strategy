@@ -1,0 +1,67 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_sweep_is0p03_us0p016_cr0p1_ts300000_s42/20260513_072733/analysis",
+  "episodes": 300,
+  "total_steps": 12102,
+  "baseline_total_steps": 14022,
+  "mean_episode_length": 40.34,
+  "baseline_mean_episode_length": 46.74,
+  "mean_episode_reward": -40.15635298034574,
+  "baseline_mean_episode_reward": -92.92602543790012,
+  "reward_improvement": 52.769672457554385,
+  "interceptor_win_rate": 0.3233333333333333,
+  "baseline_interceptor_win_rate": 0.056666666666666664,
+  "win_rate_improvement": 0.26666666666666666,
+  "response_policy_accuracy": 0.9938026772434309,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.9939054119941492
+  },
+  "intruder_policy_step_counts": {
+    "attack": 4000,
+    "detour": 4000,
+    "direct": 4102
+  },
+  "ops_winner_counts": {
+    "interceptor": 97,
+    "intruder": 203
+  },
+  "baseline_winner_counts": {
+    "interceptor": 17,
+    "intruder": 283
+  },
+  "ops_reason_counts": {
+    "active_collision": 4,
+    "entered_big_circle": 195,
+    "entered_small_circle": 4,
+    "intercepted_before_small_circle": 97
+  },
+  "baseline_reason_counts": {
+    "active_collision": 30,
+    "entered_big_circle": 251,
+    "entered_small_circle": 2,
+    "intercepted_before_small_circle": 17
+  },
+  "episode_reward_quantiles": {
+    "min": -147.10235797524444,
+    "q25": -104.34179249405861,
+    "median": -102.03971759200095,
+    "q75": 95.93811125937847,
+    "max": 98.75788754314183,
+    "std": 94.69418887418564
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -124.53664687104524,
+    "q25": -104.88052043676376,
+    "median": -103.13323793292045,
+    "q75": -101.62410121381284,
+    "max": 97.34743214040995,
+    "std": 46.06281111080686
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  }
+}
