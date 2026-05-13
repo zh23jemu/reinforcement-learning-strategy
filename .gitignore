@@ -5,6 +5,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .venv/
+.recallloom_prepared_temp/
 
 # 训练产物、过程数据与模型文件
 *.pt

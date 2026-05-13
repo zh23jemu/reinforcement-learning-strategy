@@ -15,6 +15,8 @@
 # 连续二维拦截捕猎参数 sweep 脚本。
 # 默认扫描 12 组中训参数：拦截者速度 3 档 x 入侵者速度 2 档 x 碰撞半径 2 档。
 # 每个 array task 会训练独立模型目录、执行评估，并生成 analysis 诊断结果。
+# 注意：array 任务默认不执行 pip install，避免多个任务同时改写同一个 .venv。
+# 提交前请先在登录节点或单独作业中完成依赖安装；确需在任务内安装时再显式设置 INSTALL_DEPS=1。
 # 默认使用本地 CPU 分区 defq，优先落到本地 com 节点；aws-com 可作为备用分区手动切换。
 
 set -euo pipefail
@@ -31,10 +33,11 @@ export MKL_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 
 PYTHON_BIN="${PYTHON_BIN:-.venv/bin/python}"
+INSTALL_DEPS="${INSTALL_DEPS:-0}"
 
 if [ ! -x "${PYTHON_BIN}" ]; then
   echo "错误：找不到可执行 Python：${PYTHON_BIN}"
-  echo "请先在服务器创建 .venv，或用 --export=ALL,PYTHON_BIN=/path/to/python 指定解释器。"
+  echo "请先在服务器创建 .venv 并安装依赖，或用 --export=ALL,PYTHON_BIN=/path/to/python 指定解释器。"
   exit 1
 fi
 
@@ -68,6 +71,7 @@ echo "Host:              $(hostname)"
 echo "Job ID:            ${SLURM_JOB_ID:-local}"
 echo "Array ID:          ${SLURM_ARRAY_TASK_ID}"
 echo "Python:            ${PYTHON_BIN}"
+echo "Install deps:      ${INSTALL_DEPS}"
 echo "Interceptor speed: ${INTERCEPTOR_SPEED}"
 echo "Intruder speed:    ${INTRUDER_SPEED}"
 echo "Collision radius:  ${COLLISION_RADIUS}"
@@ -77,7 +81,12 @@ echo "Seed:              ${SEED}"
 echo "Start time:        $(date '+%Y-%m-%d %H:%M:%S')"
 echo "============================================================"
 
-"${PYTHON_BIN}" -m pip install -e ".[dev]"
+if [ "${INSTALL_DEPS}" = "1" ]; then
+  # 默认关闭安装步骤，防止 Slurm array 并发写同一个 editable 安装元数据。
+  # 如果确实需要任务内安装，建议只在单任务或互斥环境中设置 INSTALL_DEPS=1。
+  "${PYTHON_BIN}" -m pip install -e ".[dev]"
+fi
+
 "${PYTHON_BIN}" scripts/run_continuous_sweep.py \
   --base-config configs/continuous_paper_like.yaml \
   --interceptor-speed "${INTERCEPTOR_SPEED}" \

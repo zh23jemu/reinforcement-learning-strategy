@@ -142,4 +142,6 @@ sbatch slurm/aggregate_continuous_plcyf.sbatch
 sbatch --export=ALL,TIMESTEPS=500000,EPISODES=500 slurm/sweep_continuous_plcyf.sbatch
 ```
 
+提交连续 sweep 前，应先在服务器项目 `.venv` 中完成依赖安装。`sweep_continuous_plcyf.sbatch` 默认不在每个 array task 内执行 `pip install`，避免多个任务并发改写同一个虚拟环境；确需任务内安装时可显式传入 `INSTALL_DEPS=1`，但不建议用于并发 array。
+
 聚合结果会写入 `runs/continuous_sweep_summary.csv`，建议优先查看 `engineering_pass`、`reward_improvement`、`win_rate_improvement` 排名靠前的参数组，再把最优 2-3 组提升到 `1M+` timesteps 做确认。
