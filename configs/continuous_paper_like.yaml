@@ -1,0 +1,32 @@
+experiment:
+  module: continuous
+  name: continuous_paper_like
+  seed: 42
+  run_dir: runs
+  artifact_dir: artifacts/continuous
+
+environment:
+  big_radius: 1.0
+  small_radius: 0.3
+  collision_radius: 0.08
+  max_steps: 500
+  switch_interval: 160
+  intruder_max_speed: 0.018
+  interceptor_max_speed: 0.022
+  world_radius: 1.5
+  detour_safe_distance: 0.35
+
+ppo:
+  total_timesteps: 1000000
+  n_steps: 2048
+  batch_size: 256
+  learning_rate: 0.0003
+  gamma: 0.99
+
+detector:
+  initial_policy: direct
+
+evaluation:
+  episodes: 1000
+  deterministic: false
+

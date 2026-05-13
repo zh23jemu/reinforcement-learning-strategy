@@ -14,6 +14,7 @@ import argparse
 from pathlib import Path
 
 from rl_strategy.config import load_config
+from rl_strategy.continuous.experiment import evaluate_continuous, train_continuous
 from rl_strategy.discrete.analysis import analyze_discrete_run
 from rl_strategy.discrete.experiment import evaluate_discrete, train_discrete
 
@@ -56,15 +57,31 @@ def main() -> None:
     args = build_parser().parse_args()
     if args.command == "train":
         config = load_config(args.config)
-        train_discrete(config)
+        if _is_continuous_config(config):
+            train_continuous(config)
+        else:
+            train_discrete(config)
     elif args.command == "evaluate":
         config = load_config(args.config)
-        evaluate_discrete(config)
+        if _is_continuous_config(config):
+            evaluate_continuous(config)
+        else:
+            evaluate_discrete(config)
     elif args.command == "analyze":
         summary = analyze_discrete_run(args.run_dir, args.output_dir)
         print(f"分析完成，生成 {len(summary['figures'])} 张图。")
     else:  # pragma: no cover - argparse 已保证不会进入该分支
         raise ValueError(f"未知命令: {args.command}")
+
+
+def _is_continuous_config(config: dict) -> bool:
+    """判断配置是否指向连续场景模块。
+
+    旧的离散配置没有 `experiment.module` 字段，因此默认仍走离散复现流程，
+    这样可以保持已有命令完全兼容。
+    """
+
+    return str(config.get("experiment", {}).get("module", "discrete")) == "continuous"
 
 
 if __name__ == "__main__":
