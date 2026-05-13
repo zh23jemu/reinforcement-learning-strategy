@@ -79,6 +79,8 @@
 - 工程复现过关：响应策略准确率高于 0.95，平均回报和拦截胜率均优于 baseline。
 - 接近论文效果：需要多 seed 稳定优于 baseline，且绝对拦截胜率达到明确目标。
 
+最新 1.5M timesteps 确认长训结果见 `docs/continuous_confirm_results.md`。当前连续场景 3 组候选参数 x 3 个 seed 均稳定优于 baseline；推荐主结果为 `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`，平均回报提升约 `50.94`，平均胜率提升约 `23.96` 个百分点。该结果可支撑“连续场景工程复现稳定优于 baseline，并满足接近论文效果候选标准”，但绝对拦截胜率仍约 30%-33%，不直接宣称完整达到原论文效果级。
+
 连续评估会在 `runs/continuous_*` 下生成：
 
 - `summary.json`：平均回报、拦截胜率、响应策略准确率、baseline 对照指标。

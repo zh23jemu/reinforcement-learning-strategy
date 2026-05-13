@@ -26,7 +26,7 @@
 
 ### C. 接近论文效果
 
-连续场景目前尚未达到此档。后续若要声明接近论文效果，建议至少满足：
+连续场景当前已在 1.5M timesteps、800 episodes、3 个 seed 的确认实验中满足本项目定义的接近论文效果候选标准。若要进一步声明完整论文效果级，仍建议至少满足：
 
 - 多 seed 评估下 OPS-DeMo 平均回报稳定优于 baseline，且提升幅度不依赖单次随机结果。
 - 拦截胜率达到一个明确、可复验的绝对水平，例如 `interceptor_win_rate >= 0.20`，或达到论文/需求文档中给出的目标范围。
@@ -35,13 +35,13 @@
 
 ## 2. 当前连续长训结果定位
 
-当前已拉回的长训结果位于：
+早期 paper-like 长训结果位于：
 
 - 训练日志：`slurm/logs/cont-train-32945557.out`、`slurm/logs/cont-train-32945557.err`
 - 模型产物：`artifacts/continuous/`
 - 评估数据：`runs/continuous_paper_like/20260513_032143/`
 
-当前评估指标：
+早期评估指标：
 
 | 指标 | OPS-DeMo | baseline | 判断 |
 |---|---:|---:|---|
@@ -49,10 +49,15 @@
 | 拦截胜率 | 3.4% | 0.5% | OPS-DeMo 相对提升，但绝对值偏低 |
 | 响应策略准确率 | 99.38% | 不适用 | 策略识别/选择机制正常 |
 
-因此当前结论是：连续场景达到“流程过关”，并且核心机制已满足“工程复现”的主要方向；但由于绝对拦截胜率仍低，暂不应声明达到论文效果级。
+1.5M 确认长训结果见 `docs/continuous_confirm_results.md`。当前确认结论是：
+
+- 3 组候选参数 x 3 个 seed 共 9 条确认结果均 `engineering_pass=True` 且 `paper_like_pass=True`。
+- 推荐主结果为 `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`，平均回报提升约 `50.94`，平均胜率提升约 `23.96` 个百分点。
+- 稳定性备选为 `0.026 / 0.018 / 0.10`，平均回报提升约 `40.67`，平均胜率提升约 `19.75` 个百分点。
+- 当前连续场景可表述为“工程复现稳定优于 baseline，并满足接近论文效果候选标准”；但绝对拦截胜率仍约 30%-33%，不应直接宣称完整达到原论文效果级。
 
 ## 3. 推荐下一步
 
-- 使用 `scripts/analyze_continuous_run.py` 固化每次连续评估的诊断指标。
-- 做连续参数 sweep，优先扫描 `interceptor_max_speed`、`intruder_max_speed`、`collision_radius`、终止奖励/惩罚、`total_timesteps`。
-- 保留当前结果作为 baseline checkpoint，后续所有优化都和 `runs/continuous_paper_like/20260513_032143/` 对比。
+- 将 `docs/continuous_confirm_results.md` 中的结果表整理进最终报告或论文复现说明。
+- 如果继续优化连续场景，优先处理绝对拦截胜率、baseline 方差、奖励/终止设计，以及更接近 Everett SAM 的 opponent modeling。
+- 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。
