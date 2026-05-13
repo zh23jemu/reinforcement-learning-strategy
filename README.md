@@ -145,3 +145,27 @@ sbatch --export=ALL,TIMESTEPS=500000,EPISODES=500 slurm/sweep_continuous_plcyf.s
 提交连续 sweep 前，应先在服务器项目 `.venv` 中完成依赖安装。`sweep_continuous_plcyf.sbatch` 默认不在每个 array task 内执行 `pip install`，避免多个任务并发改写同一个虚拟环境；确需任务内安装时可显式传入 `INSTALL_DEPS=1`，但不建议用于并发 array。
 
 聚合结果会写入 `runs/continuous_sweep_summary.csv`，建议优先查看 `engineering_pass`、`reward_improvement`、`win_rate_improvement` 排名靠前的参数组，再把最优 2-3 组提升到 `1M+` timesteps 做确认。
+
+当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
+
+- `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`
+- `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.10`
+- `interceptor_max_speed=0.026`、`intruder_max_speed=0.018`、`collision_radius=0.10`
+
+资源充足时，可直接提交 3 组候选 x 3 个 seed 的确认长训：
+
+```bash
+sbatch slurm/confirm_continuous_plcyf.sbatch
+```
+
+默认确认脚本使用 `TIMESTEPS=1000000`、`EPISODES=500`、`SEEDS={42,43,44}`，并写入 `continuous_confirm_*` 运行目录。需要调整训练步数或评估 episode 时可覆盖：
+
+```bash
+sbatch --export=ALL,TIMESTEPS=1500000,EPISODES=800 slurm/confirm_continuous_plcyf.sbatch
+```
+
+确认长训完成后仍使用同一个聚合脚本收录结果；默认会同时扫描 `continuous_sweep_*` 和 `continuous_confirm_*` 运行目录，并写入 `runs/continuous_sweep_summary.csv`：
+
+```bash
+sbatch slurm/aggregate_continuous_plcyf.sbatch
+```

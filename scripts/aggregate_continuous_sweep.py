@@ -1,6 +1,7 @@
-"""汇总连续 OPS-DeMo sweep 结果。
+"""汇总连续 OPS-DeMo sweep / confirm 结果。
 
-读取 `runs/continuous_sweep_*/*/analysis/continuous_analysis_summary.json`，
+读取 `runs/continuous_sweep_*/*/analysis/continuous_analysis_summary.json`
+和 `runs/continuous_confirm_*/*/analysis/continuous_analysis_summary.json`，
 提取参数、验收状态和核心效果指标，生成一个便于排序比较的 CSV。
 """
 
@@ -13,6 +14,9 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+
+DEFAULT_RUN_PREFIXES = ("continuous_sweep", "continuous_confirm")
 
 
 SWEEP_PATTERN = re.compile(
@@ -35,6 +39,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("runs/continuous_sweep_summary.csv"),
         help="输出 CSV 路径",
     )
+    parser.add_argument(
+        "--run-prefix",
+        action="append",
+        dest="run_prefixes",
+        default=None,
+        help=(
+            "要扫描的 runs 子目录前缀，可重复传入。默认同时扫描 "
+            "continuous_sweep 和 continuous_confirm。"
+        ),
+    )
     return parser
 
 
@@ -42,7 +56,8 @@ def main() -> None:
     """读取所有连续 sweep 分析摘要并写出总表。"""
 
     args = build_parser().parse_args()
-    rows = [_flatten_summary(path) for path in _iter_summary_paths(args.runs_root)]
+    run_prefixes = tuple(args.run_prefixes or DEFAULT_RUN_PREFIXES)
+    rows = [_flatten_summary(path) for path in _iter_summary_paths(args.runs_root, run_prefixes)]
     output = args.output
     output.parent.mkdir(parents=True, exist_ok=True)
 
@@ -58,10 +73,17 @@ def main() -> None:
     print(f"已汇总 {len(rows)} 条连续 sweep 结果到: {output}")
 
 
-def _iter_summary_paths(runs_root: Path) -> list[Path]:
-    """查找所有连续 sweep 分析摘要。"""
+def _iter_summary_paths(runs_root: Path, run_prefixes: tuple[str, ...]) -> list[Path]:
+    """按运行目录前缀查找所有连续场景分析摘要。"""
 
-    return sorted(runs_root.glob("continuous_sweep_*/*/analysis/continuous_analysis_summary.json"))
+    # 确认长训使用 continuous_confirm_* 前缀，300k 参数扫描使用
+    # continuous_sweep_* 前缀；这里统一收集，避免长训完成后还需要换脚本。
+    summary_paths: list[Path] = []
+    for run_prefix in run_prefixes:
+        summary_paths.extend(
+            runs_root.glob(f"{run_prefix}_*/*/analysis/continuous_analysis_summary.json")
+        )
+    return sorted(set(summary_paths))
 
 
 def _flatten_summary(summary_path: Path) -> dict[str, Any]:
@@ -71,7 +93,9 @@ def _flatten_summary(summary_path: Path) -> dict[str, Any]:
     experiment_name = summary_path.parents[2].name
     row: dict[str, Any] = {
         "experiment_name": experiment_name,
-        "run_dir": str(summary_path.parents[1]),
+        # 统一使用 POSIX 风格路径，避免 Windows 本地自检时把已入库 CSV
+        # 从 runs/foo/bar 改写成 runs\foo\bar，产生无意义的跨平台 diff。
+        "run_dir": summary_path.parents[1].as_posix(),
         "episodes": data.get("episodes"),
         "total_steps": data.get("total_steps"),
         "mean_episode_reward": data.get("mean_episode_reward"),
