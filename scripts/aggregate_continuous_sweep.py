@@ -105,6 +105,7 @@ def _flatten_summary(summary_path: Path) -> dict[str, Any]:
         "baseline_interceptor_win_rate": data.get("baseline_interceptor_win_rate"),
         "win_rate_improvement": data.get("win_rate_improvement"),
         "response_policy_accuracy": data.get("response_policy_accuracy"),
+        "switch_count": data.get("switch_count"),
         "process_pass": data.get("acceptance", {}).get("process_pass"),
         "engineering_pass": data.get("acceptance", {}).get("engineering_pass"),
         "paper_like_pass": data.get("acceptance", {}).get("paper_like_pass"),

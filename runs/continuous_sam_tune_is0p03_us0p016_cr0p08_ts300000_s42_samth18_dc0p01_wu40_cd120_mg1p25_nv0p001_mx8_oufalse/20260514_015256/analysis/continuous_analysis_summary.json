@@ -1,41 +1,39 @@
 {
-  "output_dir": "runs/continuous_sam_tune_is0p03_us0p016_cr0p08_ts300000_s42_samth14_dc0p01_wu40_cd160_mg0p75_nv0p001_mx8_oufalse/20260514_015213/analysis",
+  "output_dir": "runs/continuous_sam_tune_is0p03_us0p016_cr0p08_ts300000_s42_samth18_dc0p01_wu40_cd120_mg1p25_nv0p001_mx8_oufalse/20260514_015256/analysis",
   "episodes": 300,
-  "total_steps": 10323,
+  "total_steps": 13000,
   "baseline_total_steps": 14509,
-  "mean_episode_length": 34.41,
+  "mean_episode_length": 43.333333333333336,
   "baseline_mean_episode_length": 48.36333333333334,
-  "mean_episode_reward": -55.83891612291933,
+  "mean_episode_reward": -107.65988312548895,
   "baseline_mean_episode_reward": -105.95892317854663,
-  "reward_improvement": 50.1200070556273,
-  "interceptor_win_rate": 0.23666666666666666,
+  "reward_improvement": -1.7009599469423193,
+  "interceptor_win_rate": 0.0,
   "baseline_interceptor_win_rate": 0.013333333333333334,
-  "win_rate_improvement": 0.22333333333333333,
-  "response_policy_accuracy": 0.33352707546255933,
-  "switch_count": 1,
+  "win_rate_improvement": -0.013333333333333334,
+  "response_policy_accuracy": 0.3353846153846154,
+  "switch_count": 0,
   "accuracy_by_intruder_policy": {
     "attack": 0.0,
-    "detour": 0.8606271777003485,
-    "direct": 0.13611821540210287
+    "detour": 0.0,
+    "direct": 1.0
   },
   "intruder_policy_step_counts": {
-    "attack": 3360,
-    "detour": 3444,
-    "direct": 3519
+    "attack": 4320,
+    "detour": 4320,
+    "direct": 4360
   },
   "ops_winner_counts": {
-    "interceptor": 71,
-    "intruder": 229
+    "intruder": 300
   },
   "baseline_winner_counts": {
     "interceptor": 4,
     "intruder": 296
   },
   "ops_reason_counts": {
-    "active_collision": 16,
-    "entered_big_circle": 201,
-    "entered_small_circle": 12,
-    "intercepted_before_small_circle": 71
+    "active_collision": 24,
+    "entered_big_circle": 239,
+    "entered_small_circle": 37
   },
   "baseline_reason_counts": {
     "active_collision": 24,
@@ -45,12 +43,12 @@
     "intercepted_in_big_circle": 1
   },
   "episode_reward_quantiles": {
-    "min": -130.50563314616684,
-    "q25": -103.45174866169691,
-    "median": -102.1409307950735,
-    "q75": -100.56936462640763,
-    "max": 98.7601463212818,
-    "std": 85.05158622246302
+    "min": -190.2087565898894,
+    "q25": -106.53147423699498,
+    "median": -103.68392329514026,
+    "q75": -102.15729207247496,
+    "max": -100.47694438576698,
+    "std": 12.839977049353763
   },
   "baseline_episode_reward_quantiles": {
     "min": -179.1565157097578,
@@ -67,6 +65,6 @@
     "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
   },
   "figures": [
-    "runs/continuous_sam_tune_is0p03_us0p016_cr0p08_ts300000_s42_samth14_dc0p01_wu40_cd160_mg0p75_nv0p001_mx8_oufalse/20260514_015213/analysis/sam_uncertainty_analysis.png"
+    "runs/continuous_sam_tune_is0p03_us0p016_cr0p08_ts300000_s42_samth18_dc0p01_wu40_cd120_mg1p25_nv0p001_mx8_oufalse/20260514_015256/analysis/sam_uncertainty_analysis.png"
   ]
 }

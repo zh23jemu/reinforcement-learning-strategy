@@ -161,6 +161,16 @@ sbatch slurm/aggregate_continuous_plcyf.sbatch
 
 `tune_sam_continuous_plcyf.sbatch` 默认训练 `300000` timesteps、评估 `300` episodes，目标是先提升 SAM 检测版的 `response_policy_accuracy`、降低误切换，再把最优组合提升到确认长训。
 
+当前调参结果显示，`threshold=14`、`decay=0.01`、`warmup=40`、`cooldown=160`、`switch_margin=0.75`、`noise_variance=0.001` 的组合在 300k / seed 42 下表现最好，可作为下一轮 1.5M 多 seed confirm 的优先候选。
+
+可用下面命令把该组合提升到 1.5M confirm：
+
+```bash
+sbatch --array=0-2 --export=ALL,NAME_PREFIX=continuous_sam_confirm,TIMESTEPS=1500000,EPISODES=800,SAM_THRESHOLD=14,SAM_DECAY=0.01,SAM_WARMUP_STEPS=40,SAM_COOLDOWN_STEPS=160,SAM_SWITCH_MARGIN=0.75,SAM_NOISE_VARIANCE=0.001,SAM_MAX_NORMALIZED_ERROR=8,SAM_ONLINE_UPDATES=false slurm/confirm_continuous_plcyf.sbatch
+```
+
+这里用 `--array=0-2` 只跑 `0.030 / 0.016 / 0.08` 这一组的 3 个 seed；如需同时确认原 3 组环境参数，可去掉 `--array=0-2`。
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`

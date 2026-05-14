@@ -110,7 +110,13 @@ def _read_csv_optional(path: Path) -> pd.DataFrame:
 
     if not path.exists() or path.stat().st_size == 0:
         return pd.DataFrame()
-    return pd.read_csv(path)
+    try:
+        return pd.read_csv(path)
+    except pd.errors.EmptyDataError:
+        # 当 SAM switchboard 在整次评估中没有触发切换时，pandas 会把只有
+        # 空内容的 switch_events.csv 视为解析错误。这里按“没有切换事件”
+        # 处理，避免训练和评估已经成功的 run 因分析阶段被误判为失败。
+        return pd.DataFrame()
 
 
 def _build_episode_metrics(step_trace: pd.DataFrame, baseline_trace: pd.DataFrame) -> pd.DataFrame:
@@ -184,7 +190,7 @@ def _build_analysis_summary(
     process_pass = _is_process_pass(raw_summary, step_trace, baseline_trace)
 
     return {
-        "output_dir": str(output_dir),
+        "output_dir": _portable_path(output_dir),
         "episodes": int(raw_summary["episodes"]),
         "total_steps": int(len(step_trace)),
         "baseline_total_steps": int(len(baseline_trace)),
@@ -223,7 +229,7 @@ def _write_figures(step_trace: pd.DataFrame, switch_events: pd.DataFrame, output
     if {"sam_uncertainty_x", "sam_uncertainty_y", "sam_normalized_error", "sam_running_error"}.issubset(
         step_trace.columns
     ):
-        figures.append(str(_plot_sam_uncertainty(step_trace, switch_events, output_dir)))
+        figures.append(_portable_path(_plot_sam_uncertainty(step_trace, switch_events, output_dir)))
     return figures
 
 
@@ -381,6 +387,16 @@ def _safe_float(value: Any) -> float:
     if np.isnan(result):
         return 0.0
     return result
+
+
+def _portable_path(path: Path) -> str:
+    """把输出路径写成跨平台可读形式，避免结果 JSON 固化本机绝对路径。"""
+
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(Path.cwd().resolve()).as_posix()
+    except ValueError:
+        return resolved.as_posix()
 
 
 if __name__ == "__main__":

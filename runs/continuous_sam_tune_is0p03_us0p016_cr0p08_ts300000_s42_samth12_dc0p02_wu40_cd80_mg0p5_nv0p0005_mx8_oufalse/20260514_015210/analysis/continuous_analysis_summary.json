@@ -1,5 +1,5 @@
 {
-  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_sam_tune_is0p03_us0p016_cr0p08_ts300000_s42_samth12_dc0p02_wu40_cd80_mg0p5_nv0p0005_mx8_oufalse/20260514_015210/analysis",
+  "output_dir": "runs/continuous_sam_tune_is0p03_us0p016_cr0p08_ts300000_s42_samth12_dc0p02_wu40_cd80_mg0p5_nv0p0005_mx8_oufalse/20260514_015210/analysis",
   "episodes": 300,
   "total_steps": 11651,
   "baseline_total_steps": 14509,
@@ -67,6 +67,6 @@
     "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
   },
   "figures": [
-    "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_sam_tune_is0p03_us0p016_cr0p08_ts300000_s42_samth12_dc0p02_wu40_cd80_mg0p5_nv0p0005_mx8_oufalse/20260514_015210/analysis/sam_uncertainty_analysis.png"
+    "runs/continuous_sam_tune_is0p03_us0p016_cr0p08_ts300000_s42_samth12_dc0p02_wu40_cd80_mg0p5_nv0p0005_mx8_oufalse/20260514_015210/analysis/sam_uncertainty_analysis.png"
   ]
 }

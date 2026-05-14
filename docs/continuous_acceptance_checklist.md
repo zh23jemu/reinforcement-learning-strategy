@@ -64,9 +64,10 @@ SAM 原文检测版本结论是：
 - MC dropout opponent model、预测不确定性归一化误差、running error、switchboard 切换和 `sam_uncertainty_analysis.png` 可视化均已落地。
 - 9 条结果中 `engineering_pass=0`、`paper_like_pass=0`；整体平均回报提升约 `-5.18`，平均胜率提升约 `-2.47` 个百分点，平均切换/响应准确率约 `35.35%`。
 - 当前相对最好的参数组是 `0.030 / 0.016 / 0.08`，平均回报提升约 `13.12`，平均胜率提升约 `5.54` 个百分点，但 seed 间仍不稳定。
+- 最新 SAM 检测器 300k 调参中，`threshold=14`、`decay=0.01`、`warmup=40`、`cooldown=160`、`switch_margin=0.75`、`noise_variance=0.001` 的组合表现最好：回报提升约 `50.12`，胜率提升约 `22.33` 个百分点，拦截胜率 `23.67%`，切换次数 `1`。该结果仍是单 seed / 300k 筛选结果，需要 1.5M 多 seed 确认。
 
 ## 3. 推荐下一步
 
 - 将 `docs/continuous_confirm_results.md` 中的两批结果表整理进最终报告或论文复现说明，并明确区分 oracle 上限参考与 SAM 检测实测结果。
-- 如果继续优化连续场景，优先运行 `slurm/tune_sam_continuous_plcyf.sbatch`，扫描 SAM 检测阈值、running error 衰减、warmup、cooldown、候选切换 margin、MC dropout 噪声尺度和在线更新开关；再把最优组合提升到 1.5M 确认长训。
+- 如果继续优化连续场景，优先把 SAM 调参中最优的 1-2 个组合提升到 1.5M 确认长训；如 confirm 后仍不稳定，再继续扩大 SAM 检测阈值、running error 衰减、warmup、cooldown、候选切换 margin、MC dropout 噪声尺度和在线更新开关的搜索范围。
 - 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。

@@ -36,6 +36,14 @@ INSTALL_DEPS="${INSTALL_DEPS:-0}"
 TIMESTEPS="${TIMESTEPS:-1000000}"
 EPISODES="${EPISODES:-500}"
 NAME_PREFIX="${NAME_PREFIX:-continuous_confirm}"
+SAM_THRESHOLD="${SAM_THRESHOLD:-}"
+SAM_DECAY="${SAM_DECAY:-}"
+SAM_WARMUP_STEPS="${SAM_WARMUP_STEPS:-}"
+SAM_COOLDOWN_STEPS="${SAM_COOLDOWN_STEPS:-}"
+SAM_SWITCH_MARGIN="${SAM_SWITCH_MARGIN:-}"
+SAM_NOISE_VARIANCE="${SAM_NOISE_VARIANCE:-}"
+SAM_MAX_NORMALIZED_ERROR="${SAM_MAX_NORMALIZED_ERROR:-}"
+SAM_ONLINE_UPDATES="${SAM_ONLINE_UPDATES:-}"
 
 if [ ! -x "${PYTHON_BIN}" ]; then
   echo "错误：找不到可执行 Python：${PYTHON_BIN}"
@@ -84,6 +92,12 @@ echo "Timesteps:         ${TIMESTEPS}"
 echo "Episodes:          ${EPISODES}"
 echo "Seed:              ${SEED}"
 echo "Name prefix:       ${NAME_PREFIX}"
+echo "SAM threshold:     ${SAM_THRESHOLD:-<config>}"
+echo "SAM decay:         ${SAM_DECAY:-<config>}"
+echo "SAM warmup:        ${SAM_WARMUP_STEPS:-<config>}"
+echo "SAM cooldown:      ${SAM_COOLDOWN_STEPS:-<config>}"
+echo "SAM margin:        ${SAM_SWITCH_MARGIN:-<config>}"
+echo "SAM noise:         ${SAM_NOISE_VARIANCE:-<config>}"
 echo "Start time:        $(date '+%Y-%m-%d %H:%M:%S')"
 echo "============================================================"
 
@@ -91,6 +105,32 @@ if [ "${INSTALL_DEPS}" = "1" ]; then
   # 默认关闭安装步骤，防止 Slurm array 并发写同一个 editable 安装元数据。
   # 如果确实需要任务内安装，建议只在单任务或互斥环境中设置 INSTALL_DEPS=1。
   "${PYTHON_BIN}" -m pip install -e ".[dev]"
+fi
+
+SAM_ARGS=()
+if [ -n "${SAM_THRESHOLD}" ]; then
+  SAM_ARGS+=(--detector-threshold "${SAM_THRESHOLD}")
+fi
+if [ -n "${SAM_DECAY}" ]; then
+  SAM_ARGS+=(--detector-decay "${SAM_DECAY}")
+fi
+if [ -n "${SAM_WARMUP_STEPS}" ]; then
+  SAM_ARGS+=(--sam-warmup-steps "${SAM_WARMUP_STEPS}")
+fi
+if [ -n "${SAM_COOLDOWN_STEPS}" ]; then
+  SAM_ARGS+=(--sam-cooldown-steps "${SAM_COOLDOWN_STEPS}")
+fi
+if [ -n "${SAM_SWITCH_MARGIN}" ]; then
+  SAM_ARGS+=(--sam-switch-margin "${SAM_SWITCH_MARGIN}")
+fi
+if [ -n "${SAM_NOISE_VARIANCE}" ]; then
+  SAM_ARGS+=(--sam-noise-variance "${SAM_NOISE_VARIANCE}")
+fi
+if [ -n "${SAM_MAX_NORMALIZED_ERROR}" ]; then
+  SAM_ARGS+=(--sam-max-normalized-error "${SAM_MAX_NORMALIZED_ERROR}")
+fi
+if [ -n "${SAM_ONLINE_UPDATES}" ]; then
+  SAM_ARGS+=(--sam-online-updates "${SAM_ONLINE_UPDATES}")
 fi
 
 "${PYTHON_BIN}" scripts/run_continuous_sweep.py \
@@ -101,6 +141,7 @@ fi
   --timesteps "${TIMESTEPS}" \
   --episodes "${EPISODES}" \
   --seed "${SEED}" \
-  --name-prefix "${NAME_PREFIX}"
+  --name-prefix "${NAME_PREFIX}" \
+  "${SAM_ARGS[@]}"
 
 echo "Finished time: $(date '+%Y-%m-%d %H:%M:%S')"
