@@ -2,6 +2,8 @@
 
 本文档汇总连续二维拦截捕猎场景在 1.5M timesteps、800 episodes、3 个 seed 下的确认实验结果。结果来自 `runs/continuous_sweep_summary.csv` 中的 `continuous_confirm_*` 行。
 
+注意：该结果对应早期 oracle/工程化响应策略选择版本。当前代码已补入 SAM 原文方法中的 MC dropout opponent model、预测不确定性归一化误差和 switchboard 检测；接入 SAM 检测后的长训结果需要重新提交 Slurm 作业生成。
+
 ## 实验设置
 
 - 训练脚本：`slurm/confirm_continuous_plcyf.sbatch`
@@ -46,6 +48,6 @@
 
 ## 结论边界
 
-当前连续场景已经可以表述为：在本项目二维连续拦截环境中，OPS-DeMo 响应策略库在 1.5M timesteps、多 seed 确认下稳定优于单一 PPO baseline。
+该批早期结果可以表述为：在本项目二维连续拦截环境中，工程化响应策略库在 1.5M timesteps、多 seed 确认下稳定优于单一 PPO baseline。
 
-仍需谨慎的是：绝对拦截胜率约为 30%-33%，还不适合直接宣称完整达到原论文效果级。更稳妥的表述是“达到连续场景工程复现，并满足当前定义的接近论文效果候选标准”。
+仍需谨慎的是：绝对拦截胜率约为 30%-33%，且该批结果尚未使用当前 SAM 原文检测方法，还不适合直接宣称完整达到原论文效果级。更稳妥的表述是“早期工程化响应策略选择版本达到连续场景工程复现，并满足当时定义的接近论文效果候选标准”。

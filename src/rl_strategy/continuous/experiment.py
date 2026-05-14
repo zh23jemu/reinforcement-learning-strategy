@@ -14,6 +14,12 @@ from stable_baselines3 import PPO
 
 from rl_strategy.continuous.env import ContinuousInterceptEnv, ContinuousPolicyConditionedEnv
 from rl_strategy.continuous.intruder import POLICY_NAMES, IntruderPolicyName
+from rl_strategy.continuous.sam_detector import (
+    SamSwitchboard,
+    load_opponent_model,
+    save_opponent_model,
+    train_dropout_opponent_model,
+)
 
 
 def train_continuous(config: dict[str, Any]) -> None:
@@ -36,6 +42,7 @@ def train_continuous(config: dict[str, Any]) -> None:
         model = _make_ppo(config, env)
         model.learn(total_timesteps=int(config["ppo"]["total_timesteps"]))
         model.save(artifact_dir / f"response_{policy_name}.zip")
+        _train_sam_opponent_model(config, policy_name, artifact_dir)
 
     baseline_env = _make_env(
         config,
@@ -54,6 +61,8 @@ def evaluate_continuous(config: dict[str, Any]) -> Path:
     _save_json(run_dir / "config.json", config)
 
     response_policies = _load_response_policies(config)
+    detector_method = str(config.get("detector", {}).get("method", "sam"))
+    switchboard = _make_sam_switchboard(config) if detector_method == "sam" else None
     env = _make_env(
         config,
         intruder_policy=str(config["detector"]["initial_policy"]),
@@ -61,10 +70,11 @@ def evaluate_continuous(config: dict[str, Any]) -> Path:
     )
 
     rows: list[dict[str, Any]] = []
+    switch_rows: list[dict[str, Any]] = []
     episode_rewards: list[float] = []
     interceptor_wins = 0
     total_steps = 0
-    oracle_policy_steps = 0
+    correct_response_policy_steps = 0
 
     for episode in range(int(config["evaluation"]["episodes"])):
         observation, _ = env.reset()
@@ -73,55 +83,97 @@ def evaluate_continuous(config: dict[str, Any]) -> Path:
         final_winner: str | None = None
 
         while not done:
-            true_policy = env.intruder_policy
-            model = response_policies.get(true_policy)
+            observation_before_action = np.asarray(observation, dtype=np.float32).copy()
+            true_policy_before_step = env.intruder_policy
+            assumed_policy = (
+                switchboard.assumed_policy
+                if switchboard is not None
+                else str(true_policy_before_step)
+            )
+            model = response_policies.get(assumed_policy)
             if model is None:
                 action = _heuristic_interceptor_action(env)
             else:
-                conditioned_observation = _condition_observation(observation, true_policy)
+                conditioned_observation = _condition_observation(observation, assumed_policy)
                 action, _ = model.predict(
                     conditioned_observation,
                     deterministic=bool(config["evaluation"]["deterministic"]),
                 )
 
             observation, reward, terminated, truncated, info = env.step(np.asarray(action, dtype=np.float32))
+            true_policy_after_step = str(info["intruder_policy"])
+            sam_result = None
+            if switchboard is not None:
+                observed_intruder_action = np.asarray(env.state.intruder_velocity, dtype=np.float32)
+                sam_result = switchboard.update(observation_before_action, observed_intruder_action)
+                if sam_result.switched:
+                    switch_rows.append(
+                        {
+                            "episode": episode,
+                            "global_step": info["global_step"],
+                            "from_policy": assumed_policy,
+                            "to_policy": sam_result.assumed_policy,
+                            "true_policy": true_policy_after_step,
+                            "normalized_error": sam_result.normalized_error,
+                        }
+                    )
             done = bool(terminated or truncated)
             episode_reward += float(reward)
             total_steps += 1
-            oracle_policy_steps += int(true_policy == info["intruder_policy"])
+            correct_response_policy_steps += int(assumed_policy == true_policy_after_step)
             final_winner = info["winner"] or final_winner
 
-            rows.append(
-                {
-                    "episode": episode,
-                    "global_step": info["global_step"],
-                    "episode_step": info["episode_step"],
-                    "reward": reward,
-                    "episode_reward_so_far": episode_reward,
-                    "intruder_policy": info["intruder_policy"],
-                    "response_policy": true_policy,
-                    "response_policy_correct": true_policy == info["intruder_policy"],
-                    "winner": info["winner"],
-                    "reason": info["reason"],
-                    "collision": info["collision"],
-                    "intruder_distance": info["intruder_distance"],
-                    "agent_distance": info["agent_distance"],
-                    "interceptor_action_x": float(np.asarray(action).reshape(2)[0]),
-                    "interceptor_action_y": float(np.asarray(action).reshape(2)[1]),
-                }
-            )
+            row = {
+                "episode": episode,
+                "global_step": info["global_step"],
+                "episode_step": info["episode_step"],
+                "reward": reward,
+                "episode_reward_so_far": episode_reward,
+                "intruder_policy": true_policy_after_step,
+                "intruder_policy_before_step": true_policy_before_step,
+                "response_policy": assumed_policy,
+                "response_policy_correct": assumed_policy == true_policy_after_step,
+                "winner": info["winner"],
+                "reason": info["reason"],
+                "collision": info["collision"],
+                "intruder_distance": info["intruder_distance"],
+                "agent_distance": info["agent_distance"],
+                "interceptor_action_x": float(np.asarray(action).reshape(2)[0]),
+                "interceptor_action_y": float(np.asarray(action).reshape(2)[1]),
+                "intruder_action_x": float(env.state.intruder_velocity[0]),
+                "intruder_action_y": float(env.state.intruder_velocity[1]),
+            }
+            if sam_result is not None:
+                row.update(
+                    {
+                        "sam_pred_action_x": float(sam_result.prediction.mean[0]),
+                        "sam_pred_action_y": float(sam_result.prediction.mean[1]),
+                        "sam_uncertainty_x": float(sam_result.prediction.uncertainty[0]),
+                        "sam_uncertainty_y": float(sam_result.prediction.uncertainty[1]),
+                        "sam_uncertainty_mean": float(np.mean(sam_result.prediction.uncertainty)),
+                        "sam_normalized_error": sam_result.normalized_error,
+                        "sam_running_error": sam_result.running_error,
+                        "sam_switched": sam_result.switched,
+                    }
+                )
+                for name, value in sam_result.candidate_errors.items():
+                    row[f"sam_candidate_error_{name}"] = value
+            rows.append(row)
 
         episode_rewards.append(episode_reward)
         interceptor_wins += int(final_winner == "interceptor")
 
     pd.DataFrame(rows).to_csv(run_dir / "step_trace.csv", index=False)
+    pd.DataFrame(switch_rows).to_csv(run_dir / "switch_events.csv", index=False)
     baseline_rewards = _evaluate_baseline(config, run_dir)
     summary = {
         "episodes": int(config["evaluation"]["episodes"]),
         "mean_episode_reward": float(np.mean(episode_rewards)),
         "std_episode_reward": float(np.std(episode_rewards)),
         "interceptor_win_rate": float(interceptor_wins / max(int(config["evaluation"]["episodes"]), 1)),
-        "response_policy_accuracy": float(oracle_policy_steps / max(total_steps, 1)),
+        "response_policy_accuracy": float(correct_response_policy_steps / max(total_steps, 1)),
+        "detector_method": detector_method,
+        "switch_count": len(switch_rows),
         "baseline_mean_episode_reward": baseline_rewards["mean"],
         "baseline_std_episode_reward": baseline_rewards["std"],
         "baseline_interceptor_win_rate": baseline_rewards["win_rate"],
@@ -207,6 +259,88 @@ def _make_env(
         world_radius=float(environment["world_radius"]),
         detour_safe_distance=float(environment["detour_safe_distance"]),
         seed=int(config["experiment"]["seed"]),
+    )
+
+
+def _train_sam_opponent_model(config: dict[str, Any], policy_name: str, artifact_dir: Path) -> None:
+    """为指定入侵策略训练 SAM dropout opponent model。
+
+    训练数据来自固定入侵策略环境中的短 rollout。标签是环境真实产生的入侵者
+    二维速度，符合 SAM 原文用状态-动作轨迹学习 opponent policy 的设定。
+    """
+
+    sam_config = config.get("sam", {})
+    if not bool(sam_config.get("enabled", True)):
+        return
+
+    observations, actions = _collect_opponent_model_data(config, policy_name)
+    model = train_dropout_opponent_model(
+        observations,
+        actions,
+        hidden_dim=int(sam_config.get("hidden_dim", 64)),
+        dropout=float(sam_config.get("dropout", 0.1)),
+        epochs=int(sam_config.get("epochs", 8)),
+        batch_size=int(sam_config.get("batch_size", 128)),
+        learning_rate=float(sam_config.get("learning_rate", 0.001)),
+        seed=int(config["experiment"]["seed"]),
+    )
+    save_opponent_model(
+        artifact_dir / f"opponent_model_{policy_name}.zip",
+        model,
+        {
+            "input_dim": int(observations.shape[1]),
+            "output_dim": int(actions.shape[1]),
+            "hidden_dim": int(sam_config.get("hidden_dim", 64)),
+            "dropout": float(sam_config.get("dropout", 0.1)),
+            "policy_name": policy_name,
+        },
+    )
+
+
+def _collect_opponent_model_data(config: dict[str, Any], policy_name: str) -> tuple[np.ndarray, np.ndarray]:
+    """采集 opponent model 的监督训练样本。"""
+
+    sam_config = config.get("sam", {})
+    sample_steps = int(sam_config.get("sample_steps", 2000))
+    env = _make_env(config, intruder_policy=policy_name, switch_interval=None)
+    rng = np.random.default_rng(int(config["experiment"]["seed"]))
+    observation, _ = env.reset()
+    observations: list[np.ndarray] = []
+    actions: list[np.ndarray] = []
+    for _ in range(sample_steps):
+        observations.append(np.asarray(observation, dtype=np.float32).copy())
+        # 用随机拦截者动作覆盖不同相对位置，使 opponent model 不只记住单一路径。
+        interceptor_action = rng.uniform(
+            low=-env.interceptor_max_speed,
+            high=env.interceptor_max_speed,
+            size=2,
+        ).astype(np.float32)
+        observation, _, terminated, truncated, _ = env.step(interceptor_action)
+        actions.append(np.asarray(env.state.intruder_velocity, dtype=np.float32).copy())
+        if terminated or truncated:
+            observation, _ = env.reset()
+    return np.stack(observations, axis=0), np.stack(actions, axis=0)
+
+
+def _make_sam_switchboard(config: dict[str, Any]) -> SamSwitchboard:
+    """加载 opponent models 并创建 SAM switchboard。"""
+
+    artifact_dir = Path(config["experiment"]["artifact_dir"])
+    opponent_models = {
+        name: load_opponent_model(artifact_dir / f"opponent_model_{name}.zip")
+        for name in POLICY_NAMES
+    }
+    detector = config.get("detector", {})
+    sam_config = config.get("sam", {})
+    return SamSwitchboard(
+        policy_names=list(POLICY_NAMES),
+        opponent_models=opponent_models,
+        initial_policy=str(detector["initial_policy"]),
+        threshold=float(detector.get("threshold", 8.0)),
+        decay=float(detector.get("decay", 0.05)),
+        mc_passes=int(sam_config.get("mc_passes", 20)),
+        noise_variance=float(sam_config.get("noise_variance", 1e-4)),
+        online_learning_rate=float(sam_config.get("online_learning_rate", 0.0003)),
     )
 
 

@@ -24,9 +24,23 @@ ppo:
   gamma: 0.99
 
 detector:
+  method: sam
   initial_policy: direct
+  threshold: 8.0
+  decay: 0.05
+
+sam:
+  enabled: true
+  sample_steps: 5000
+  hidden_dim: 64
+  dropout: 0.1
+  epochs: 10
+  batch_size: 256
+  learning_rate: 0.001
+  mc_passes: 20
+  noise_variance: 0.0001
+  online_learning_rate: 0.0003
 
 evaluation:
   episodes: 1000
   deterministic: false
-

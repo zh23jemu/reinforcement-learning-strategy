@@ -2,7 +2,7 @@
 
 本项目当前优先复现离散动作空间论文 `2406.06500v1.pdf` 中的 OPS-DeMo 框架：在 Predator-Prey 网格环境中，使用 PPO 训练对手策略库与响应策略库，并用运行误差检测对手策略切换。
 
-连续动作空间场景已加入初版工程链路：使用 Stable-Baselines3 PPO 训练三类入侵策略对应的响应策略，并评估相对普通 PPO baseline 的收益。当前连续模块定位为工程可复现初版，暂不声明达到论文效果级。
+连续动作空间场景已加入 SAM 风格工程链路：使用 Stable-Baselines3 PPO 训练三类入侵策略对应的响应策略，并使用 MC dropout opponent model 的不确定性归一化误差进行策略切换检测，评估相对普通 PPO baseline 的收益。
 
 ## 快速开始
 
@@ -79,12 +79,12 @@
 - 工程复现过关：响应策略准确率高于 0.95，平均回报和拦截胜率均优于 baseline。
 - 接近论文效果：需要多 seed 稳定优于 baseline，且绝对拦截胜率达到明确目标。
 
-最新 1.5M timesteps 确认长训结果见 `docs/continuous_confirm_results.md`。当前连续场景 3 组候选参数 x 3 个 seed 均稳定优于 baseline；推荐主结果为 `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`，平均回报提升约 `50.94`，平均胜率提升约 `23.96` 个百分点。该结果可支撑“连续场景工程复现稳定优于 baseline，并满足接近论文效果候选标准”，但绝对拦截胜率仍约 30%-33%，不直接宣称完整达到原论文效果级。
+早期 1.5M timesteps 确认长训结果见 `docs/continuous_confirm_results.md`，该批结果对应接入 SAM 检测前的工程化响应策略选择版本。当前代码已改为 SAM 原文方法：MC dropout opponent model 预测入侵者动作，并用观测误差除以预测不确定性得到归一化 running error 后触发策略切换；接入该检测方法后的长训结果需要重新提交 Slurm 作业生成。
 
 连续评估会在 `runs/continuous_*` 下生成：
 
 - `summary.json`：平均回报、拦截胜率、响应策略准确率、baseline 对照指标。
-- `step_trace.csv`：OPS-DeMo 响应策略库逐步过程数据。
+- `step_trace.csv`：SAM switchboard、MC dropout 预测、不确定性、归一化误差和响应策略库逐步过程数据。
 - `baseline_step_trace.csv`：普通 PPO baseline 逐步过程数据。
 
 可使用以下脚本生成连续诊断结果：
@@ -97,6 +97,7 @@
 
 - `analysis/continuous_analysis_summary.json`：核心指标、胜负分布、终止原因、验收判断。
 - `analysis/episode_metrics.csv`：episode 级 OPS-DeMo 与 baseline 对比表。
+- `analysis/sam_uncertainty_analysis.png`：MC dropout 动作预测不确定性、归一化误差和 running error 可视化。
 
 ## Slurm 长训与参数扫描
 
