@@ -1,0 +1,29 @@
+Traceback (most recent call last):
+  File "/mnt/users/xj62kv/reinforcement-learning-strategy/scripts/run_continuous_sweep.py", line 211, in <module>
+    main()
+  File "/mnt/users/xj62kv/reinforcement-learning-strategy/scripts/run_continuous_sweep.py", line 97, in main
+    analysis_summary = analyze_continuous_run(run_dir)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/users/xj62kv/reinforcement-learning-strategy/scripts/analyze_continuous_run.py", line 77, in analyze_continuous_run
+    switch_events = _read_csv_optional(switch_events_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/users/xj62kv/reinforcement-learning-strategy/scripts/analyze_continuous_run.py", line 113, in _read_csv_optional
+    return pd.read_csv(path)
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/users/xj62kv/reinforcement-learning-strategy/.venv/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/users/xj62kv/reinforcement-learning-strategy/.venv/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 300, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/users/xj62kv/reinforcement-learning-strategy/.venv/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 1645, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/users/xj62kv/reinforcement-learning-strategy/.venv/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 1922, in _make_engine
+    return mapping[engine](f, **self.options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/users/xj62kv/reinforcement-learning-strategy/.venv/lib/python3.11/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 95, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/parsers.pyx", line 575, in pandas._libs.parsers.TextReader.__cinit__
+pandas.errors.EmptyDataError: No columns to parse from file
