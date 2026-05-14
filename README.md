@@ -171,6 +171,8 @@ sbatch --array=0-2 --export=ALL,NAME_PREFIX=continuous_sam_confirm,TIMESTEPS=150
 
 这里用 `--array=0-2` 只跑 `0.030 / 0.016 / 0.08` 这一组的 3 个 seed；如需同时确认原 3 组环境参数，可去掉 `--array=0-2`。
 
+该组合的 1.5M / 800 episodes / 3 seed confirm 已完成：平均回报提升约 `6.29`，平均胜率提升约 `2.00` 个百分点，但 3 个 seed 都未达到 `engineering_pass`。主要问题是 seed 43 和 seed 44 没有触发切换，检测器仍偏保守。下一轮应先做多 seed 小规模调参，降低切换门槛后再 confirm。
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`
