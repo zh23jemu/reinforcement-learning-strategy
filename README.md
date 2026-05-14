@@ -185,6 +185,12 @@ sbatch slurm/aggregate_continuous_plcyf.sbatch
 
 筛选时优先看 `switch_count` 是否在每个 seed 都大于 0，再看 `reward_improvement`、`win_rate_improvement` 和 seed 间最小值；不要只按单个 seed 的最高回报选参数。
 
+当前多 seed tune 首选组合为 `threshold=10`、`decay=0.01`、`warmup=30`、`cooldown=80`、`switch_margin=0.35`、`noise_variance=0.001`。该组合在 seeds `42/43/44` 下切换次数为 `20/1/5`，平均回报提升约 `26.79`，平均胜率提升约 `11.89` 个百分点。可用下面命令进入 1.5M confirm：
+
+```bash
+sbatch --array=0-2 --export=ALL,NAME_PREFIX=continuous_sam_confirm_msbest,TIMESTEPS=1500000,EPISODES=800,SAM_THRESHOLD=10,SAM_DECAY=0.01,SAM_WARMUP_STEPS=30,SAM_COOLDOWN_STEPS=80,SAM_SWITCH_MARGIN=0.35,SAM_NOISE_VARIANCE=0.001,SAM_MAX_NORMALIZED_ERROR=8,SAM_ONLINE_UPDATES=false slurm/confirm_continuous_plcyf.sbatch
+```
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`
