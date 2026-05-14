@@ -1,0 +1,49 @@
+{
+  "experiment": {
+    "module": "continuous",
+    "name": "continuous_confirm_is0p03_us0p016_cr0p08_ts1500000_s44",
+    "seed": 44,
+    "run_dir": "runs",
+    "artifact_dir": "artifacts/continuous_sweep/continuous_confirm_is0p03_us0p016_cr0p08_ts1500000_s44"
+  },
+  "environment": {
+    "big_radius": 1.0,
+    "small_radius": 0.3,
+    "collision_radius": 0.08,
+    "max_steps": 500,
+    "switch_interval": 160,
+    "intruder_max_speed": 0.016,
+    "interceptor_max_speed": 0.03,
+    "world_radius": 1.5,
+    "detour_safe_distance": 0.35
+  },
+  "ppo": {
+    "total_timesteps": 1500000,
+    "n_steps": 2048,
+    "batch_size": 256,
+    "learning_rate": 0.0003,
+    "gamma": 0.99
+  },
+  "detector": {
+    "method": "sam",
+    "initial_policy": "direct",
+    "threshold": 8.0,
+    "decay": 0.05
+  },
+  "sam": {
+    "enabled": true,
+    "sample_steps": 5000,
+    "hidden_dim": 64,
+    "dropout": 0.1,
+    "epochs": 10,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "mc_passes": 20,
+    "noise_variance": 0.0001,
+    "online_learning_rate": 0.0003
+  },
+  "evaluation": {
+    "episodes": 800,
+    "deterministic": false
+  }
+}

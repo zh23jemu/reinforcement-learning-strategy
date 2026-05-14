@@ -1,0 +1,59 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_smoke/20260513_225045/analysis",
+  "episodes": 10,
+  "total_steps": 153,
+  "baseline_total_steps": 153,
+  "mean_episode_length": 15.3,
+  "baseline_mean_episode_length": 15.3,
+  "mean_episode_reward": -102.63990763592719,
+  "baseline_mean_episode_reward": -102.65160283613204,
+  "reward_improvement": 0.011695200204854928,
+  "interceptor_win_rate": 0.0,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.0,
+  "response_policy_accuracy": 0.39869281045751637,
+  "switch_count": 13,
+  "accuracy_by_intruder_policy": {
+    "direct": 0.39869281045751637
+  },
+  "intruder_policy_step_counts": {
+    "direct": 153
+  },
+  "ops_winner_counts": {
+    "intruder": 10
+  },
+  "baseline_winner_counts": {
+    "intruder": 10
+  },
+  "ops_reason_counts": {
+    "entered_big_circle": 10
+  },
+  "baseline_reason_counts": {
+    "entered_big_circle": 10
+  },
+  "episode_reward_quantiles": {
+    "min": -105.0157666683197,
+    "q25": -103.29559624880552,
+    "median": -102.45563250780106,
+    "q75": -101.50949311703442,
+    "max": -100.89088799357414,
+    "std": 1.3695767603794302
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -104.82132745981217,
+    "q25": -103.29450343340635,
+    "median": -102.65864939093589,
+    "q75": -101.54380330890417,
+    "max": -100.90390309691429,
+    "std": 1.287973248322712
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_smoke/20260513_225045/analysis/sam_uncertainty_analysis.png"
+  ]
+}

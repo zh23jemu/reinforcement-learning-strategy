@@ -1,0 +1,71 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_confirm_is0p026_us0p018_cr0p1_ts1500000_s42/20260513_234216/analysis",
+  "episodes": 800,
+  "total_steps": 27840,
+  "baseline_total_steps": 39951,
+  "mean_episode_length": 34.8,
+  "baseline_mean_episode_length": 49.93875,
+  "mean_episode_reward": -78.03817661360559,
+  "baseline_mean_episode_reward": -98.90940029266156,
+  "reward_improvement": 20.871223679055973,
+  "interceptor_win_rate": 0.12875,
+  "baseline_interceptor_win_rate": 0.03625,
+  "win_rate_improvement": 0.0925,
+  "response_policy_accuracy": 0.3425646551724138,
+  "switch_count": 614,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.33189655172413796,
+    "detour": 0.4771551724137931,
+    "direct": 0.21864224137931035
+  },
+  "intruder_policy_step_counts": {
+    "attack": 9280,
+    "detour": 9280,
+    "direct": 9280
+  },
+  "ops_winner_counts": {
+    "interceptor": 103,
+    "intruder": 697
+  },
+  "baseline_winner_counts": {
+    "interceptor": 29,
+    "intruder": 771
+  },
+  "ops_reason_counts": {
+    "active_collision": 75,
+    "entered_big_circle": 564,
+    "entered_small_circle": 58,
+    "intercepted_before_small_circle": 103
+  },
+  "baseline_reason_counts": {
+    "active_collision": 33,
+    "entered_big_circle": 725,
+    "entered_small_circle": 13,
+    "intercepted_in_big_circle": 29
+  },
+  "episode_reward_quantiles": {
+    "min": -142.24308078855273,
+    "q25": -103.60457541152836,
+    "median": -102.2096133840084,
+    "q75": -101.00095845490694,
+    "max": 98.22644778311252,
+    "std": 67.33396942885885
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -158.6092762261629,
+    "q25": -104.28620047777892,
+    "median": -102.46926946103574,
+    "q75": -101.2918573513627,
+    "max": 78.46486769452692,
+    "std": 30.855120526409646
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_confirm_is0p026_us0p018_cr0p1_ts1500000_s42/20260513_234216/analysis/sam_uncertainty_analysis.png"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_confirm_is0p03_us0p016_cr0p08_ts1500000_s42/20260513_234535/analysis",
+  "episodes": 800,
+  "total_steps": 33223,
+  "baseline_total_steps": 39432,
+  "mean_episode_length": 41.52875,
+  "baseline_mean_episode_length": 49.29,
+  "mean_episode_reward": -77.58860506196916,
+  "baseline_mean_episode_reward": -108.67576642323061,
+  "reward_improvement": 31.08716136126145,
+  "interceptor_win_rate": 0.13875,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.13875,
+  "response_policy_accuracy": 0.32989194232910934,
+  "switch_count": 755,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.33496376811594203,
+    "detour": 0.41304347826086957,
+    "direct": 0.2424840707170421
+  },
+  "intruder_policy_step_counts": {
+    "attack": 11040,
+    "detour": 11040,
+    "direct": 11143
+  },
+  "ops_winner_counts": {
+    "interceptor": 111,
+    "intruder": 689
+  },
+  "baseline_winner_counts": {
+    "intruder": 800
+  },
+  "ops_reason_counts": {
+    "active_collision": 22,
+    "entered_big_circle": 607,
+    "entered_small_circle": 60,
+    "intercepted_before_small_circle": 109,
+    "intercepted_in_big_circle": 2
+  },
+  "baseline_reason_counts": {
+    "active_collision": 57,
+    "entered_big_circle": 742,
+    "entered_small_circle": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -181.99876333922128,
+    "q25": -104.12979900479318,
+    "median": -102.42853053689002,
+    "q75": -101.06390155017377,
+    "max": 98.54777807340024,
+    "std": 70.42435626522774
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -181.79789577811954,
+    "q25": -104.8325478860736,
+    "median": -103.03197339475156,
+    "q75": -101.70750923544168,
+    "max": -100.38095875263214,
+    "std": 17.0381083607004
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_confirm_is0p03_us0p016_cr0p08_ts1500000_s42/20260513_234535/analysis/sam_uncertainty_analysis.png"
+  ]
+}

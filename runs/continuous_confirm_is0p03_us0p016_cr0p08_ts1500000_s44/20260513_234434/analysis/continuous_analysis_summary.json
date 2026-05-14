@@ -1,0 +1,73 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_confirm_is0p03_us0p016_cr0p08_ts1500000_s44/20260513_234434/analysis",
+  "episodes": 800,
+  "total_steps": 32915,
+  "baseline_total_steps": 49476,
+  "mean_episode_length": 41.14375,
+  "baseline_mean_episode_length": 61.845,
+  "mean_episode_reward": -73.53854131253425,
+  "baseline_mean_episode_reward": -109.12202236779572,
+  "reward_improvement": 35.58348105526147,
+  "interceptor_win_rate": 0.15625,
+  "baseline_interceptor_win_rate": 0.005,
+  "win_rate_improvement": 0.15125,
+  "response_policy_accuracy": 0.38988303205225583,
+  "switch_count": 935,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.346875,
+    "detour": 0.4575300109130593,
+    "direct": 0.3648881239242685
+  },
+  "intruder_policy_step_counts": {
+    "attack": 10880,
+    "detour": 10996,
+    "direct": 11039
+  },
+  "ops_winner_counts": {
+    "interceptor": 125,
+    "intruder": 675
+  },
+  "baseline_winner_counts": {
+    "interceptor": 4,
+    "intruder": 796
+  },
+  "ops_reason_counts": {
+    "active_collision": 55,
+    "entered_big_circle": 607,
+    "entered_small_circle": 13,
+    "intercepted_before_small_circle": 124,
+    "intercepted_in_big_circle": 1
+  },
+  "baseline_reason_counts": {
+    "active_collision": 1,
+    "entered_big_circle": 768,
+    "entered_small_circle": 27,
+    "intercepted_before_small_circle": 2,
+    "intercepted_in_big_circle": 2
+  },
+  "episode_reward_quantiles": {
+    "min": -167.8405342176556,
+    "q25": -103.63151947885751,
+    "median": -102.24429467201233,
+    "q75": -100.91850158542394,
+    "max": 98.77853994101284,
+    "std": 73.70961742520177
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -192.62812611579895,
+    "q25": -105.14571768343448,
+    "median": -102.90562783181667,
+    "q75": -101.56117028534412,
+    "max": 97.5587364307046,
+    "std": 24.104218696186418
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_confirm_is0p03_us0p016_cr0p08_ts1500000_s44/20260513_234434/analysis/sam_uncertainty_analysis.png"
+  ]
+}

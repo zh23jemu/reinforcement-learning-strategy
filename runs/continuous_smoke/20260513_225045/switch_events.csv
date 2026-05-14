@@ -1,0 +1,14 @@
+episode,global_step,from_policy,to_policy,true_policy,normalized_error
+0,8,direct,attack,direct,0.9219661951065063
+1,17,attack,direct,direct,1.6766211986541748
+1,33,direct,attack,direct,0.6206151843070984
+2,46,attack,attack,direct,0.7540696859359741
+2,57,attack,direct,direct,1.0849275588989258
+3,68,direct,detour,direct,0.9284379482269287
+4,85,detour,detour,direct,0.6025405526161194
+6,98,detour,direct,direct,5.106137752532959
+6,107,direct,direct,direct,0.8544307351112366
+8,124,direct,detour,direct,0.8401240110397339
+8,132,detour,attack,direct,1.027494192123413
+8,143,attack,detour,direct,0.49793314933776855
+9,151,detour,attack,direct,1.8097598552703857

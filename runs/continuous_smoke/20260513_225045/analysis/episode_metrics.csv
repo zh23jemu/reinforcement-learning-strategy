@@ -1,0 +1,11 @@
+episode,ops_episode_len,ops_episode_reward,ops_winner,ops_reason,ops_final_intruder_policy,baseline_episode_len,baseline_winner,baseline_reason,baseline_episode_reward,ops_interceptor_win,baseline_interceptor_win
+0,16,-102.5740745127201,intruder,entered_big_circle,direct,16,intruder,entered_big_circle,-102.66319069266319,False,False
+1,26,-104.89472712278366,intruder,entered_big_circle,direct,26,intruder,entered_big_circle,-104.82132745981217,False,False
+2,19,-103.51317943811416,intruder,entered_big_circle,direct,19,intruder,entered_big_circle,-103.49508823633194,False,False
+3,10,-101.9358456993103,intruder,entered_big_circle,direct,10,intruder,entered_big_circle,-101.94998158454895,False,False
+4,16,-102.337190502882,intruder,entered_big_circle,direct,16,intruder,entered_big_circle,-102.6541080892086,False,False
+5,8,-101.36737558960914,intruder,entered_big_circle,direct,8,intruder,entered_big_circle,-101.40841055035591,False,False
+6,18,-102.6428466808796,intruder,entered_big_circle,direct,18,intruder,entered_big_circle,-102.69274902462959,False,False
+7,6,-100.89088799357414,intruder,entered_big_circle,direct,6,intruder,entered_big_circle,-100.90390309691429,False,False
+8,26,-105.0157666683197,intruder,entered_big_circle,direct,26,intruder,entered_big_circle,-104.67838888168335,False,False
+9,8,-101.22718215107918,intruder,entered_big_circle,direct,8,intruder,entered_big_circle,-101.2488807451725,False,False
