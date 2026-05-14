@@ -79,7 +79,7 @@
 - 工程复现过关：响应策略准确率高于 0.95，平均回报和拦截胜率均优于 baseline。
 - 接近论文效果：需要多 seed 稳定优于 baseline，且绝对拦截胜率达到明确目标。
 
-早期 1.5M timesteps 确认长训结果见 `docs/continuous_confirm_results.md`，该批结果对应接入 SAM 检测前的工程化响应策略选择版本。当前代码已改为 SAM 原文方法：MC dropout opponent model 预测入侵者动作，并用观测误差除以预测不确定性得到归一化 running error 后触发策略切换；接入该检测方法后的长训结果需要重新提交 Slurm 作业生成。
+1.5M timesteps 确认长训结果见 `docs/continuous_confirm_results.md`。当前同时保留两批结果：早期 oracle/工程化响应策略选择版本作为理想策略选择上限参考；SAM 原文检测版本使用 MC dropout opponent model 预测入侵者动作，并用观测误差除以预测不确定性得到归一化 running error 后触发策略切换。SAM 检测版本已完成长训确认，但当前平均收益尚未稳定优于 baseline，需要继续优化检测阈值、opponent model 和切换策略。
 
 连续评估会在 `runs/continuous_*` 下生成：
 
@@ -148,6 +148,18 @@ sbatch --export=ALL,TIMESTEPS=500000,EPISODES=500 slurm/sweep_continuous_plcyf.s
 提交连续 sweep 前，应先在服务器项目 `.venv` 中完成依赖安装。`sweep_continuous_plcyf.sbatch` 默认不在每个 array task 内执行 `pip install`，避免多个任务并发改写同一个虚拟环境；确需任务内安装时可显式传入 `INSTALL_DEPS=1`，但不建议用于并发 array。
 
 聚合结果会写入 `runs/continuous_sweep_summary.csv`，建议优先查看 `engineering_pass`、`reward_improvement`、`win_rate_improvement` 排名靠前的参数组，再把最优 2-3 组提升到 `1M+` timesteps 做确认。
+
+SAM 检测器调参 sweep：
+
+```bash
+# 固定当前相对最优环境参数 0.030 / 0.016 / 0.08，扫描 threshold、cooldown、margin、noise 等检测参数
+sbatch slurm/tune_sam_continuous_plcyf.sbatch
+
+# 调参任务完成后同样用连续聚合脚本汇总，默认会扫描 continuous_sam_tune_* 运行目录
+sbatch slurm/aggregate_continuous_plcyf.sbatch
+```
+
+`tune_sam_continuous_plcyf.sbatch` 默认训练 `300000` timesteps、评估 `300` episodes，目标是先提升 SAM 检测版的 `response_policy_accuracy`、降低误切换，再把最优组合提升到确认长训。
 
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 

@@ -26,20 +26,25 @@ ppo:
 detector:
   method: sam
   initial_policy: direct
-  threshold: 8.0
-  decay: 0.05
+  threshold: 12.0
+  decay: 0.02
 
 sam:
   enabled: true
-  sample_steps: 5000
-  hidden_dim: 64
-  dropout: 0.1
-  epochs: 10
+  sample_steps: 10000
+  hidden_dim: 96
+  dropout: 0.05
+  epochs: 20
   batch_size: 256
   learning_rate: 0.001
-  mc_passes: 20
-  noise_variance: 0.0001
+  mc_passes: 30
+  noise_variance: 0.0005
   online_learning_rate: 0.0003
+  online_updates: false
+  warmup_steps: 40
+  cooldown_steps: 120
+  switch_margin: 0.5
+  max_normalized_error: 8.0
 
 evaluation:
   episodes: 1000

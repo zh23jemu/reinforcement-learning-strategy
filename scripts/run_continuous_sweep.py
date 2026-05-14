@@ -41,6 +41,22 @@ def build_parser() -> argparse.ArgumentParser:
         default="continuous_sweep",
         help="写入 runs/ 和 artifacts/ 下的实验名前缀",
     )
+    parser.add_argument("--detector-threshold", type=float, default=None, help="覆盖 detector.threshold")
+    parser.add_argument("--detector-decay", type=float, default=None, help="覆盖 detector.decay")
+    parser.add_argument("--sam-warmup-steps", type=int, default=None, help="覆盖 sam.warmup_steps")
+    parser.add_argument("--sam-cooldown-steps", type=int, default=None, help="覆盖 sam.cooldown_steps")
+    parser.add_argument("--sam-switch-margin", type=float, default=None, help="覆盖 sam.switch_margin")
+    parser.add_argument("--sam-max-normalized-error", type=float, default=None, help="覆盖 sam.max_normalized_error")
+    parser.add_argument("--sam-noise-variance", type=float, default=None, help="覆盖 sam.noise_variance")
+    parser.add_argument("--sam-mc-passes", type=int, default=None, help="覆盖 sam.mc_passes")
+    parser.add_argument("--sam-sample-steps", type=int, default=None, help="覆盖 sam.sample_steps")
+    parser.add_argument("--sam-epochs", type=int, default=None, help="覆盖 sam.epochs")
+    parser.add_argument(
+        "--sam-online-updates",
+        choices=("true", "false"),
+        default=None,
+        help="覆盖 sam.online_updates，调参时通常设为 false 以避免错误样本污染模型",
+    )
     return parser
 
 
@@ -56,7 +72,7 @@ def main() -> None:
         collision_radius=args.collision_radius,
         timesteps=args.timesteps,
         seed=args.seed,
-    )
+    ) + _build_sam_suffix(args)
 
     # 每个 sweep 任务都写入独立目录，避免 Slurm array 并发时覆盖模型和结果。
     config["experiment"]["name"] = experiment_name
@@ -69,6 +85,7 @@ def main() -> None:
     config["ppo"]["total_timesteps"] = args.timesteps
     if args.episodes is not None:
         config["evaluation"]["episodes"] = args.episodes
+    _apply_sam_overrides(config, args)
 
     print("============================================================")
     print("连续 OPS-DeMo sweep 单任务")
@@ -103,10 +120,66 @@ def _build_experiment_name(
     )
 
 
+def _apply_sam_overrides(config: dict[str, Any], args: argparse.Namespace) -> None:
+    """应用 SAM 检测调参覆盖。
+
+    Slurm array 会用同一个基础 YAML 扫不同检测器组合；这里集中处理覆盖项，避免
+    复制多份配置文件。未显式传入的参数保持基础配置原值。
+    """
+
+    detector = config.setdefault("detector", {})
+    sam = config.setdefault("sam", {})
+    detector_overrides = {
+        "threshold": args.detector_threshold,
+        "decay": args.detector_decay,
+    }
+    sam_overrides = {
+        "warmup_steps": args.sam_warmup_steps,
+        "cooldown_steps": args.sam_cooldown_steps,
+        "switch_margin": args.sam_switch_margin,
+        "max_normalized_error": args.sam_max_normalized_error,
+        "noise_variance": args.sam_noise_variance,
+        "mc_passes": args.sam_mc_passes,
+        "sample_steps": args.sam_sample_steps,
+        "epochs": args.sam_epochs,
+    }
+    for key, value in detector_overrides.items():
+        if value is not None:
+            detector[key] = value
+    for key, value in sam_overrides.items():
+        if value is not None:
+            sam[key] = value
+    if args.sam_online_updates is not None:
+        sam["online_updates"] = args.sam_online_updates == "true"
+
+
 def _slug_float(value: float) -> str:
     """把小数转成目录友好的短字符串，例如 0.026 -> 0p026。"""
 
     return re.sub(r"[^0-9a-zA-Z]+", "p", f"{value:g}")
+
+
+def _build_sam_suffix(args: argparse.Namespace) -> str:
+    """为 SAM 调参任务追加目录后缀，避免不同检测器组合覆盖同一目录。"""
+
+    parts: list[str] = []
+    if args.detector_threshold is not None:
+        parts.append(f"th{_slug_float(args.detector_threshold)}")
+    if args.detector_decay is not None:
+        parts.append(f"dc{_slug_float(args.detector_decay)}")
+    if args.sam_warmup_steps is not None:
+        parts.append(f"wu{args.sam_warmup_steps}")
+    if args.sam_cooldown_steps is not None:
+        parts.append(f"cd{args.sam_cooldown_steps}")
+    if args.sam_switch_margin is not None:
+        parts.append(f"mg{_slug_float(args.sam_switch_margin)}")
+    if args.sam_noise_variance is not None:
+        parts.append(f"nv{_slug_float(args.sam_noise_variance)}")
+    if args.sam_max_normalized_error is not None:
+        parts.append(f"mx{_slug_float(args.sam_max_normalized_error)}")
+    if args.sam_online_updates is not None:
+        parts.append(f"ou{args.sam_online_updates}")
+    return "" if not parts else "_sam" + "_".join(parts)
 
 
 def _sweep_metadata(args: argparse.Namespace, experiment_name: str) -> dict[str, Any]:
@@ -120,6 +193,17 @@ def _sweep_metadata(args: argparse.Namespace, experiment_name: str) -> dict[str,
         "total_timesteps": args.timesteps,
         "seed": args.seed,
         "episodes": args.episodes,
+        "detector_threshold": args.detector_threshold,
+        "detector_decay": args.detector_decay,
+        "sam_warmup_steps": args.sam_warmup_steps,
+        "sam_cooldown_steps": args.sam_cooldown_steps,
+        "sam_switch_margin": args.sam_switch_margin,
+        "sam_max_normalized_error": args.sam_max_normalized_error,
+        "sam_noise_variance": args.sam_noise_variance,
+        "sam_mc_passes": args.sam_mc_passes,
+        "sam_sample_steps": args.sam_sample_steps,
+        "sam_epochs": args.sam_epochs,
+        "sam_online_updates": args.sam_online_updates,
     }
 
 

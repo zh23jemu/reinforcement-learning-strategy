@@ -115,6 +115,11 @@ def evaluate_continuous(config: dict[str, Any]) -> Path:
                             "to_policy": sam_result.assumed_policy,
                             "true_policy": true_policy_after_step,
                             "normalized_error": sam_result.normalized_error,
+                            "running_error": sam_result.running_error,
+                            "best_candidate": sam_result.best_candidate,
+                            "best_candidate_error": sam_result.best_candidate_error,
+                            "current_candidate_error": sam_result.current_candidate_error,
+                            "switch_margin": sam_result.switch_margin,
                         }
                     )
             done = bool(terminated or truncated)
@@ -154,6 +159,12 @@ def evaluate_continuous(config: dict[str, Any]) -> Path:
                         "sam_normalized_error": sam_result.normalized_error,
                         "sam_running_error": sam_result.running_error,
                         "sam_switched": sam_result.switched,
+                        "sam_switch_ready": sam_result.switch_ready,
+                        "sam_best_candidate": sam_result.best_candidate,
+                        "sam_best_candidate_error": sam_result.best_candidate_error,
+                        "sam_current_candidate_error": sam_result.current_candidate_error,
+                        "sam_switch_margin": sam_result.switch_margin,
+                        "sam_steps_since_switch": sam_result.steps_since_switch,
                     }
                 )
                 for name, value in sam_result.candidate_errors.items():
@@ -341,6 +352,15 @@ def _make_sam_switchboard(config: dict[str, Any]) -> SamSwitchboard:
         mc_passes=int(sam_config.get("mc_passes", 20)),
         noise_variance=float(sam_config.get("noise_variance", 1e-4)),
         online_learning_rate=float(sam_config.get("online_learning_rate", 0.0003)),
+        warmup_steps=int(sam_config.get("warmup_steps", detector.get("warmup_steps", 0))),
+        cooldown_steps=int(sam_config.get("cooldown_steps", detector.get("cooldown_steps", 0))),
+        switch_margin=float(sam_config.get("switch_margin", detector.get("switch_margin", 0.0))),
+        max_normalized_error=(
+            None
+            if sam_config.get("max_normalized_error", detector.get("max_normalized_error")) is None
+            else float(sam_config.get("max_normalized_error", detector.get("max_normalized_error")))
+        ),
+        online_updates=bool(sam_config.get("online_updates", True)),
     )
 
 

@@ -37,8 +37,14 @@ class SamSwitchResult:
 
     assumed_policy: str
     switched: bool
+    switch_ready: bool
     normalized_error: float
     running_error: float
+    best_candidate: str
+    best_candidate_error: float
+    current_candidate_error: float
+    switch_margin: float
+    steps_since_switch: int
     prediction: SamPrediction
     candidate_errors: dict[str, float]
 
@@ -159,7 +165,19 @@ class SamSwitchboard:
         mc_passes: int,
         noise_variance: float,
         online_learning_rate: float,
+        warmup_steps: int = 0,
+        cooldown_steps: int = 0,
+        switch_margin: float = 0.0,
+        max_normalized_error: float | None = None,
+        online_updates: bool = True,
     ) -> None:
+        """创建 SAM switchboard。
+
+        参数中的 warmup/cooldown/margin 不改变 SAM 的核心误差定义，只限制“何时
+        允许切换”。这样可以降低 MC dropout 早期不稳定和连续环境短时噪声造成的
+        误切换，同时仍保留原文的 normalized running error 检测机制。
+        """
+
         self.policy_names = list(policy_names)
         self.opponent_models = opponent_models
         self.assumed_policy = initial_policy
@@ -167,7 +185,16 @@ class SamSwitchboard:
         self.decay = float(decay)
         self.mc_passes = int(mc_passes)
         self.noise_variance = float(noise_variance)
+        self.warmup_steps = max(0, int(warmup_steps))
+        self.cooldown_steps = max(0, int(cooldown_steps))
+        self.switch_margin = max(0.0, float(switch_margin))
+        self.max_normalized_error = (
+            None if max_normalized_error is None else max(0.0, float(max_normalized_error))
+        )
+        self.online_updates = bool(online_updates) and float(online_learning_rate) > 0.0
         self.running_error = 0.0
+        self.step_count = 0
+        self.steps_since_switch = self.cooldown_steps
         self._optimizers = {
             name: torch.optim.Adam(model.parameters(), lr=float(online_learning_rate))
             for name, model in opponent_models.items()
@@ -197,31 +224,64 @@ class SamSwitchboard:
         环境返回的真实入侵者速度。误差计算对应论文公式 ``r += |a-a_hat|/eta``。
         """
 
+        self.step_count += 1
+        self.steps_since_switch += 1
         observed = np.asarray(observed_action, dtype=np.float32).reshape(-1)
         prediction = self.predict(self.assumed_policy, observation)
         normalized_error = self._normalized_error(observed, prediction)
         self.running_error += normalized_error
 
         candidate_errors = self._candidate_errors(observation, observed)
+        best_candidate = min(candidate_errors, key=candidate_errors.get)
+        best_candidate_error = float(candidate_errors[best_candidate])
+        current_candidate_error = float(candidate_errors[self.assumed_policy])
+        candidate_margin = current_candidate_error - best_candidate_error
+        switch_ready = self._switch_ready(best_candidate, candidate_margin)
         switched = False
-        if self.running_error >= self.threshold:
+        if switch_ready:
             switched = True
-            self.assumed_policy = min(candidate_errors, key=candidate_errors.get)
+            self.assumed_policy = best_candidate
             self.running_error = 0.0
+            self.steps_since_switch = 0
         else:
             self.running_error = max(0.0, self.running_error - self.decay)
 
         # SAM 原文会持续更新当前 opponent model。这里用最新观测对当前假设模型做
         # 一步在线微调，使模型能适配当前连续环境中的轻微分布漂移。
-        self._train_online(self.assumed_policy, observation, observed)
+        if self.online_updates:
+            self._train_online(self.assumed_policy, observation, observed)
         return SamSwitchResult(
             assumed_policy=self.assumed_policy,
             switched=switched,
+            switch_ready=switch_ready,
             normalized_error=float(normalized_error),
             running_error=float(self.running_error),
+            best_candidate=best_candidate,
+            best_candidate_error=best_candidate_error,
+            current_candidate_error=current_candidate_error,
+            switch_margin=float(candidate_margin),
+            steps_since_switch=int(self.steps_since_switch),
             prediction=prediction,
             candidate_errors=candidate_errors,
         )
+
+    def _switch_ready(self, best_candidate: str, candidate_margin: float) -> bool:
+        """判断本步是否允许切换到候选模型。
+
+        SAM 的核心触发条件仍是 running error 超过阈值；额外条件用于过滤连续
+        环境中的瞬时噪声：warmup 让 MC dropout 初期预测先稳定，cooldown 防止
+        连续来回切换，margin 要求新候选确实比当前模型更匹配。
+        """
+
+        if self.running_error < self.threshold:
+            return False
+        if self.step_count <= self.warmup_steps:
+            return False
+        if self.steps_since_switch < self.cooldown_steps:
+            return False
+        if best_candidate == self.assumed_policy:
+            return False
+        return candidate_margin >= self.switch_margin
 
     def _candidate_errors(self, observation: np.ndarray, observed_action: np.ndarray) -> dict[str, float]:
         """计算每个候选模型对当前动作的归一化误差，用于切换时选最匹配模型。"""
@@ -235,7 +295,10 @@ class SamSwitchboard:
         """计算 ``|a-a_hat|/eta``，对二维动作取均值保持量纲稳定。"""
 
         denominator = np.maximum(prediction.uncertainty, 1e-6)
-        return float(np.mean(np.abs(observed_action - prediction.mean) / denominator))
+        error = float(np.mean(np.abs(observed_action - prediction.mean) / denominator))
+        if self.max_normalized_error is not None:
+            return min(error, self.max_normalized_error)
+        return error
 
     def _train_online(self, policy_name: str, observation: np.ndarray, observed_action: np.ndarray) -> None:
         """用单个观测样本在线更新 opponent model。"""

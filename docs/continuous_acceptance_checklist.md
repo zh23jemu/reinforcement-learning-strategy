@@ -26,7 +26,7 @@
 
 ### C. 接近论文效果
 
-早期 oracle/工程化响应策略选择版本已在 1.5M timesteps、800 episodes、3 个 seed 的确认实验中满足本项目定义的接近论文效果候选标准。当前代码已接入 SAM 原文检测方法，接入后的长训结果需要重新生成；若要声明完整论文效果级，仍建议至少满足：
+早期 oracle/工程化响应策略选择版本已在 1.5M timesteps、800 episodes、3 个 seed 的确认实验中满足本项目定义的接近论文效果候选标准。SAM 原文检测版本也已完成同规格长训确认，但当前指标尚未达到工程/论文效果标准；若要声明完整论文效果级，仍建议至少满足：
 
 - 多 seed 评估下 OPS-DeMo 平均回报稳定优于 baseline，且提升幅度不依赖单次随机结果。
 - 拦截胜率达到一个明确、可复验的绝对水平，例如 `interceptor_win_rate >= 0.20`，或达到论文/需求文档中给出的目标范围。
@@ -49,15 +49,24 @@
 | 拦截胜率 | 3.4% | 0.5% | OPS-DeMo 相对提升，但绝对值偏低 |
 | 响应策略准确率 | 99.38% | 不适用 | 策略识别/选择机制正常 |
 
-早期 1.5M 确认长训结果见 `docs/continuous_confirm_results.md`。该批结果对应接入 SAM 检测前的工程化响应策略选择版本，结论是：
+1.5M 确认长训结果见 `docs/continuous_confirm_results.md`。当前同时保留早期 oracle 版本和 SAM 原文检测版本，便于区分“理想策略选择上限”和“原文检测方法实测效果”。
+
+早期 oracle/工程化响应策略选择版本结论是：
 
 - 3 组候选参数 x 3 个 seed 共 9 条确认结果均 `engineering_pass=True` 且 `paper_like_pass=True`。
 - 推荐主结果为 `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`，平均回报提升约 `50.94`，平均胜率提升约 `23.96` 个百分点。
 - 稳定性备选为 `0.026 / 0.018 / 0.10`，平均回报提升约 `40.67`，平均胜率提升约 `19.75` 个百分点。
-- 当前 SAM 检测代码已完成 smoke 验证，但需要重新跑长训后，才能把上述指标更新为 SAM 原文检测方法下的最终结论。
+- 该批结果不应作为 SAM 原文检测方法的最终效果，只适合作为上限参考。
+
+SAM 原文检测版本结论是：
+
+- 3 组候选参数 x 3 个 seed 共 9 条确认结果均已完成训练、评估、分析和聚合，`process_pass=True`。
+- MC dropout opponent model、预测不确定性归一化误差、running error、switchboard 切换和 `sam_uncertainty_analysis.png` 可视化均已落地。
+- 9 条结果中 `engineering_pass=0`、`paper_like_pass=0`；整体平均回报提升约 `-5.18`，平均胜率提升约 `-2.47` 个百分点，平均切换/响应准确率约 `35.35%`。
+- 当前相对最好的参数组是 `0.030 / 0.016 / 0.08`，平均回报提升约 `13.12`，平均胜率提升约 `5.54` 个百分点，但 seed 间仍不稳定。
 
 ## 3. 推荐下一步
 
-- 将 `docs/continuous_confirm_results.md` 中的结果表整理进最终报告或论文复现说明。
-- 如果继续优化连续场景，优先重新跑接入 SAM 检测后的长训确认结果，再处理绝对拦截胜率、baseline 方差和奖励/终止设计。
+- 将 `docs/continuous_confirm_results.md` 中的两批结果表整理进最终报告或论文复现说明，并明确区分 oracle 上限参考与 SAM 检测实测结果。
+- 如果继续优化连续场景，优先运行 `slurm/tune_sam_continuous_plcyf.sbatch`，扫描 SAM 检测阈值、running error 衰减、warmup、cooldown、候选切换 margin、MC dropout 噪声尺度和在线更新开关；再把最优组合提升到 1.5M 确认长训。
 - 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。

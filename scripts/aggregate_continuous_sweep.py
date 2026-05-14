@@ -16,7 +16,7 @@ from typing import Any
 import pandas as pd
 
 
-DEFAULT_RUN_PREFIXES = ("continuous_sweep", "continuous_confirm")
+DEFAULT_RUN_PREFIXES = ("continuous_sweep", "continuous_confirm", "continuous_sam_tune")
 
 
 SWEEP_PATTERN = re.compile(
@@ -24,7 +24,7 @@ SWEEP_PATTERN = re.compile(
     r"_us(?P<intruder_speed>[^_]+)"
     r"_cr(?P<collision_radius>[^_]+)"
     r"_ts(?P<timesteps>[^_]+)"
-    r"_s(?P<seed>[^_]+)$"
+    r"_s(?P<seed>[0-9]+)(?:_|$)"
 )
 
 
@@ -46,7 +46,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "要扫描的 runs 子目录前缀，可重复传入。默认同时扫描 "
-            "continuous_sweep 和 continuous_confirm。"
+            "continuous_sweep、continuous_confirm 和 continuous_sam_tune。"
         ),
     )
     return parser
