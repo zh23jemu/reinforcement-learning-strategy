@@ -173,6 +173,18 @@ sbatch --array=0-2 --export=ALL,NAME_PREFIX=continuous_sam_confirm,TIMESTEPS=150
 
 该组合的 1.5M / 800 episodes / 3 seed confirm 已完成：平均回报提升约 `6.29`，平均胜率提升约 `2.00` 个百分点，但 3 个 seed 都未达到 `engineering_pass`。主要问题是 seed 43 和 seed 44 没有触发切换，检测器仍偏保守。下一轮应先做多 seed 小规模调参，降低切换门槛后再 confirm。
 
+多 seed 小规模调参：
+
+```bash
+# 6 组更容易触发切换的 SAM 参数 x 3 个 seed，共 18 个任务；ISP 当前空闲节点少时默认每次并发 2 个。
+sbatch slurm/tune_sam_multiseed_continuous_plcyf.sbatch
+
+# 完成后聚合，默认会收录 continuous_sam_multiseed_tune_* 结果
+sbatch slurm/aggregate_continuous_plcyf.sbatch
+```
+
+筛选时优先看 `switch_count` 是否在每个 seed 都大于 0，再看 `reward_improvement`、`win_rate_improvement` 和 seed 间最小值；不要只按单个 seed 的最高回报选参数。
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`

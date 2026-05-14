@@ -70,5 +70,5 @@ SAM 原文检测版本结论是：
 ## 3. 推荐下一步
 
 - 将 `docs/continuous_confirm_results.md` 中的两批结果表整理进最终报告或论文复现说明，并明确区分 oracle 上限参考与 SAM 检测实测结果。
-- 如果继续优化连续场景，优先做多 seed 小规模调参，降低 threshold/cooldown/margin，避免 1.5M confirm 中出现 0 次切换；如仍不稳定，再检查 opponent model 特征、监督样本覆盖和 online update 策略。
+- 如果继续优化连续场景，优先运行 `slurm/tune_sam_multiseed_continuous_plcyf.sbatch` 做多 seed 小规模调参，降低 threshold/cooldown/margin，避免 1.5M confirm 中出现 0 次切换；筛选时先要求每个 seed 的 `switch_count > 0`，再比较平均收益和最差 seed 表现。如仍不稳定，再检查 opponent model 特征、监督样本覆盖和 online update 策略。
 - 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。
