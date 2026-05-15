@@ -52,6 +52,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--sam-sample-steps", type=int, default=None, help="覆盖 sam.sample_steps")
     parser.add_argument("--sam-epochs", type=int, default=None, help="覆盖 sam.epochs")
     parser.add_argument(
+        "--sam-feature-mode",
+        choices=("raw", "geometry"),
+        default=None,
+        help="覆盖 sam.feature_mode；geometry 会为 opponent model 追加连续相对几何特征",
+    )
+    parser.add_argument(
         "--sam-online-updates",
         choices=("true", "false"),
         default=None,
@@ -142,6 +148,7 @@ def _apply_sam_overrides(config: dict[str, Any], args: argparse.Namespace) -> No
         "mc_passes": args.sam_mc_passes,
         "sample_steps": args.sam_sample_steps,
         "epochs": args.sam_epochs,
+        "feature_mode": args.sam_feature_mode,
     }
     for key, value in detector_overrides.items():
         if value is not None:
@@ -177,6 +184,8 @@ def _build_sam_suffix(args: argparse.Namespace) -> str:
         parts.append(f"nv{_slug_float(args.sam_noise_variance)}")
     if args.sam_max_normalized_error is not None:
         parts.append(f"mx{_slug_float(args.sam_max_normalized_error)}")
+    if args.sam_feature_mode is not None:
+        parts.append(f"fm{args.sam_feature_mode}")
     if args.sam_online_updates is not None:
         parts.append(f"ou{args.sam_online_updates}")
     return "" if not parts else "_sam" + "_".join(parts)
@@ -203,6 +212,7 @@ def _sweep_metadata(args: argparse.Namespace, experiment_name: str) -> dict[str,
         "sam_mc_passes": args.sam_mc_passes,
         "sam_sample_steps": args.sam_sample_steps,
         "sam_epochs": args.sam_epochs,
+        "sam_feature_mode": args.sam_feature_mode,
         "sam_online_updates": args.sam_online_updates,
     }
 

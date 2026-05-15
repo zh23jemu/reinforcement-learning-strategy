@@ -294,15 +294,18 @@ def _train_sam_opponent_model(config: dict[str, Any], policy_name: str, artifact
         batch_size=int(sam_config.get("batch_size", 128)),
         learning_rate=float(sam_config.get("learning_rate", 0.001)),
         seed=int(config["experiment"]["seed"]),
+        feature_mode=str(sam_config.get("feature_mode", "geometry")),
     )
     save_opponent_model(
         artifact_dir / f"opponent_model_{policy_name}.zip",
         model,
         {
-            "input_dim": int(observations.shape[1]),
+            "input_dim": int(model.sam_input_dim),
+            "raw_input_dim": int(model.sam_raw_input_dim),
             "output_dim": int(actions.shape[1]),
             "hidden_dim": int(sam_config.get("hidden_dim", 64)),
             "dropout": float(sam_config.get("dropout", 0.1)),
+            "feature_mode": str(model.sam_feature_mode),
             "policy_name": policy_name,
         },
     )

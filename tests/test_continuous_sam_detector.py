@@ -1,7 +1,13 @@
 import numpy as np
 import torch
 
-from rl_strategy.continuous.sam_detector import SamSwitchboard, train_dropout_opponent_model
+from rl_strategy.continuous.sam_detector import (
+    build_sam_observation_features,
+    load_opponent_model,
+    save_opponent_model,
+    SamSwitchboard,
+    train_dropout_opponent_model,
+)
 
 
 class ConstantOpponentModel(torch.nn.Module):
@@ -48,6 +54,90 @@ def test_sam_switchboard_uses_mc_dropout_uncertainty():
     assert result.prediction.mean.shape == (2,)
     assert result.prediction.uncertainty.shape == (2,)
     assert np.all(result.prediction.uncertainty > 0.0)
+
+
+def test_geometry_feature_mode_augments_observation_consistently():
+    observation = np.array(
+        [0.5, 0.0, -0.5, 0.0, -1.0, 0.0, 0.2, 0.0, 0.5, 1.0],
+        dtype=np.float32,
+    )
+    features = build_sam_observation_features(observation, "geometry")
+
+    assert features.shape == (24,)
+    np.testing.assert_allclose(features[:10], observation)
+    np.testing.assert_allclose(features[10:12], np.array([-1.0, 0.0], dtype=np.float32))
+    np.testing.assert_allclose(features[12:14], np.array([-0.5, 0.0], dtype=np.float32))
+    np.testing.assert_allclose(features[14:16], np.array([-1.0, 0.0], dtype=np.float32))
+
+
+def test_sam_switchboard_predicts_with_geometry_feature_mode():
+    rng = np.random.default_rng(2)
+    observations = rng.normal(size=(64, 10)).astype(np.float32)
+    actions = np.repeat(np.array([[0.05, -0.02]], dtype=np.float32), repeats=64, axis=0)
+    model = train_dropout_opponent_model(
+        observations,
+        actions,
+        hidden_dim=16,
+        dropout=0.1,
+        epochs=1,
+        batch_size=16,
+        learning_rate=0.01,
+        seed=2,
+        feature_mode="geometry",
+    )
+    switchboard = SamSwitchboard(
+        policy_names=["direct"],
+        opponent_models={"direct": model},
+        initial_policy="direct",
+        threshold=100.0,
+        decay=0.0,
+        mc_passes=3,
+        noise_variance=1e-4,
+        online_learning_rate=0.0,
+        online_updates=False,
+    )
+
+    result = switchboard.update(observations[0], actions[0])
+
+    assert model.sam_input_dim == 24
+    assert result.prediction.mean.shape == (2,)
+    assert result.normalized_error >= 0.0
+
+
+def test_geometry_feature_mode_survives_model_round_trip(tmp_path):
+    rng = np.random.default_rng(3)
+    observations = rng.normal(size=(32, 10)).astype(np.float32)
+    actions = rng.normal(size=(32, 2)).astype(np.float32)
+    model = train_dropout_opponent_model(
+        observations,
+        actions,
+        hidden_dim=8,
+        dropout=0.1,
+        epochs=1,
+        batch_size=8,
+        learning_rate=0.01,
+        seed=3,
+        feature_mode="geometry",
+    )
+    path = tmp_path / "opponent_model.zip"
+    save_opponent_model(
+        path,
+        model,
+        {
+            "input_dim": model.sam_input_dim,
+            "raw_input_dim": model.sam_raw_input_dim,
+            "output_dim": 2,
+            "hidden_dim": 8,
+            "dropout": 0.1,
+            "feature_mode": model.sam_feature_mode,
+        },
+    )
+
+    loaded = load_opponent_model(path)
+
+    assert loaded.sam_feature_mode == "geometry"
+    assert loaded.sam_raw_input_dim == 10
+    assert loaded.sam_input_dim == 24
 
 
 def test_sam_switchboard_respects_warmup_cooldown_and_margin():

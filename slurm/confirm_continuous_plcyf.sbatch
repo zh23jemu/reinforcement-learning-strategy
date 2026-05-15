@@ -43,6 +43,7 @@ SAM_COOLDOWN_STEPS="${SAM_COOLDOWN_STEPS:-}"
 SAM_SWITCH_MARGIN="${SAM_SWITCH_MARGIN:-}"
 SAM_NOISE_VARIANCE="${SAM_NOISE_VARIANCE:-}"
 SAM_MAX_NORMALIZED_ERROR="${SAM_MAX_NORMALIZED_ERROR:-}"
+SAM_FEATURE_MODE="${SAM_FEATURE_MODE:-}"
 SAM_ONLINE_UPDATES="${SAM_ONLINE_UPDATES:-}"
 
 if [ ! -x "${PYTHON_BIN}" ]; then
@@ -98,6 +99,7 @@ echo "SAM warmup:        ${SAM_WARMUP_STEPS:-<config>}"
 echo "SAM cooldown:      ${SAM_COOLDOWN_STEPS:-<config>}"
 echo "SAM margin:        ${SAM_SWITCH_MARGIN:-<config>}"
 echo "SAM noise:         ${SAM_NOISE_VARIANCE:-<config>}"
+echo "SAM feature mode:  ${SAM_FEATURE_MODE:-<config>}"
 echo "Start time:        $(date '+%Y-%m-%d %H:%M:%S')"
 echo "============================================================"
 
@@ -128,6 +130,9 @@ if [ -n "${SAM_NOISE_VARIANCE}" ]; then
 fi
 if [ -n "${SAM_MAX_NORMALIZED_ERROR}" ]; then
   SAM_ARGS+=(--sam-max-normalized-error "${SAM_MAX_NORMALIZED_ERROR}")
+fi
+if [ -n "${SAM_FEATURE_MODE}" ]; then
+  SAM_ARGS+=(--sam-feature-mode "${SAM_FEATURE_MODE}")
 fi
 if [ -n "${SAM_ONLINE_UPDATES}" ]; then
   SAM_ARGS+=(--sam-online-updates "${SAM_ONLINE_UPDATES}")

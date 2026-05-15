@@ -46,6 +46,7 @@ INTRUDER_SPEED="${INTRUDER_SPEED:-0.016}"
 COLLISION_RADIUS="${COLLISION_RADIUS:-0.08}"
 TIMESTEPS="${TIMESTEPS:-300000}"
 EPISODES="${EPISODES:-300}"
+SAM_FEATURE_MODE="${SAM_FEATURE_MODE:-geometry}"
 SEEDS=(42 43 44)
 
 # 6 组更激进的检测器组合，重点降低 threshold/cooldown/margin，避免 0 次切换。
@@ -97,6 +98,7 @@ echo "Cooldown steps:       ${COOLDOWN}"
 echo "Switch margin:        ${MARGIN}"
 echo "Noise variance:       ${NOISE}"
 echo "Max normalized error: ${MAX_ERROR}"
+echo "SAM feature mode:     ${SAM_FEATURE_MODE}"
 echo "Start time:           $(date '+%Y-%m-%d %H:%M:%S')"
 echo "============================================================"
 
@@ -121,6 +123,7 @@ fi
   --sam-switch-margin "${MARGIN}" \
   --sam-noise-variance "${NOISE}" \
   --sam-max-normalized-error "${MAX_ERROR}" \
+  --sam-feature-mode "${SAM_FEATURE_MODE}" \
   --sam-online-updates false
 
 echo "Finished time: $(date '+%Y-%m-%d %H:%M:%S')"

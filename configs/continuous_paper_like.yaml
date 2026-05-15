@@ -31,6 +31,7 @@ detector:
 
 sam:
   enabled: true
+  feature_mode: geometry
   sample_steps: 10000
   hidden_dim: 96
   dropout: 0.05

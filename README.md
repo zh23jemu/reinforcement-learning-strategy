@@ -189,6 +189,13 @@ sbatch slurm/aggregate_continuous_plcyf.sbatch
 
 后续优化应优先提高 MC dropout opponent model 的检测质量，包括扩展监督样本覆盖、检查连续动作特征表示，并围绕 normalized error 的阈值、冷却时间和在线更新策略做更细的稳定性验证。
 
+当前代码已支持 `sam.feature_mode=geometry`，会在原始观测后追加相对位置、单位方向、相对速度和速度投影等连续几何特征，默认用于新的 opponent model 训练。可用下面命令跑一轮 geometry 特征的小规模多 seed 对比：
+
+```bash
+sbatch --export=ALL,NAME_PREFIX=continuous_sam_geometry_tune,SAM_FEATURE_MODE=geometry slurm/tune_sam_multiseed_continuous_plcyf.sbatch
+sbatch slurm/aggregate_continuous_plcyf.sbatch
+```
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`

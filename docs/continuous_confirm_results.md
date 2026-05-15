@@ -161,3 +161,5 @@ sbatch --array=0-2 --export=ALL,NAME_PREFIX=continuous_sam_confirm_msbest,TIMEST
 当前仍未标记为 `engineering_pass` / `paper_like_pass`，主要原因是分析脚本沿用了 oracle 风格的严格门槛：`response_policy_accuracy >= 0.95`。SAM 原文式 MC dropout 检测在该连续动作环境中的响应准确率约 `32%~33%`，明显低于直接使用真实策略标签的 oracle 版本。因此这批结果适合表述为“原文方法链路已复现，连续环境下有稳定收益”，但还不适合表述为“完全达到论文理想检测效果”。
 
 后续优化方向：优先提高 opponent model 对连续动作的建模质量，扩展监督样本覆盖，检查归一化误差中的不确定性尺度，并继续围绕 threshold、cooldown、switch margin 与 online update 做稳定性实验。
+
+已新增 `sam.feature_mode=geometry` 作为下一轮优化变量。该模式不改变 SAM 的 MC dropout 和 normalized error 检测公式，只是在 opponent model 输入中追加连续拦截场景的相对几何特征，便于模型区分 direct、detour、attack 三类动作模式。建议先运行 `continuous_sam_geometry_tune` 小规模多 seed 对比，再决定是否进入 1.5M confirm。

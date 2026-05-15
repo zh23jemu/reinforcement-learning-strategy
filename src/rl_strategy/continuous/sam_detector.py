@@ -22,6 +22,10 @@ import numpy as np
 import torch
 from torch import nn
 
+SAM_FEATURE_MODE_RAW = "raw"
+SAM_FEATURE_MODE_GEOMETRY = "geometry"
+SAM_FEATURE_MODES = {SAM_FEATURE_MODE_RAW, SAM_FEATURE_MODE_GEOMETRY}
+
 
 @dataclass(frozen=True)
 class SamPrediction:
@@ -74,6 +78,68 @@ class DropoutOpponentModel(nn.Module):
         return self.net(observation)
 
 
+def build_sam_observation_features(observations: np.ndarray, feature_mode: str = SAM_FEATURE_MODE_RAW) -> np.ndarray:
+    """为 SAM opponent model 构造输入特征。
+
+    ``raw`` 模式保持原始环境观测不变，用于兼容历史模型和单元测试。
+    ``geometry`` 模式在原始观测后追加连续拦截任务中的相对几何量，包括双方相对
+    位置、指向目标和拦截者的单位方向、相对速度以及速度投影。SAM 原文要求
+    opponent model 学习 ``observation -> opponent action``，这里没有改变 MC
+    dropout 与归一化误差公式，只是把连续环境里更有判别力的观测表示显式提供给
+    监督模型，降低模型自行从 10 维原始观测中反复学习几何关系的难度。
+    """
+
+    if feature_mode not in SAM_FEATURE_MODES:
+        raise ValueError(f"未知 SAM feature_mode: {feature_mode}")
+    array = np.asarray(observations, dtype=np.float32)
+    was_vector = array.ndim == 1
+    if was_vector:
+        array = array.reshape(1, -1)
+    if feature_mode == SAM_FEATURE_MODE_RAW:
+        features = array
+    else:
+        if array.shape[1] < 10:
+            raise ValueError("geometry feature_mode 需要至少 10 维连续环境观测")
+        intruder_position = array[:, 0:2]
+        interceptor_position = array[:, 2:4]
+        intruder_velocity = array[:, 4:6]
+        interceptor_velocity = array[:, 6:8]
+        relative_to_interceptor = interceptor_position - intruder_position
+        relative_to_target = -intruder_position
+        relative_velocity = interceptor_velocity - intruder_velocity
+        unit_to_interceptor = _unit_vector(relative_to_interceptor)
+        unit_to_target = _unit_vector(relative_to_target)
+        intruder_speed = np.linalg.norm(intruder_velocity, axis=1, keepdims=True)
+        interceptor_speed = np.linalg.norm(interceptor_velocity, axis=1, keepdims=True)
+        target_alignment = np.sum(intruder_velocity * unit_to_target, axis=1, keepdims=True)
+        interceptor_alignment = np.sum(intruder_velocity * unit_to_interceptor, axis=1, keepdims=True)
+        features = np.concatenate(
+            [
+                array,
+                relative_to_interceptor,
+                relative_to_target,
+                unit_to_interceptor,
+                unit_to_target,
+                relative_velocity,
+                intruder_speed,
+                interceptor_speed,
+                target_alignment,
+                interceptor_alignment,
+            ],
+            axis=1,
+        )
+    if was_vector:
+        return features.reshape(-1).astype(np.float32)
+    return features.astype(np.float32)
+
+
+def _unit_vector(vectors: np.ndarray) -> np.ndarray:
+    """批量计算二维单位向量，零向量保持为零，避免归一化产生 NaN。"""
+
+    norms = np.linalg.norm(vectors, axis=1, keepdims=True)
+    return np.divide(vectors, np.maximum(norms, 1e-8), dtype=np.float32)
+
+
 def train_dropout_opponent_model(
     observations: np.ndarray,
     actions: np.ndarray,
@@ -84,6 +150,7 @@ def train_dropout_opponent_model(
     batch_size: int,
     learning_rate: float,
     seed: int,
+    feature_mode: str = SAM_FEATURE_MODE_RAW,
 ) -> DropoutOpponentModel:
     """用监督学习训练一个 SAM opponent model。
 
@@ -96,21 +163,27 @@ def train_dropout_opponent_model(
         batch_size: mini-batch 大小。
         learning_rate: Adam 学习率。
         seed: 随机种子，保证 smoke 测试可复现。
+        feature_mode: opponent model 输入特征模式，``geometry`` 会追加连续场景
+            的相对几何特征。
 
     返回:
         训练完成的 opponent model。
     """
 
     torch.manual_seed(seed)
+    model_inputs = build_sam_observation_features(observations, feature_mode)
     model = DropoutOpponentModel(
-        input_dim=int(observations.shape[1]),
+        input_dim=int(model_inputs.shape[1]),
         output_dim=int(actions.shape[1]),
         hidden_dim=hidden_dim,
         dropout=dropout,
     )
+    model.sam_feature_mode = feature_mode
+    model.sam_raw_input_dim = int(observations.shape[1])
+    model.sam_input_dim = int(model_inputs.shape[1])
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     loss_fn = nn.MSELoss()
-    x = torch.as_tensor(observations, dtype=torch.float32)
+    x = torch.as_tensor(model_inputs, dtype=torch.float32)
     y = torch.as_tensor(actions, dtype=torch.float32)
     n_samples = int(len(x))
     generator = torch.Generator().manual_seed(seed)
@@ -146,6 +219,9 @@ def load_opponent_model(path: Path) -> DropoutOpponentModel:
         hidden_dim=int(metadata["hidden_dim"]),
         dropout=float(metadata["dropout"]),
     )
+    model.sam_feature_mode = str(metadata.get("feature_mode", SAM_FEATURE_MODE_RAW))
+    model.sam_raw_input_dim = int(metadata.get("raw_input_dim", metadata["input_dim"]))
+    model.sam_input_dim = int(metadata["input_dim"])
     model.load_state_dict(payload["state_dict"])
     model.eval()
     return model
@@ -206,7 +282,7 @@ class SamSwitchboard:
 
         model = self.opponent_models[policy_name]
         model.train()  # 预测时保持 dropout 开启，近似 Bayesian 后验采样。
-        x = torch.as_tensor(observation, dtype=torch.float32).reshape(1, -1)
+        x = torch.as_tensor(self._model_observation(model, observation), dtype=torch.float32).reshape(1, -1)
         samples: list[np.ndarray] = []
         with torch.no_grad():
             for _ in range(self.mc_passes):
@@ -306,10 +382,16 @@ class SamSwitchboard:
         model = self.opponent_models[policy_name]
         optimizer = self._optimizers[policy_name]
         model.train()
-        x = torch.as_tensor(observation, dtype=torch.float32).reshape(1, -1)
+        x = torch.as_tensor(self._model_observation(model, observation), dtype=torch.float32).reshape(1, -1)
         y = torch.as_tensor(observed_action, dtype=torch.float32).reshape(1, -1)
         prediction = model(x)
         loss = self._loss_fn(prediction, y)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+    def _model_observation(self, model: nn.Module, observation: np.ndarray) -> np.ndarray:
+        """按模型保存的 feature mode 转换观测，兼容历史 raw 模型。"""
+
+        feature_mode = str(getattr(model, "sam_feature_mode", SAM_FEATURE_MODE_RAW))
+        return build_sam_observation_features(observation, feature_mode)

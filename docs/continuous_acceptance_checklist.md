@@ -72,4 +72,5 @@ SAM 原文检测版本结论是：
 
 - 将 `docs/continuous_confirm_results.md` 中的两批结果表整理进最终报告或论文复现说明，并明确区分 oracle 上限参考与 SAM 检测实测结果。
 - 如果继续优化连续场景，优先检查 opponent model 特征、监督样本覆盖和 online update 策略，提高 MC dropout normalized error 对策略变化的识别质量；验收口径上应区分“论文方法链路复现并产生稳定收益”和“接近 oracle 的策略识别准确率”。
+- 当前代码已经支持 `sam.feature_mode=geometry`，下一轮实验优先用该模式对比 raw 输入，再决定是否继续扩大 confirm。
 - 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。
