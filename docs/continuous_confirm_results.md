@@ -145,3 +145,19 @@ sbatch slurm/aggregate_continuous_plcyf.sbatch
 ```bash
 sbatch --array=0-2 --export=ALL,NAME_PREFIX=continuous_sam_confirm_msbest,TIMESTEPS=1500000,EPISODES=800,SAM_THRESHOLD=10,SAM_DECAY=0.01,SAM_WARMUP_STEPS=30,SAM_COOLDOWN_STEPS=80,SAM_SWITCH_MARGIN=0.35,SAM_NOISE_VARIANCE=0.001,SAM_MAX_NORMALIZED_ERROR=8,SAM_ONLINE_UPDATES=false slurm/confirm_continuous_plcyf.sbatch
 ```
+
+## SAM msbest 1.5M 确认长训结果
+
+2026-05-15 已 pull 回 `continuous_sam_confirm_msbest_*` 结果，并重新聚合到 `runs/continuous_sweep_summary.csv`。该轮使用多 seed 小规模调参筛出的首选参数：`threshold=10`、`decay=0.01`、`warmup=30`、`cooldown=80`、`switch_margin=0.35`、`noise_variance=0.001`、`max_normalized_error=8`、`online_updates=false`。
+
+| seed | 回报提升 | 胜率提升 | SAM 拦截胜率 | baseline 拦截胜率 | 响应准确率 | 切换次数 | 验收 |
+|---:|---:|---:|---:|---:|---:|---:|---|
+| 42 | 30.37 | 13.88 pp | 13.88% | 0.00% | 33.34% | 43 | `process_pass=True`，`engineering_pass=False` |
+| 43 | 4.81 | 2.50 pp | 26.00% | 23.50% | 33.36% | 1 | `process_pass=True`，`engineering_pass=False` |
+| 44 | 51.06 | 22.63 pp | 23.13% | 0.50% | 32.01% | 28 | `process_pass=True`，`engineering_pass=False` |
+
+平均回报提升约 `28.74`，平均胜率提升约 `13.00` 个百分点，平均 SAM 拦截胜率 `21.00%`，平均 baseline 拦截胜率 `8.00%`。三个 seed 全部正收益、全部触发切换，说明 SAM 原文检测链路在连续拦截环境下已经跑通，并且相对 baseline 有稳定收益。
+
+当前仍未标记为 `engineering_pass` / `paper_like_pass`，主要原因是分析脚本沿用了 oracle 风格的严格门槛：`response_policy_accuracy >= 0.95`。SAM 原文式 MC dropout 检测在该连续动作环境中的响应准确率约 `32%~33%`，明显低于直接使用真实策略标签的 oracle 版本。因此这批结果适合表述为“原文方法链路已复现，连续环境下有稳定收益”，但还不适合表述为“完全达到论文理想检测效果”。
+
+后续优化方向：优先提高 opponent model 对连续动作的建模质量，扩展监督样本覆盖，检查归一化误差中的不确定性尺度，并继续围绕 threshold、cooldown、switch margin 与 online update 做稳定性实验。

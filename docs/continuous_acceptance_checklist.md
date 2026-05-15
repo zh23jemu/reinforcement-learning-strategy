@@ -66,10 +66,10 @@ SAM 原文检测版本结论是：
 - 当前相对最好的参数组是 `0.030 / 0.016 / 0.08`，平均回报提升约 `13.12`，平均胜率提升约 `5.54` 个百分点，但 seed 间仍不稳定。
 - 最新 SAM 检测器 300k 调参中，`threshold=14`、`decay=0.01`、`warmup=40`、`cooldown=160`、`switch_margin=0.75`、`noise_variance=0.001` 的组合表现最好：回报提升约 `50.12`，胜率提升约 `22.33` 个百分点，拦截胜率 `23.67%`，切换次数 `1`。该结果仍是单 seed / 300k 筛选结果，需要 1.5M 多 seed 确认。
 - 该最优组合已完成 1.5M / 800 episodes / 3 seed 确认，平均回报提升约 `6.29`，平均胜率提升约 `2.00` 个百分点，但 `engineering_pass=0/3`、`paper_like_pass=0/3`。seed 43 和 seed 44 的切换次数为 0，说明检测器仍偏保守。
-- 多 seed 小规模调参已进一步筛出更稳定组合：`threshold=10`、`decay=0.01`、`warmup=30`、`cooldown=80`、`switch_margin=0.35`、`noise_variance=0.001`。该组合在 seeds `42/43/44` 下切换次数为 `20/1/5`，平均回报提升约 `26.79`，平均胜率提升约 `11.89` 个百分点，适合进入下一轮 1.5M 确认长训。
+- 多 seed 小规模调参进一步筛出更稳定组合：`threshold=10`、`decay=0.01`、`warmup=30`、`cooldown=80`、`switch_margin=0.35`、`noise_variance=0.001`。该组合已完成 1.5M / 800 episodes / 3 seed 确认，三 seed 全部正收益且全部触发切换，平均回报提升约 `28.74`，平均胜率提升约 `13.00` 个百分点，平均 SAM 拦截胜率 `21.00%`。但当前验收脚本仍给出 `engineering_pass=0/3`、`paper_like_pass=0/3`，主要因为 SAM 检测版响应准确率约 `32%~33%`，未达到 oracle 风格的 `response_policy_accuracy >= 0.95` 阈值。
 
 ## 3. 推荐下一步
 
 - 将 `docs/continuous_confirm_results.md` 中的两批结果表整理进最终报告或论文复现说明，并明确区分 oracle 上限参考与 SAM 检测实测结果。
-- 如果继续优化连续场景，优先把多 seed tune 的首选组合提交 1.5M / 800 episodes / 3 seed confirm；如仍不稳定，再检查 opponent model 特征、监督样本覆盖和 online update 策略。
+- 如果继续优化连续场景，优先检查 opponent model 特征、监督样本覆盖和 online update 策略，提高 MC dropout normalized error 对策略变化的识别质量；验收口径上应区分“论文方法链路复现并产生稳定收益”和“接近 oracle 的策略识别准确率”。
 - 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。
