@@ -1,0 +1,69 @@
+{
+  "output_dir": "runs/continuous_sam_confirm_msbest_is0p03_us0p016_cr0p08_ts1500000_s42_samth10_dc0p01_wu30_cd80_mg0p35_nv0p001_mx8_oufalse/20260514_214210/analysis",
+  "episodes": 800,
+  "total_steps": 33192,
+  "baseline_total_steps": 39432,
+  "mean_episode_length": 41.49,
+  "baseline_mean_episode_length": 49.29,
+  "mean_episode_reward": -78.30502412100844,
+  "baseline_mean_episode_reward": -108.67576642323061,
+  "reward_improvement": 30.37074230222217,
+  "interceptor_win_rate": 0.13875,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.13875,
+  "response_policy_accuracy": 0.3333935888165823,
+  "switch_count": 43,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.5857789855072464,
+    "detour": 0.40217391304347827,
+    "direct": 0.014308855291576673
+  },
+  "intruder_policy_step_counts": {
+    "attack": 11040,
+    "detour": 11040,
+    "direct": 11112
+  },
+  "ops_winner_counts": {
+    "interceptor": 111,
+    "intruder": 689
+  },
+  "baseline_winner_counts": {
+    "intruder": 800
+  },
+  "ops_reason_counts": {
+    "active_collision": 25,
+    "entered_big_circle": 613,
+    "entered_small_circle": 51,
+    "intercepted_before_small_circle": 111
+  },
+  "baseline_reason_counts": {
+    "active_collision": 57,
+    "entered_big_circle": 742,
+    "entered_small_circle": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -183.13985665887583,
+    "q25": -104.45838585793972,
+    "median": -102.53165626764297,
+    "q75": -101.10796805381773,
+    "max": 98.9170525944233,
+    "std": 71.24420735188555
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -181.79789577811954,
+    "q25": -104.8325478860736,
+    "median": -103.03197339475156,
+    "q75": -101.70750923544168,
+    "max": -100.38095875263214,
+    "std": 17.0381083607004
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "runs/continuous_sam_confirm_msbest_is0p03_us0p016_cr0p08_ts1500000_s42_samth10_dc0p01_wu30_cd80_mg0p35_nv0p001_mx8_oufalse/20260514_214210/analysis/sam_uncertainty_analysis.png"
+  ]
+}
