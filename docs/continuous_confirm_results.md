@@ -163,3 +163,18 @@ sbatch --array=0-2 --export=ALL,NAME_PREFIX=continuous_sam_confirm_msbest,TIMEST
 后续优化方向：优先提高 opponent model 对连续动作的建模质量，扩展监督样本覆盖，检查归一化误差中的不确定性尺度，并继续围绕 threshold、cooldown、switch margin 与 online update 做稳定性实验。
 
 已新增 `sam.feature_mode=geometry` 作为下一轮优化变量。该模式不改变 SAM 的 MC dropout 和 normalized error 检测公式，只是在 opponent model 输入中追加连续拦截场景的相对几何特征，便于模型区分 direct、detour、attack 三类动作模式。建议先运行 `continuous_sam_geometry_tune` 小规模多 seed 对比，再决定是否进入 1.5M confirm。
+
+## SAM geometry 1.5M 确认长训结果
+
+2026-05-16 已 pull 回 `continuous_sam_geometry_confirm_*` 结果，并修复聚合脚本默认前缀，使 `continuous_sam_geometry_confirm_*` 自动收录到 `runs/continuous_sweep_summary.csv`。本轮共确认两组：
+
+| 参数组 | seed | 回报提升 | 胜率提升 | SAM 拦截胜率 | baseline 拦截胜率 | 响应准确率 | 切换次数 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| aggressive `th=8/dc=0.02/wu=20/cd=40/mg=0.2/noise=0.0005` | 42 | 59.60 | 27.50 pp | 27.50% | 0.00% | 68.38% | 243 |
+| aggressive `th=8/dc=0.02/wu=20/cd=40/mg=0.2/noise=0.0005` | 43 | -2.28 | -0.25 pp | 23.25% | 23.50% | 73.23% | 269 |
+| aggressive `th=8/dc=0.02/wu=20/cd=40/mg=0.2/noise=0.0005` | 44 | 55.22 | 24.50 pp | 25.00% | 0.50% | 74.92% | 183 |
+| balanced `th=12/dc=0.02/wu=30/cd=80/mg=0.5/noise=0.0005` | 42 | 23.26 | 10.62 pp | 10.62% | 0.00% | 38.85% | 61 |
+| balanced `th=12/dc=0.02/wu=30/cd=80/mg=0.5/noise=0.0005` | 43 | -4.29 | -1.50 pp | 22.00% | 23.50% | 33.50% | 29 |
+| balanced `th=12/dc=0.02/wu=30/cd=80/mg=0.5/noise=0.0005` | 44 | 41.51 | 18.12 pp | 18.62% | 0.50% | 35.05% | 47 |
+
+aggressive 组平均回报提升约 `37.52`，平均胜率提升约 `17.25` 个百分点，平均响应准确率 `72.18%`，明显优于 raw / msbest 的约 `33%`，但切换次数 `183~269` 偏高，且 seed 43 略低于 baseline。balanced 组切换次数较合理，但准确率回落到 `35.80%`，收益也弱于 aggressive。下一轮建议搜索两者之间的中间参数，例如 `threshold=9~10`、`cooldown=60~80`、`switch_margin=0.25~0.35`，目标是在保持 geometry 高准确率的同时降低过度切换。
