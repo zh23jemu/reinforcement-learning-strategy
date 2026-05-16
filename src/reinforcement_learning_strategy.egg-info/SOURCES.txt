@@ -12,12 +12,14 @@ src/rl_strategy/continuous/__init__.py
 src/rl_strategy/continuous/env.py
 src/rl_strategy/continuous/experiment.py
 src/rl_strategy/continuous/intruder.py
+src/rl_strategy/continuous/sam_detector.py
 src/rl_strategy/discrete/__init__.py
 src/rl_strategy/discrete/analysis.py
 src/rl_strategy/discrete/detector.py
 src/rl_strategy/discrete/env.py
 src/rl_strategy/discrete/experiment.py
 tests/test_continuous_env.py
+tests/test_continuous_sam_detector.py
 tests/test_discrete_analysis.py
 tests/test_discrete_detector.py
 tests/test_discrete_env.py

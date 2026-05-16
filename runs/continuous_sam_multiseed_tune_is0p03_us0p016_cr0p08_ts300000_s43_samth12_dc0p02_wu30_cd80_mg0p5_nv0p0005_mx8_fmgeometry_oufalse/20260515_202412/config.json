@@ -1,0 +1,55 @@
+{
+  "experiment": {
+    "module": "continuous",
+    "name": "continuous_sam_multiseed_tune_is0p03_us0p016_cr0p08_ts300000_s43_samth12_dc0p02_wu30_cd80_mg0p5_nv0p0005_mx8_fmgeometry_oufalse",
+    "seed": 43,
+    "run_dir": "runs",
+    "artifact_dir": "artifacts/continuous_sweep/continuous_sam_multiseed_tune_is0p03_us0p016_cr0p08_ts300000_s43_samth12_dc0p02_wu30_cd80_mg0p5_nv0p0005_mx8_fmgeometry_oufalse"
+  },
+  "environment": {
+    "big_radius": 1.0,
+    "small_radius": 0.3,
+    "collision_radius": 0.08,
+    "max_steps": 500,
+    "switch_interval": 160,
+    "intruder_max_speed": 0.016,
+    "interceptor_max_speed": 0.03,
+    "world_radius": 1.5,
+    "detour_safe_distance": 0.35
+  },
+  "ppo": {
+    "total_timesteps": 300000,
+    "n_steps": 2048,
+    "batch_size": 256,
+    "learning_rate": 0.0003,
+    "gamma": 0.99
+  },
+  "detector": {
+    "method": "sam",
+    "initial_policy": "direct",
+    "threshold": 12.0,
+    "decay": 0.02
+  },
+  "sam": {
+    "enabled": true,
+    "feature_mode": "geometry",
+    "sample_steps": 10000,
+    "hidden_dim": 96,
+    "dropout": 0.05,
+    "epochs": 20,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "mc_passes": 30,
+    "noise_variance": 0.0005,
+    "online_learning_rate": 0.0003,
+    "online_updates": false,
+    "warmup_steps": 30,
+    "cooldown_steps": 80,
+    "switch_margin": 0.5,
+    "max_normalized_error": 8.0
+  },
+  "evaluation": {
+    "episodes": 300,
+    "deterministic": false
+  }
+}
