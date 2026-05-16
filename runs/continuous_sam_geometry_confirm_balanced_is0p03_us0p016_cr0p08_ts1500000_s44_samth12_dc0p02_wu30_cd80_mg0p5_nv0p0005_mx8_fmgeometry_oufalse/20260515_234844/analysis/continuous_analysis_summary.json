@@ -1,0 +1,74 @@
+{
+  "output_dir": "runs/continuous_sam_geometry_confirm_balanced_is0p03_us0p016_cr0p08_ts1500000_s44_samth12_dc0p02_wu30_cd80_mg0p5_nv0p0005_mx8_fmgeometry_oufalse/20260515_234844/analysis",
+  "episodes": 800,
+  "total_steps": 33219,
+  "baseline_total_steps": 49476,
+  "mean_episode_length": 41.52375,
+  "baseline_mean_episode_length": 61.845,
+  "mean_episode_reward": -67.60713045687312,
+  "baseline_mean_episode_reward": -109.12202236779572,
+  "reward_improvement": 41.5148919109226,
+  "interceptor_win_rate": 0.18625,
+  "baseline_interceptor_win_rate": 0.005,
+  "win_rate_improvement": 0.18125,
+  "response_policy_accuracy": 0.350492188205545,
+  "switch_count": 47,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.3203804347826087,
+    "detour": 0.5552536231884058,
+    "direct": 0.17739473920459647
+  },
+  "intruder_policy_step_counts": {
+    "attack": 11040,
+    "detour": 11040,
+    "direct": 11139
+  },
+  "ops_winner_counts": {
+    "interceptor": 149,
+    "intruder": 651
+  },
+  "baseline_winner_counts": {
+    "interceptor": 4,
+    "intruder": 796
+  },
+  "ops_reason_counts": {
+    "active_collision": 21,
+    "entered_big_circle": 595,
+    "entered_small_circle": 35,
+    "intercepted_before_small_circle": 146,
+    "intercepted_in_big_circle": 2,
+    "passive_intercept": 1
+  },
+  "baseline_reason_counts": {
+    "active_collision": 1,
+    "entered_big_circle": 768,
+    "entered_small_circle": 27,
+    "intercepted_before_small_circle": 2,
+    "intercepted_in_big_circle": 2
+  },
+  "episode_reward_quantiles": {
+    "min": -176.81814130455246,
+    "q25": -103.89203796505929,
+    "median": -102.27667830005288,
+    "q75": -100.79407756119966,
+    "max": 98.56089486420154,
+    "std": 78.95458059546162
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -192.62812611579895,
+    "q25": -105.14571768343448,
+    "median": -102.90562783181667,
+    "q75": -101.56117028534412,
+    "max": 97.5587364307046,
+    "std": 24.104218696186418
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "runs/continuous_sam_geometry_confirm_balanced_is0p03_us0p016_cr0p08_ts1500000_s44_samth12_dc0p02_wu30_cd80_mg0p5_nv0p0005_mx8_fmgeometry_oufalse/20260515_234844/analysis/sam_uncertainty_analysis.png"
+  ]
+}
