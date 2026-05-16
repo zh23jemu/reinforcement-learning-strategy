@@ -21,6 +21,7 @@ DEFAULT_RUN_PREFIXES = (
     "continuous_confirm",
     "continuous_sam_tune",
     "continuous_sam_multiseed_tune",
+    "continuous_sam_geometry_narrow_tune",
     "continuous_sam_confirm",
     "continuous_sam_geometry_confirm",
 )
@@ -54,8 +55,8 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "要扫描的 runs 子目录前缀，可重复传入。默认同时扫描 "
             "continuous_sweep、continuous_confirm、continuous_sam_tune、"
-            "continuous_sam_multiseed_tune、continuous_sam_confirm 和 "
-            "continuous_sam_geometry_confirm。"
+            "continuous_sam_multiseed_tune、continuous_sam_geometry_narrow_tune、"
+            "continuous_sam_confirm 和 continuous_sam_geometry_confirm。"
         ),
     )
     return parser
