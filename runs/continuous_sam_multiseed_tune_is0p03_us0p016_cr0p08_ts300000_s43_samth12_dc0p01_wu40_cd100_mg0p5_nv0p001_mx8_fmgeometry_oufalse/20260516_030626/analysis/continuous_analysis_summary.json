@@ -1,0 +1,71 @@
+{
+  "output_dir": "runs/continuous_sam_multiseed_tune_is0p03_us0p016_cr0p08_ts300000_s43_samth12_dc0p01_wu40_cd100_mg0p5_nv0p001_mx8_fmgeometry_oufalse/20260516_030626/analysis",
+  "episodes": 300,
+  "total_steps": 9662,
+  "baseline_total_steps": 12506,
+  "mean_episode_length": 32.20666666666666,
+  "baseline_mean_episode_length": 41.68666666666667,
+  "mean_episode_reward": -65.63371410760432,
+  "baseline_mean_episode_reward": -91.28706244442874,
+  "reward_improvement": 25.653348336824422,
+  "interceptor_win_rate": 0.19,
+  "baseline_interceptor_win_rate": 0.07,
+  "win_rate_improvement": 0.12,
+  "response_policy_accuracy": 0.3321258538604844,
+  "switch_count": 3,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.0,
+    "detour": 0.803125,
+    "direct": 0.19589209074187616
+  },
+  "intruder_policy_step_counts": {
+    "attack": 3200,
+    "detour": 3200,
+    "direct": 3262
+  },
+  "ops_winner_counts": {
+    "interceptor": 57,
+    "intruder": 243
+  },
+  "baseline_winner_counts": {
+    "interceptor": 21,
+    "intruder": 279
+  },
+  "ops_reason_counts": {
+    "active_collision": 47,
+    "entered_big_circle": 195,
+    "entered_small_circle": 1,
+    "intercepted_before_small_circle": 57
+  },
+  "baseline_reason_counts": {
+    "active_collision": 30,
+    "entered_big_circle": 244,
+    "entered_small_circle": 5,
+    "intercepted_before_small_circle": 21
+  },
+  "episode_reward_quantiles": {
+    "min": -179.74745734035957,
+    "q25": -104.00064725846052,
+    "median": -102.59644667387009,
+    "q75": -100.8316479486227,
+    "max": 98.28179426074028,
+    "std": 78.84285030265592
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -148.24408061027526,
+    "q25": -104.89734228551387,
+    "median": -103.22114723369478,
+    "q75": -101.45295288532972,
+    "max": 98.37740521669387,
+    "std": 51.554411488168036
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "runs/continuous_sam_multiseed_tune_is0p03_us0p016_cr0p08_ts300000_s43_samth12_dc0p01_wu40_cd100_mg0p5_nv0p001_mx8_fmgeometry_oufalse/20260516_030626/analysis/sam_uncertainty_analysis.png"
+  ]
+}
