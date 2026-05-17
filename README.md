@@ -198,6 +198,13 @@ sbatch --export=ALL,NAME_PREFIX=continuous_sam_geometry_tune,SAM_FEATURE_MODE=ge
 sbatch slurm/aggregate_continuous_plcyf.sbatch
 ```
 
+seed 43 诊断显示 `direct/attack` response policy 可能弱于 baseline 后，应先跑 oracle 对照：该任务假设检测完全正确，按真实入侵策略直接选择响应策略，用于判断瓶颈是在 response policy 库本身还是 SAM 检测/切换时序。
+
+```bash
+sbatch --partition=defq --array=0-2 --export=ALL,TIMESTEPS=1500000,EPISODES=800 slurm/oracle_compare_continuous_plcyf.sbatch
+sbatch --partition=defq --export=ALL slurm/aggregate_continuous_plcyf.sbatch
+```
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`

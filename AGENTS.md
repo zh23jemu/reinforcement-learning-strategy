@@ -39,11 +39,12 @@
 - geometry midbest 1.5M confirm 平均回报提升约 `32.87`，平均胜率提升约 `15.17 pp`，平均响应准确率约 `66.62%`，但 seed 43 回报提升 `-12.45`。
 - geometry `cd80m25` 1.5M confirm 平均回报提升约 `32.13`，平均胜率提升约 `14.75 pp`，平均响应准确率约 `65.42%`，平均切换次数 `177.0`，但 seed 43 回报提升 `-13.04`。
 - 已新增 `scripts/diagnose_continuous_run.py`，可输出 episode 胜负组合、最终响应策略拆分、终止原因差异和最大 reward gap。
+- 已新增 `scripts/run_continuous_oracle_compare.py` 与 `slurm/oracle_compare_continuous_plcyf.sbatch`，可在 detector 完全正确的 oracle 条件下比较 response policy 库与 baseline，用于隔离 `direct/attack` 短板是否来自响应策略本身。
 
 ## TODO
 
 - 优先诊断并补强连续 response policy 的 `direct` 和 `attack` 控制质量。
-- 做 response policy 与 baseline 的 oracle 对照，确认当前响应策略库本身的上限。
+- 先运行 response policy 与 baseline 的 oracle 对照，确认当前响应策略库本身的上限。
 - 若 `direct/attack` 响应策略不再系统性弱于 baseline，再继续做 SAM 参数微调或更大规模 confirm。
 - 后续结果继续写入 `docs/continuous_confirm_results.md`、`docs/continuous_acceptance_checklist.md` 和 `.recallloom/`。
 
@@ -65,7 +66,7 @@
 
 ## Next TODO
 
-- 在服务器上优先设计 `direct/attack` response policy 补强或 oracle 对照实验。
+- 在服务器 `defq` 分区运行 `slurm/oracle_compare_continuous_plcyf.sbatch`，优先确认 `direct/attack` 在 oracle 条件下是否仍弱于 baseline。
 - 若需要长训，沿用现有 Slurm 风格并提交到 `defq` 分区。
 
 ## Open Issues

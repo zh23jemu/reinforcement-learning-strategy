@@ -76,4 +76,5 @@ SAM 原文检测版本结论是：
 - geometry 1.5M confirm 显示 aggressive 组平均响应准确率约 `72.18%`、平均胜率提升约 `17.25` 个百分点，但切换次数 `183~269` 偏高且 seed 43 略负；balanced 组切换较少但准确率回落到约 `35.80%`。
 - geometry 窄范围 300k 调参中 6 组参数的 3 个 seed 全部正收益，`th=10 / cd=60 / mg=0.25` 与 `th=10 / cd=80 / mg=0.25` 表现最好；其中 `cd80m25` 已完成 1.5M confirm，平均回报提升约 `32.13`、平均胜率提升约 `14.75` 个百分点、平均响应准确率约 `65.42%`，但 seed 43 仍为负收益。
 - seed 43 的 episode 级诊断显示，`detour` 响应策略显著优于 baseline，但 `direct` 和 `attack` 响应策略系统性弱于 baseline。下一阶段应从继续微调 SAM threshold/cooldown/margin，转向补强 continuous response policy 的 `direct/attack` 控制质量，或先做 response policy 与 baseline 的 oracle 对照来确认策略库上限。
+- 已新增 `scripts/run_continuous_oracle_compare.py` 和 `slurm/oracle_compare_continuous_plcyf.sbatch`，用于正式运行 response policy oracle 对照；若 oracle 对照下 `direct/attack` 仍弱于 baseline，则优先改 response policy 训练与奖励设计，而不是继续调 SAM 检测参数。
 - 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py`、`scripts/diagnose_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。
