@@ -79,7 +79,7 @@
 - 工程复现过关：响应策略准确率高于 0.95，平均回报和拦截胜率均优于 baseline。
 - 接近论文效果：需要多 seed 稳定优于 baseline，且绝对拦截胜率达到明确目标。
 
-1.5M timesteps 确认长训结果见 `docs/continuous_confirm_results.md`。当前同时保留两批结果：早期 oracle/工程化响应策略选择版本作为理想策略选择上限参考；SAM 原文检测版本使用 MC dropout opponent model 预测入侵者动作，并用观测误差除以预测不确定性得到归一化 running error 后触发策略切换。SAM 检测版本已完成长训确认，但当前平均收益尚未稳定优于 baseline，需要继续优化检测阈值、opponent model 和切换策略。
+1.5M timesteps 确认长训结果见 `docs/continuous_confirm_results.md`。当前同时保留早期 oracle/工程化响应策略选择版本、raw SAM 检测版本和 geometry SAM 检测版本：oracle 版本只作为理想策略选择上限参考；SAM 原文检测版本使用 MC dropout opponent model 预测入侵者动作，并用观测误差除以预测不确定性得到归一化 running error 后触发策略切换。geometry 特征已显著提高响应准确率并带来稳定平均收益，但 seed 43 诊断显示 `direct/attack` 响应策略控制质量仍弱于 baseline，下一阶段应优先补强响应策略库，而不是继续盲目扩大 SAM 参数扫描。
 
 连续评估会在 `runs/continuous_*` 下生成：
 
@@ -91,6 +91,7 @@
 
 ```powershell
 .venv\Scripts\python.exe scripts\analyze_continuous_run.py --run-dir runs\continuous_paper_like\<运行目录>
+.venv\Scripts\python.exe scripts\diagnose_continuous_run.py --run-dir runs\continuous_paper_like\<运行目录>
 ```
 
 脚本会写出：
@@ -98,6 +99,7 @@
 - `analysis/continuous_analysis_summary.json`：核心指标、胜负分布、终止原因、验收判断。
 - `analysis/episode_metrics.csv`：episode 级 OPS-DeMo 与 baseline 对比表。
 - `analysis/sam_uncertainty_analysis.png`：MC dropout 动作预测不确定性、归一化误差和 running error 可视化。
+- `analysis/continuous_run_diagnosis.json` 及若干 CSV：episode 胜负组合、最终响应策略拆分、终止原因差异和最大 reward gap，用于定位某个 seed 或某类入侵策略的失败模式。
 
 ## Slurm 长训与参数扫描
 

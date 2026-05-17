@@ -178,3 +178,36 @@ sbatch --array=0-2 --export=ALL,NAME_PREFIX=continuous_sam_confirm_msbest,TIMEST
 | balanced `th=12/dc=0.02/wu=30/cd=80/mg=0.5/noise=0.0005` | 44 | 41.51 | 18.12 pp | 18.62% | 0.50% | 35.05% | 47 |
 
 aggressive 组平均回报提升约 `37.52`，平均胜率提升约 `17.25` 个百分点，平均响应准确率 `72.18%`，明显优于 raw / msbest 的约 `33%`，但切换次数 `183~269` 偏高，且 seed 43 略低于 baseline。balanced 组切换次数较合理，但准确率回落到 `35.80%`，收益也弱于 aggressive。下一轮建议搜索两者之间的中间参数，例如 `threshold=9~10`、`cooldown=60~80`、`switch_margin=0.25~0.35`，目标是在保持 geometry 高准确率的同时降低过度切换。
+
+## SAM geometry 窄范围调参与 cd80m25 确认结果
+
+2026-05-17 已 pull 回 `continuous_sam_geometry_narrow_tune_*` 与 `continuous_sam_geometry_confirm_cd80m25_*` 结果，并重新聚合到 `runs/continuous_sweep_summary.csv`。窄范围调参固定环境参数 `0.030 / 0.016 / 0.08`，使用 `feature_mode=geometry`、`decay=0.02`、`warmup=20`、`noise_variance=0.0005`、`max_normalized_error=8`、`online_updates=false`，主要扫描 `cooldown`、`switch_margin` 和 `threshold`。
+
+窄范围 300k 调参中，6 组参数在 3 个 seed 下全部保持正收益，但收益随 `cooldown` 与 `switch_margin` 增大而下降。前两组结果如下：
+
+| 参数组 | 平均回报提升 | 最小回报提升 | 平均胜率提升 | 平均响应准确率 | 平均切换次数 | 判断 |
+|---|---:|---:|---:|---:|---:|---|
+| `th=10 / cd=60 / mg=0.25` | 33.43 | 14.36 | 15.11 pp | 60.95% | 81.3 | 300k 最优，等价于 midbest 短训复核 |
+| `th=10 / cd=80 / mg=0.25` | 32.09 | 12.38 | 14.44 pp | 58.09% | 74.0 | 切换略少，提升到 confirm 验证 |
+
+`cd80m25` 1.5M / 800 episodes / 3 seed 确认参数为 `threshold=10`、`decay=0.02`、`warmup=20`、`cooldown=80`、`switch_margin=0.25`、`noise_variance=0.0005`、`feature_mode=geometry`、`online_updates=false`。
+
+| seed | 回报提升 | 胜率提升 | SAM 拦截胜率 | baseline 拦截胜率 | 响应准确率 | 切换次数 | 判断 |
+|---:|---:|---:|---:|---:|---:|---:|---|
+| 42 | 53.14 | 24.62 pp | 24.62% | 0.00% | 63.79% | 175 | 明显优于 baseline |
+| 43 | -13.04 | -5.37 pp | 18.12% | 23.50% | 59.41% | 197 | 仍弱于 baseline |
+| 44 | 56.30 | 25.00 pp | 25.50% | 0.50% | 73.06% | 159 | 明显优于 baseline |
+
+三 seed 平均回报提升约 `32.13`，平均胜率提升约 `14.75` 个百分点，平均响应准确率约 `65.42%`，平均切换次数 `177.0`。相比 midbest，`cd80m25` 降低了平均切换次数，但没有解决 seed 43 负收益；继续只调 SAM threshold/cooldown/margin 的边际收益已经变小。
+
+## seed 43 诊断结论
+
+已新增 `scripts/diagnose_continuous_run.py`，用于在已有 `analysis/episode_metrics.csv` 与逐步轨迹基础上，输出 episode 级胜负组合、最终响应策略拆分、终止原因差异和最大 reward gap。诊断产物写入各 run 的 `analysis/` 目录，包括 `continuous_run_diagnosis.json`、`episode_outcome_breakdown.csv`、`policy_outcome_breakdown.csv`、`reason_delta.csv` 和 `largest_reward_gaps.csv`。
+
+对 aggressive、balanced、midbest、cd80m25 四组 seed 43 confirm 的诊断显示，geometry 特征确实提高了 SAM 检测/选择准确率，但 seed 43 的主要损失不是继续缺少切换，而是响应策略在 `direct` 和 `attack` 场景的控制质量弱于 baseline。以 `cd80m25` seed 43 为例：
+
+- episode 胜负组合为 `baseline_only_win=142`、`ops_only_win=99`、`both_win=46`、`both_lose=513`；baseline 胜场 `188/800`，OPS/SAM 胜场 `145/800`。
+- 按最终响应策略拆分，`detour` 表现很强：OPS/SAM 胜率约 `95.97%`，baseline 胜率约 `32.21%`，平均 reward gap 约 `+126.28`。
+- `direct` 与 `attack` 是主要短板：`direct` 下 OPS/SAM 胜率约 `0.17%`、baseline 胜率约 `21.18%`，平均 reward gap 约 `-43.96`；`attack` 下 OPS/SAM 胜率约 `1.80%`、baseline 胜率约 `25.00%`，平均 reward gap 约 `-55.10`。
+
+因此下一阶段不建议继续盲目扩大 SAM 参数扫描。更合理的路线是先补强 continuous response policy 的 `direct/attack` 控制质量，或做 response policy 与 baseline 的 oracle 对照，确认当前响应策略库本身的上限；只有当 `direct/attack` 不再系统性弱于 baseline 后，再继续做 SAM 检测参数微调或更大规模 confirm。
