@@ -19,6 +19,7 @@ src/rl_strategy/discrete/detector.py
 src/rl_strategy/discrete/env.py
 src/rl_strategy/discrete/experiment.py
 tests/test_continuous_env.py
+tests/test_continuous_oracle_compare.py
 tests/test_continuous_sam_detector.py
 tests/test_discrete_analysis.py
 tests/test_discrete_detector.py
