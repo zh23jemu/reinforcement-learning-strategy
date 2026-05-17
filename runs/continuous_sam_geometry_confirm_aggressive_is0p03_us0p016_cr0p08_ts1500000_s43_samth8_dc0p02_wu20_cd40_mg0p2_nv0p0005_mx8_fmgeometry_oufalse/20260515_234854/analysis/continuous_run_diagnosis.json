@@ -1,0 +1,67 @@
+{
+  "output_dir": "C:/Coding/reinforcement-learning-strategy/runs/continuous_sam_geometry_confirm_aggressive_is0p03_us0p016_cr0p08_ts1500000_s43_samth8_dc0p02_wu20_cd40_mg0p2_nv0p0005_mx8_fmgeometry_oufalse/20260515_234854/analysis",
+  "episodes": 800,
+  "ops_win_count": 186,
+  "baseline_win_count": 188,
+  "baseline_only_win_count": 160,
+  "ops_only_win_count": 158,
+  "both_win_count": 28,
+  "both_lose_count": 454,
+  "mean_reward_gap": -2.275682700700547,
+  "median_reward_gap": -0.007725965976703719,
+  "baseline_only_mean_reward_gap": -201.43236310271567,
+  "ops_only_mean_reward_gap": 198.87212977153413,
+  "policy_with_worst_mean_gap": {
+    "ops_final_intruder_policy": "direct",
+    "episodes": 567,
+    "ops_win_rate": 0.0,
+    "baseline_win_rate": 0.271605,
+    "mean_reward_gap": -56.020039,
+    "baseline_only_wins": 154,
+    "ops_only_wins": 0
+  },
+  "largest_baseline_advantage_episode": {
+    "episode": 519,
+    "reward_gap": -240.53962631583212,
+    "ops_episode_reward": -143.19230609059332,
+    "baseline_episode_reward": 97.3473202252388,
+    "ops_interceptor_win": false,
+    "baseline_interceptor_win": true,
+    "ops_reason": "entered_big_circle",
+    "baseline_reason": "intercepted_before_small_circle",
+    "ops_final_intruder_policy": "direct",
+    "outcome_pair": "baseline_only_win"
+  },
+  "largest_ops_advantage_episode": {
+    "episode": 148,
+    "reward_gap": 203.2600493478775,
+    "ops_episode_reward": 97.3285582280159,
+    "baseline_episode_reward": -105.9314911198616,
+    "ops_interceptor_win": true,
+    "baseline_interceptor_win": false,
+    "ops_reason": "intercepted_before_small_circle",
+    "baseline_reason": "entered_big_circle",
+    "ops_final_intruder_policy": "detour",
+    "outcome_pair": "ops_only_win"
+  },
+  "switch_summary": {
+    "switch_count": 269,
+    "switch_to_true_policy_rate": 0.6877323420074349,
+    "switches_by_target": {
+      "attack": 84,
+      "detour": 101,
+      "direct": 84
+    },
+    "switches_by_true_policy": {
+      "attack": 109,
+      "detour": 94,
+      "direct": 66
+    }
+  },
+  "outputs": {
+    "episode_outcome_breakdown": "C:/Coding/reinforcement-learning-strategy/runs/continuous_sam_geometry_confirm_aggressive_is0p03_us0p016_cr0p08_ts1500000_s43_samth8_dc0p02_wu20_cd40_mg0p2_nv0p0005_mx8_fmgeometry_oufalse/20260515_234854/analysis/episode_outcome_breakdown.csv",
+    "policy_outcome_breakdown": "C:/Coding/reinforcement-learning-strategy/runs/continuous_sam_geometry_confirm_aggressive_is0p03_us0p016_cr0p08_ts1500000_s43_samth8_dc0p02_wu20_cd40_mg0p2_nv0p0005_mx8_fmgeometry_oufalse/20260515_234854/analysis/policy_outcome_breakdown.csv",
+    "reason_delta": "C:/Coding/reinforcement-learning-strategy/runs/continuous_sam_geometry_confirm_aggressive_is0p03_us0p016_cr0p08_ts1500000_s43_samth8_dc0p02_wu20_cd40_mg0p2_nv0p0005_mx8_fmgeometry_oufalse/20260515_234854/analysis/reason_delta.csv",
+    "largest_reward_gaps": "C:/Coding/reinforcement-learning-strategy/runs/continuous_sam_geometry_confirm_aggressive_is0p03_us0p016_cr0p08_ts1500000_s43_samth8_dc0p02_wu20_cd40_mg0p2_nv0p0005_mx8_fmgeometry_oufalse/20260515_234854/analysis/largest_reward_gaps.csv"
+  }
+}
