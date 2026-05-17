@@ -1,0 +1,69 @@
+{
+  "output_dir": "runs/continuous_sam_geometry_narrow_tune_is0p03_us0p016_cr0p08_ts300000_s44_samth11_dc0p02_wu30_cd80_mg0p35_nv0p0005_mx8_fmgeometry_oufalse/20260516_074141/analysis",
+  "episodes": 300,
+  "total_steps": 13998,
+  "baseline_total_steps": 16394,
+  "mean_episode_length": 46.66,
+  "baseline_mean_episode_length": 54.64666666666667,
+  "mean_episode_reward": -101.6205283730934,
+  "baseline_mean_episode_reward": -109.7845787092924,
+  "reward_improvement": 8.164050336198997,
+  "interceptor_win_rate": 0.02666666666666667,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.02666666666666667,
+  "response_policy_accuracy": 0.40648664094870696,
+  "switch_count": 52,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.5588362068965518,
+    "detour": 0.33857758620689654,
+    "direct": 0.32344213649851633
+  },
+  "intruder_policy_step_counts": {
+    "attack": 4640,
+    "detour": 4640,
+    "direct": 4718
+  },
+  "ops_winner_counts": {
+    "interceptor": 8,
+    "intruder": 292
+  },
+  "baseline_winner_counts": {
+    "intruder": 300
+  },
+  "ops_reason_counts": {
+    "active_collision": 19,
+    "entered_big_circle": 257,
+    "entered_small_circle": 16,
+    "intercepted_before_small_circle": 8
+  },
+  "baseline_reason_counts": {
+    "active_collision": 9,
+    "entered_big_circle": 285,
+    "entered_small_circle": 6
+  },
+  "episode_reward_quantiles": {
+    "min": -164.93972223520265,
+    "q25": -105.64006308853627,
+    "median": -103.48535226583479,
+    "q75": -101.80254825145006,
+    "max": 97.2865998390317,
+    "std": 33.30934085789452
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -182.99669804394244,
+    "q25": -105.54739215523006,
+    "median": -103.33283398985863,
+    "q75": -101.69503080427647,
+    "max": -100.41263511061669,
+    "std": 18.438915059628716
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "runs/continuous_sam_geometry_narrow_tune_is0p03_us0p016_cr0p08_ts300000_s44_samth11_dc0p02_wu30_cd80_mg0p35_nv0p0005_mx8_fmgeometry_oufalse/20260516_074141/analysis/sam_uncertainty_analysis.png"
+  ]
+}

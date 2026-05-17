@@ -1,0 +1,69 @@
+{
+  "output_dir": "runs/continuous_sam_geometry_narrow_tune_is0p03_us0p016_cr0p08_ts300000_s44_samth11_dc0p02_wu20_cd80_mg0p3_nv0p0005_mx8_fmgeometry_oufalse/20260516_074143/analysis",
+  "episodes": 300,
+  "total_steps": 13020,
+  "baseline_total_steps": 16394,
+  "mean_episode_length": 43.4,
+  "baseline_mean_episode_length": 54.64666666666667,
+  "mean_episode_reward": -98.27906952213606,
+  "baseline_mean_episode_reward": -109.7845787092924,
+  "reward_improvement": 11.505509187156349,
+  "interceptor_win_rate": 0.04,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.04,
+  "response_policy_accuracy": 0.46044546850998463,
+  "switch_count": 68,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.5083333333333333,
+    "detour": 0.5525462962962963,
+    "direct": 0.3223744292237443
+  },
+  "intruder_policy_step_counts": {
+    "attack": 4320,
+    "detour": 4320,
+    "direct": 4380
+  },
+  "ops_winner_counts": {
+    "interceptor": 12,
+    "intruder": 288
+  },
+  "baseline_winner_counts": {
+    "intruder": 300
+  },
+  "ops_reason_counts": {
+    "active_collision": 23,
+    "entered_big_circle": 249,
+    "entered_small_circle": 16,
+    "intercepted_before_small_circle": 12
+  },
+  "baseline_reason_counts": {
+    "active_collision": 9,
+    "entered_big_circle": 285,
+    "entered_small_circle": 6
+  },
+  "episode_reward_quantiles": {
+    "min": -155.06519539773458,
+    "q25": -105.66263895004987,
+    "median": -103.47597646296023,
+    "q75": -101.7819778394699,
+    "max": 98.01397880874576,
+    "std": 40.147221815882716
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -182.99669804394244,
+    "q25": -105.54739215523006,
+    "median": -103.33283398985863,
+    "q75": -101.69503080427647,
+    "max": -100.41263511061669,
+    "std": 18.438915059628716
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "runs/continuous_sam_geometry_narrow_tune_is0p03_us0p016_cr0p08_ts300000_s44_samth11_dc0p02_wu20_cd80_mg0p3_nv0p0005_mx8_fmgeometry_oufalse/20260516_074143/analysis/sam_uncertainty_analysis.png"
+  ]
+}
