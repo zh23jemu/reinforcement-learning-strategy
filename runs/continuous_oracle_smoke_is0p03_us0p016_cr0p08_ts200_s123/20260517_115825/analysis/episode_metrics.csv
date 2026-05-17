@@ -1,0 +1,3 @@
+episode,ops_episode_len,ops_episode_reward,ops_winner,ops_reason,ops_final_intruder_policy,baseline_episode_len,baseline_winner,baseline_reason,baseline_episode_reward,ops_interceptor_win,baseline_interceptor_win
+0,5,-100.6649264061451,intruder,entered_big_circle,direct,5,intruder,entered_big_circle,-100.70395745873451,False,False
+1,26,-104.60835428237915,intruder,entered_big_circle,direct,26,intruder,entered_big_circle,-104.64984827041626,False,False

@@ -1,0 +1,5 @@
+episode,reward_gap,ops_episode_reward,baseline_episode_reward,ops_interceptor_win,baseline_interceptor_win,ops_reason,baseline_reason,ops_final_intruder_policy,ops_episode_len,baseline_episode_len,outcome_pair,rank_type
+0,0.039031,-100.664926,-100.703957,False,False,entered_big_circle,entered_big_circle,direct,5,5,both_lose,baseline_advantage
+1,0.041494,-104.608354,-104.649848,False,False,entered_big_circle,entered_big_circle,direct,26,26,both_lose,baseline_advantage
+1,0.041494,-104.608354,-104.649848,False,False,entered_big_circle,entered_big_circle,direct,26,26,both_lose,ops_advantage
+0,0.039031,-100.664926,-100.703957,False,False,entered_big_circle,entered_big_circle,direct,5,5,both_lose,ops_advantage

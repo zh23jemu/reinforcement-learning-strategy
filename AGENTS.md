@@ -59,6 +59,7 @@
 ## Current Status
 
 - 本地最新进展已包含 oracle 对照结果：整体 oracle 上限通过验收，但 seed 43 的 `direct/attack` response policy 在分策略上仍弱于 baseline，工作重心转向这两类响应策略专项补强。
+- 本地仅剩的未跟踪内容是 oracle 对照与 response focus 脚本的 smoke 验证产物，本轮准备入库以保持工作区干净。
 
 ## Recent Changes
 
@@ -66,6 +67,7 @@
 - 补充连续验收清单和 README 中的诊断脚本说明。
 - 创建项目级 `AGENTS.md`，记录长期代理上下文和当前下一步。
 - pull 回并分析 `continuous_oracle_compare_*` 三 seed 结果，确认 oracle 整体通过验收但 seed 43 `direct/attack` 仍需补强。
+- 准备提交 `continuous_oracle_smoke_*` 与 `continuous_response_focus_smoke_*` 的本地 smoke 验证产物，保留脚本可运行证据。
 
 ## Next TODO
 

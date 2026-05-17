@@ -1,0 +1,57 @@
+{
+  "output_dir": "runs/continuous_oracle_smoke_is0p03_us0p016_cr0p08_ts200_s123/20260517_115453/analysis",
+  "episodes": 2,
+  "total_steps": 31,
+  "baseline_total_steps": 31,
+  "mean_episode_length": 15.5,
+  "baseline_mean_episode_length": 15.5,
+  "mean_episode_reward": -102.63664034426213,
+  "baseline_mean_episode_reward": -102.67690286457538,
+  "reward_improvement": 0.04026252031324873,
+  "interceptor_win_rate": 0.0,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.0,
+  "response_policy_accuracy": 1.0,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "direct": 1.0
+  },
+  "intruder_policy_step_counts": {
+    "direct": 31
+  },
+  "ops_winner_counts": {
+    "intruder": 2
+  },
+  "baseline_winner_counts": {
+    "intruder": 2
+  },
+  "ops_reason_counts": {
+    "entered_big_circle": 2
+  },
+  "baseline_reason_counts": {
+    "entered_big_circle": 2
+  },
+  "episode_reward_quantiles": {
+    "min": -104.60835428237915,
+    "q25": -103.62249731332064,
+    "median": -102.63664034426213,
+    "q75": -101.65078337520362,
+    "max": -100.6649264061451,
+    "std": 1.971713938117027
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -104.64984827041626,
+    "q25": -103.66337556749582,
+    "median": -102.67690286457538,
+    "q75": -101.69043016165494,
+    "max": -100.70395745873451,
+    "std": 1.9729454058408749
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": []
+}

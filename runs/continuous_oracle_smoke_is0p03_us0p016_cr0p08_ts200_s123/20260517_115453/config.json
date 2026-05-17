@@ -1,0 +1,55 @@
+{
+  "experiment": {
+    "module": "continuous",
+    "name": "continuous_oracle_smoke_is0p03_us0p016_cr0p08_ts200_s123",
+    "seed": 123,
+    "run_dir": "runs",
+    "artifact_dir": "artifacts\\continuous_sweep\\continuous_oracle_smoke_is0p03_us0p016_cr0p08_ts200_s123"
+  },
+  "environment": {
+    "big_radius": 1.0,
+    "small_radius": 0.3,
+    "collision_radius": 0.08,
+    "max_steps": 500,
+    "switch_interval": 160,
+    "intruder_max_speed": 0.016,
+    "interceptor_max_speed": 0.03,
+    "world_radius": 1.5,
+    "detour_safe_distance": 0.35
+  },
+  "ppo": {
+    "total_timesteps": 200,
+    "n_steps": 128,
+    "batch_size": 64,
+    "learning_rate": 0.0003,
+    "gamma": 0.99
+  },
+  "detector": {
+    "method": "oracle",
+    "initial_policy": "direct",
+    "threshold": 12.0,
+    "decay": 0.02
+  },
+  "sam": {
+    "enabled": true,
+    "feature_mode": "geometry",
+    "sample_steps": 300,
+    "hidden_dim": 32,
+    "dropout": 0.1,
+    "epochs": 3,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "mc_passes": 8,
+    "noise_variance": 0.0005,
+    "online_learning_rate": 0.0003,
+    "online_updates": false,
+    "warmup_steps": 10,
+    "cooldown_steps": 20,
+    "switch_margin": 0.25,
+    "max_normalized_error": 8.0
+  },
+  "evaluation": {
+    "episodes": 2,
+    "deterministic": false
+  }
+}
