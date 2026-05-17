@@ -40,12 +40,14 @@
 - geometry `cd80m25` 1.5M confirm 平均回报提升约 `32.13`，平均胜率提升约 `14.75 pp`，平均响应准确率约 `65.42%`，平均切换次数 `177.0`，但 seed 43 回报提升 `-13.04`。
 - 已新增 `scripts/diagnose_continuous_run.py`，可输出 episode 胜负组合、最终响应策略拆分、终止原因差异和最大 reward gap。
 - 已新增 `scripts/run_continuous_oracle_compare.py` 与 `slurm/oracle_compare_continuous_plcyf.sbatch`，可在 detector 完全正确的 oracle 条件下比较 response policy 库与 baseline，用于隔离 `direct/attack` 短板是否来自响应策略本身。
+- `continuous_oracle_compare_*` 已完成 1.5M / 800 episodes / 3 seed 对照：seed 42/43/44 全部 `engineering_pass=True` 且 `paper_like_pass=True`，但 seed 43 的分策略诊断仍显示 `direct` 和 `attack` 弱于 baseline，`detour` 显著强于 baseline。
+- 已新增 `slurm/response_focus_continuous_plcyf.sbatch`，默认比较 direct/attack response policy 加训到 `3M` 与 `5M` 两档，`detour` 和 baseline 保持基础步数，并继续用 oracle 对照评估。
 
 ## TODO
 
 - 优先诊断并补强连续 response policy 的 `direct` 和 `attack` 控制质量。
-- 先运行 response policy 与 baseline 的 oracle 对照，确认当前响应策略库本身的上限。
-- 若 `direct/attack` 响应策略不再系统性弱于 baseline，再继续做 SAM 参数微调或更大规模 confirm。
+- 下一轮优先运行 `response_focus_continuous_plcyf.sbatch`，先验证更长 direct/attack 训练步数是否能修复 seed 43 分策略短板。
+- 若 `direct/attack` 响应策略补强后不再系统性弱于 baseline，再继续做 SAM 参数微调或更大规模 confirm。
 - 后续结果继续写入 `docs/continuous_confirm_results.md`、`docs/continuous_acceptance_checklist.md` 和 `.recallloom/`。
 
 ## 风险问题
@@ -56,22 +58,23 @@
 
 ## Current Status
 
-- 本地最新进展已包含 seed 43 诊断脚本与诊断产物，工作重心转向响应策略库质量，而不是继续盲扫 SAM 检测参数。
+- 本地最新进展已包含 oracle 对照结果：整体 oracle 上限通过验收，但 seed 43 的 `direct/attack` response policy 在分策略上仍弱于 baseline，工作重心转向这两类响应策略专项补强。
 
 ## Recent Changes
 
 - 补充连续确认结果文档中的 geometry 窄范围调参、`cd80m25` confirm 和 seed 43 分策略诊断结论。
 - 补充连续验收清单和 README 中的诊断脚本说明。
 - 创建项目级 `AGENTS.md`，记录长期代理上下文和当前下一步。
+- pull 回并分析 `continuous_oracle_compare_*` 三 seed 结果，确认 oracle 整体通过验收但 seed 43 `direct/attack` 仍需补强。
 
 ## Next TODO
 
-- 在服务器 `defq` 分区运行 `slurm/oracle_compare_continuous_plcyf.sbatch`，优先确认 `direct/attack` 在 oracle 条件下是否仍弱于 baseline。
-- 若需要长训，沿用现有 Slurm 风格并提交到 `defq` 分区。
+- 在服务器 `defq` 分区运行 `sbatch --partition=defq --array=0-5 --export=ALL,BASE_TIMESTEPS=1500000,EPISODES=800 slurm/response_focus_continuous_plcyf.sbatch`，完成后聚合并分析 `continuous_response_focus_*`。
+- 长训继续沿用现有 Slurm 风格并提交到 `defq` 分区。
 
 ## Open Issues
 
-- `direct/attack` response policy 为什么弱于 baseline 尚未定位到训练不足、奖励形状、策略入口选择还是环境随机性。
+- seed 43 的 `direct/attack` response policy 在 oracle 条件下仍弱于 baseline，根因尚未定位到训练不足、奖励形状、策略入口选择还是环境随机性。
 - 当前验收阈值仍混用了 oracle 策略识别口径和 SAM 检测口径，最终报告需要明确解释。
 
 ## Architecture Decisions

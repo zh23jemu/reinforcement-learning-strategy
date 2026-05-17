@@ -205,6 +205,17 @@ sbatch --partition=defq --array=0-2 --export=ALL,TIMESTEPS=1500000,EPISODES=800 
 sbatch --partition=defq --export=ALL slurm/aggregate_continuous_plcyf.sbatch
 ```
 
+该 oracle 对照已完成：三 seed 全部通过工程/论文候选验收，但 seed 43 的 `direct/attack` 分策略诊断仍弱于 baseline。下一轮应针对 `direct/attack` response policy 做专项补强，而不是继续扩大 SAM 参数扫描。
+
+direct/attack 专项加训使用：
+
+```bash
+sbatch --partition=defq --array=0-5 --export=ALL,BASE_TIMESTEPS=1500000,EPISODES=800 slurm/response_focus_continuous_plcyf.sbatch
+sbatch --partition=defq --export=ALL slurm/aggregate_continuous_plcyf.sbatch
+```
+
+该脚本默认跑 2 档 direct/attack 训练步数 `3M` 和 `5M`，每档覆盖 seeds `42/43/44`；`detour` 与 baseline 保持 `BASE_TIMESTEPS`，便于隔离 direct/attack 加训是否有效。
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`

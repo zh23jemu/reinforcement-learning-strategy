@@ -39,6 +39,30 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--intruder-speed", type=float, default=0.016, help="入侵者最大速度")
     parser.add_argument("--collision-radius", type=float, default=0.08, help="主动碰撞半径")
     parser.add_argument("--timesteps", type=int, required=True, help="每个 PPO 模型训练步数")
+    parser.add_argument(
+        "--response-direct-timesteps",
+        type=int,
+        default=None,
+        help="只覆盖 response_direct 训练步数；为空时使用 --timesteps",
+    )
+    parser.add_argument(
+        "--response-detour-timesteps",
+        type=int,
+        default=None,
+        help="只覆盖 response_detour 训练步数；为空时使用 --timesteps",
+    )
+    parser.add_argument(
+        "--response-attack-timesteps",
+        type=int,
+        default=None,
+        help="只覆盖 response_attack 训练步数；为空时使用 --timesteps",
+    )
+    parser.add_argument(
+        "--baseline-timesteps",
+        type=int,
+        default=None,
+        help="只覆盖 baseline 训练步数；为空时使用 --timesteps",
+    )
     parser.add_argument("--seed", type=int, required=True, help="随机种子")
     parser.add_argument("--episodes", type=int, default=None, help="覆盖 evaluation.episodes")
     parser.add_argument(
@@ -121,6 +145,21 @@ def _apply_overrides(config: dict[str, Any], args: argparse.Namespace, experimen
     config["environment"]["intruder_max_speed"] = args.intruder_speed
     config["environment"]["collision_radius"] = args.collision_radius
     config["ppo"]["total_timesteps"] = args.timesteps
+    response_timesteps = {
+        "direct": getattr(args, "response_direct_timesteps", None),
+        "detour": getattr(args, "response_detour_timesteps", None),
+        "attack": getattr(args, "response_attack_timesteps", None),
+    }
+    response_timesteps = {
+        name: int(value)
+        for name, value in response_timesteps.items()
+        if value is not None
+    }
+    if response_timesteps:
+        config["ppo"]["response_timesteps_by_policy"] = response_timesteps
+    baseline_timesteps = getattr(args, "baseline_timesteps", None)
+    if baseline_timesteps is not None:
+        config["ppo"]["baseline_total_timesteps"] = int(baseline_timesteps)
     if args.episodes is not None:
         config["evaluation"]["episodes"] = args.episodes
 
@@ -182,6 +221,10 @@ def _metadata(args: argparse.Namespace, experiment_name: str) -> dict[str, Any]:
         "intruder_max_speed": args.intruder_speed,
         "collision_radius": args.collision_radius,
         "total_timesteps": args.timesteps,
+        "response_direct_timesteps": args.response_direct_timesteps,
+        "response_detour_timesteps": args.response_detour_timesteps,
+        "response_attack_timesteps": args.response_attack_timesteps,
+        "baseline_timesteps": args.baseline_timesteps,
         "seed": args.seed,
         "episodes": args.episodes,
         "detector_method": "oracle",

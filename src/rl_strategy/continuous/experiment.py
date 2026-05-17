@@ -33,6 +33,11 @@ def train_continuous(config: dict[str, Any]) -> None:
     artifact_dir = Path(config["experiment"]["artifact_dir"])
     artifact_dir.mkdir(parents=True, exist_ok=True)
 
+    response_timesteps_by_policy = config.get("ppo", {}).get("response_timesteps_by_policy", {})
+    if not isinstance(response_timesteps_by_policy, dict):
+        response_timesteps_by_policy = {}
+    default_timesteps = int(config["ppo"]["total_timesteps"])
+
     for index, policy_name in enumerate(POLICY_NAMES):
         env = ContinuousPolicyConditionedEnv(
             _make_env(config, intruder_policy=policy_name, switch_interval=None),
@@ -40,7 +45,10 @@ def train_continuous(config: dict[str, Any]) -> None:
             policy_count=len(POLICY_NAMES),
         )
         model = _make_ppo(config, env)
-        model.learn(total_timesteps=int(config["ppo"]["total_timesteps"]))
+        # 默认三类响应策略使用同一训练步数；专项补强实验可以只加训 direct/attack，
+        # 用于确认 seed 43 的短板是否来自某类 response policy 训练不足。
+        policy_timesteps = int(response_timesteps_by_policy.get(policy_name, default_timesteps))
+        model.learn(total_timesteps=policy_timesteps)
         model.save(artifact_dir / f"response_{policy_name}.zip")
         _train_sam_opponent_model(config, policy_name, artifact_dir)
 
@@ -50,7 +58,8 @@ def train_continuous(config: dict[str, Any]) -> None:
         switch_interval=int(config["environment"]["switch_interval"]),
     )
     baseline_model = _make_ppo(config, baseline_env)
-    baseline_model.learn(total_timesteps=int(config["ppo"]["total_timesteps"]))
+    baseline_timesteps = int(config["ppo"].get("baseline_total_timesteps", default_timesteps))
+    baseline_model.learn(total_timesteps=baseline_timesteps)
     baseline_model.save(artifact_dir / "baseline_switching_ppo.zip")
 
 

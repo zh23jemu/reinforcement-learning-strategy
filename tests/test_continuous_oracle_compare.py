@@ -30,6 +30,10 @@ def test_oracle_compare_overrides_detector_and_paths():
         intruder_speed=0.016,
         collision_radius=0.08,
         timesteps=1500,
+        response_direct_timesteps=None,
+        response_detour_timesteps=None,
+        response_attack_timesteps=None,
+        baseline_timesteps=None,
         seed=43,
         episodes=800,
         artifact_dir=None,
@@ -71,6 +75,10 @@ def test_oracle_compare_accepts_explicit_artifact_dir():
         intruder_speed=0.016,
         collision_radius=0.08,
         timesteps=1500,
+        response_direct_timesteps=None,
+        response_detour_timesteps=None,
+        response_attack_timesteps=None,
+        baseline_timesteps=None,
         seed=42,
         episodes=None,
         artifact_dir=Path("artifacts/reuse"),
@@ -97,3 +105,42 @@ def test_oracle_compare_experiment_name_matches_aggregator_pattern():
     )
 
     assert name == "continuous_oracle_compare_is0p03_us0p016_cr0p08_ts1500000_s44"
+
+
+def test_oracle_compare_can_focus_direct_attack_training_steps():
+    """direct/attack 专项补强应只覆盖指定响应策略和 baseline 步数。"""
+
+    config = {
+        "experiment": {"name": "base", "seed": 1, "artifact_dir": "artifacts/continuous"},
+        "environment": {
+            "interceptor_max_speed": 0.022,
+            "intruder_max_speed": 0.018,
+            "collision_radius": 0.08,
+        },
+        "ppo": {"total_timesteps": 1500000},
+        "evaluation": {"episodes": 10},
+        "detector": {"method": "sam", "initial_policy": "direct"},
+    }
+    args = Namespace(
+        interceptor_speed=0.03,
+        intruder_speed=0.016,
+        collision_radius=0.08,
+        timesteps=1500000,
+        response_direct_timesteps=3000000,
+        response_detour_timesteps=None,
+        response_attack_timesteps=3000000,
+        baseline_timesteps=1500000,
+        seed=43,
+        episodes=800,
+        artifact_dir=None,
+    )
+
+    _apply_overrides(config, args, "continuous_response_focus_da3000000_s43")
+
+    assert config["ppo"]["total_timesteps"] == 1500000
+    assert config["ppo"]["response_timesteps_by_policy"] == {
+        "direct": 3000000,
+        "attack": 3000000,
+    }
+    assert config["ppo"]["baseline_total_timesteps"] == 1500000
+    assert "detour" not in config["ppo"]["response_timesteps_by_policy"]
