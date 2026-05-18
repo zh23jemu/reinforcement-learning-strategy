@@ -1,0 +1,4 @@
+episode,global_step,from_policy,to_policy,true_policy,normalized_error,running_error,best_candidate,best_candidate_error,current_candidate_error,switch_margin
+9,422,direct,detour,attack,0.6852688789367676,0.0,detour,0.15936842560768127,0.7782503366470337,0.6188819110393524
+20,948,detour,attack,attack,0.7324856519699097,0.0,attack,0.12150958925485611,0.7354403734207153,0.6139307841658592
+30,1185,attack,detour,detour,0.8309080004692078,0.0,detour,0.20674854516983032,0.8078789114952087,0.6011303663253784

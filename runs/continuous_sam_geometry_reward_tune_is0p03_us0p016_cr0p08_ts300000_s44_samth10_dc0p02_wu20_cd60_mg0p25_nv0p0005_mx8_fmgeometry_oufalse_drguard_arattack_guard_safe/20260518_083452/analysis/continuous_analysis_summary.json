@@ -1,0 +1,68 @@
+{
+  "output_dir": "runs/continuous_sam_geometry_reward_tune_is0p03_us0p016_cr0p08_ts300000_s44_samth10_dc0p02_wu20_cd60_mg0p25_nv0p0005_mx8_fmgeometry_oufalse_drguard_arattack_guard_safe/20260518_083452/analysis",
+  "episodes": 300,
+  "total_steps": 12743,
+  "baseline_total_steps": 17310,
+  "mean_episode_length": 42.47666666666667,
+  "baseline_mean_episode_length": 57.7,
+  "mean_episode_reward": -118.30781932503363,
+  "baseline_mean_episode_reward": -130.30123891045102,
+  "reward_improvement": 11.993419585417385,
+  "interceptor_win_rate": 0.06666666666666667,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.06666666666666667,
+  "response_policy_accuracy": 0.6107666954406341,
+  "switch_count": 82,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.56875,
+    "detour": 0.6587711069418386,
+    "direct": 0.6038434822875666
+  },
+  "intruder_policy_step_counts": {
+    "attack": 4160,
+    "detour": 4264,
+    "direct": 4319
+  },
+  "ops_winner_counts": {
+    "interceptor": 20,
+    "intruder": 280
+  },
+  "baseline_winner_counts": {
+    "intruder": 300
+  },
+  "ops_reason_counts": {
+    "active_collision": 26,
+    "entered_big_circle": 243,
+    "entered_small_circle": 11,
+    "intercepted_before_small_circle": 20
+  },
+  "baseline_reason_counts": {
+    "active_collision": 3,
+    "entered_big_circle": 297
+  },
+  "episode_reward_quantiles": {
+    "min": -273.30339090287686,
+    "q25": -124.51440911367536,
+    "median": -122.50675496309995,
+    "q75": -121.1069741499424,
+    "max": 98.08191121786832,
+    "std": 64.3915239004206
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -281.4364957857132,
+    "q25": -125.21396184623242,
+    "median": -123.03345019102096,
+    "q75": -121.53207714676856,
+    "max": -120.31317663609981,
+    "std": 22.37199083634192
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "runs/continuous_sam_geometry_reward_tune_is0p03_us0p016_cr0p08_ts300000_s44_samth10_dc0p02_wu20_cd60_mg0p25_nv0p0005_mx8_fmgeometry_oufalse_drguard_arattack_guard_safe/20260518_083452/analysis/sam_uncertainty_analysis.png"
+  ]
+}

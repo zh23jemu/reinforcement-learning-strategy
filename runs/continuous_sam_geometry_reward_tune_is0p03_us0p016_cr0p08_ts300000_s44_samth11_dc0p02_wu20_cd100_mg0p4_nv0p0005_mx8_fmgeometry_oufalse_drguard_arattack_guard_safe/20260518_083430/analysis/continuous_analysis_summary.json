@@ -1,0 +1,69 @@
+{
+  "output_dir": "runs/continuous_sam_geometry_reward_tune_is0p03_us0p016_cr0p08_ts300000_s44_samth11_dc0p02_wu20_cd100_mg0p4_nv0p0005_mx8_fmgeometry_oufalse_drguard_arattack_guard_safe/20260518_083430/analysis",
+  "episodes": 300,
+  "total_steps": 12142,
+  "baseline_total_steps": 17310,
+  "mean_episode_length": 40.473333333333336,
+  "baseline_mean_episode_length": 57.7,
+  "mean_episode_reward": -129.4273833396527,
+  "baseline_mean_episode_reward": -130.30123891045102,
+  "reward_improvement": 0.8738555707983267,
+  "interceptor_win_rate": 0.023333333333333334,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.023333333333333334,
+  "response_policy_accuracy": 0.28545544391368805,
+  "switch_count": 46,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.328,
+    "detour": 0.248,
+    "direct": 0.28054080154514727
+  },
+  "intruder_policy_step_counts": {
+    "attack": 4000,
+    "detour": 4000,
+    "direct": 4142
+  },
+  "ops_winner_counts": {
+    "interceptor": 7,
+    "intruder": 293
+  },
+  "baseline_winner_counts": {
+    "intruder": 300
+  },
+  "ops_reason_counts": {
+    "active_collision": 31,
+    "entered_big_circle": 251,
+    "entered_small_circle": 11,
+    "intercepted_before_small_circle": 6,
+    "intercepted_in_big_circle": 1
+  },
+  "baseline_reason_counts": {
+    "active_collision": 3,
+    "entered_big_circle": 297
+  },
+  "episode_reward_quantiles": {
+    "min": -278.29290904238815,
+    "q25": -124.42281023338437,
+    "median": -122.64538677960634,
+    "q75": -121.39185604050755,
+    "max": 97.16179221987724,
+    "std": 49.0343687823964
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -281.4364957857132,
+    "q25": -125.21396184623242,
+    "median": -123.03345019102096,
+    "q75": -121.53207714676856,
+    "max": -120.31317663609981,
+    "std": 22.37199083634192
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": false,
+    "paper_like_pass": false,
+    "judgement": "仅达到流程过关：链路已跑通，但相对 baseline 的收益仍不足。"
+  },
+  "figures": [
+    "runs/continuous_sam_geometry_reward_tune_is0p03_us0p016_cr0p08_ts300000_s44_samth11_dc0p02_wu20_cd100_mg0p4_nv0p0005_mx8_fmgeometry_oufalse_drguard_arattack_guard_safe/20260518_083430/analysis/sam_uncertainty_analysis.png"
+  ]
+}
