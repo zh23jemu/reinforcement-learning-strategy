@@ -1,0 +1,5 @@
+outcome_pair,episodes,mean_reward_gap,median_reward_gap,mean_ops_reward,mean_baseline_reward,mean_ops_len,mean_baseline_len
+baseline_only_win,3,-233.483308,-231.014554,-140.374654,93.108654,23.333333,357.333333
+both_lose,532,1.356454,0.367817,-144.542491,-145.898945,41.276316,51.663534
+both_win,2,4.095644,4.095644,98.203464,94.10782,31.5,353.0
+ops_only_win,263,245.733687,238.301181,97.20237,-148.531317,38.61597,62.410646

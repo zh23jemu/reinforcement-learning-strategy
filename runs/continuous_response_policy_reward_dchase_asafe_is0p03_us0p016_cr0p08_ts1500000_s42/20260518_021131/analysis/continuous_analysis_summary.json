@@ -1,0 +1,67 @@
+{
+  "output_dir": "runs/continuous_response_policy_reward_dchase_asafe_is0p03_us0p016_cr0p08_ts1500000_s42/20260518_021131/analysis",
+  "episodes": 800,
+  "total_steps": 31709,
+  "baseline_total_steps": 38983,
+  "mean_episode_length": 39.63625,
+  "baseline_mean_episode_length": 48.72875,
+  "mean_episode_reward": -56.47602486395459,
+  "baseline_mean_episode_reward": -133.6418777716659,
+  "reward_improvement": 77.1658529077113,
+  "interceptor_win_rate": 0.33,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.33,
+  "response_policy_accuracy": 0.9937557160427639,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.9937671168193408
+  },
+  "intruder_policy_step_counts": {
+    "attack": 10560,
+    "detour": 10560,
+    "direct": 10589
+  },
+  "ops_winner_counts": {
+    "interceptor": 264,
+    "intruder": 536
+  },
+  "baseline_winner_counts": {
+    "intruder": 800
+  },
+  "ops_reason_counts": {
+    "active_collision": 26,
+    "entered_big_circle": 502,
+    "entered_small_circle": 8,
+    "intercepted_before_small_circle": 262,
+    "intercepted_in_big_circle": 2
+  },
+  "baseline_reason_counts": {
+    "entered_big_circle": 781,
+    "entered_small_circle": 19
+  },
+  "episode_reward_quantiles": {
+    "min": -226.08553068369628,
+    "q25": -126.85832152143121,
+    "median": -123.32661094367505,
+    "q75": 95.65485832951963,
+    "max": 116.36977789148688,
+    "std": 108.74796644032415
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -215.64222375094892,
+    "q25": -131.12907494038342,
+    "median": -126.59132449269295,
+    "q75": -123.50504287034273,
+    "max": -117.98698735654354,
+    "std": 21.25808481793409
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}

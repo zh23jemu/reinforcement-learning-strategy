@@ -1,0 +1,59 @@
+{
+  "output_dir": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_response_policy_reward_dstrong_astrong_is0p03_us0p016_cr0p08_ts1500000_s43/20260518_021000/analysis",
+  "episodes": 800,
+  "ops_win_count": 242,
+  "baseline_win_count": 1,
+  "baseline_only_win_count": 1,
+  "ops_only_win_count": 242,
+  "both_win_count": 0,
+  "both_lose_count": 557,
+  "mean_reward_gap": 76.0755972219061,
+  "median_reward_gap": 0.5384323596954346,
+  "baseline_only_mean_reward_gap": -229.35406374573708,
+  "ops_only_mean_reward_gap": 246.62631450071038,
+  "policy_with_worst_mean_gap": {
+    "ops_final_intruder_policy": "attack",
+    "episodes": 32,
+    "ops_win_rate": 0.0,
+    "baseline_win_rate": 0.0,
+    "mean_reward_gap": -125.526459,
+    "baseline_only_wins": 0,
+    "ops_only_wins": 0
+  },
+  "largest_baseline_advantage_episode": {
+    "episode": 258,
+    "reward_gap": -229.35406374573708,
+    "ops_episode_reward": -141.29240590810775,
+    "baseline_episode_reward": 88.06165783762933,
+    "ops_interceptor_win": false,
+    "baseline_interceptor_win": true,
+    "ops_reason": "entered_big_circle",
+    "baseline_reason": "intercepted_before_small_circle",
+    "ops_final_intruder_policy": "direct",
+    "outcome_pair": "baseline_only_win"
+  },
+  "largest_ops_advantage_episode": {
+    "episode": 542,
+    "reward_gap": 447.77289814397693,
+    "ops_episode_reward": 96.83132326304911,
+    "baseline_episode_reward": -350.9415748809278,
+    "ops_interceptor_win": true,
+    "baseline_interceptor_win": false,
+    "ops_reason": "intercepted_before_small_circle",
+    "baseline_reason": "active_collision",
+    "ops_final_intruder_policy": "detour",
+    "outcome_pair": "ops_only_win"
+  },
+  "switch_summary": {
+    "switch_count": 0,
+    "switch_to_true_policy_rate": null,
+    "switches_by_target": {},
+    "switches_by_true_policy": {}
+  },
+  "outputs": {
+    "episode_outcome_breakdown": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_response_policy_reward_dstrong_astrong_is0p03_us0p016_cr0p08_ts1500000_s43/20260518_021000/analysis/episode_outcome_breakdown.csv",
+    "policy_outcome_breakdown": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_response_policy_reward_dstrong_astrong_is0p03_us0p016_cr0p08_ts1500000_s43/20260518_021000/analysis/policy_outcome_breakdown.csv",
+    "reason_delta": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_response_policy_reward_dstrong_astrong_is0p03_us0p016_cr0p08_ts1500000_s43/20260518_021000/analysis/reason_delta.csv",
+    "largest_reward_gaps": "/mnt/users/xj62kv/reinforcement-learning-strategy/runs/continuous_response_policy_reward_dstrong_astrong_is0p03_us0p016_cr0p08_ts1500000_s43/20260518_021000/analysis/largest_reward_gaps.csv"
+  }
+}

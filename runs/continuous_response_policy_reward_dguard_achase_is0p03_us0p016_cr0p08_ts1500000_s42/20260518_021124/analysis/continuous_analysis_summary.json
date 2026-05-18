@@ -1,0 +1,71 @@
+{
+  "output_dir": "runs/continuous_response_policy_reward_dguard_achase_is0p03_us0p016_cr0p08_ts1500000_s42/20260518_021124/analysis",
+  "episodes": 800,
+  "total_steps": 27148,
+  "baseline_total_steps": 45242,
+  "mean_episode_length": 33.935,
+  "baseline_mean_episode_length": 56.5525,
+  "mean_episode_reward": -59.03443715733953,
+  "baseline_mean_episode_reward": -106.3698405151112,
+  "reward_improvement": 47.335403357771675,
+  "interceptor_win_rate": 0.29375,
+  "baseline_interceptor_win_rate": 0.095,
+  "win_rate_improvement": 0.19875,
+  "response_policy_accuracy": 0.9937748637100339,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.9937148527952365,
+    "direct": 0.9938589757648865
+  },
+  "intruder_policy_step_counts": {
+    "attack": 8960,
+    "detour": 9069,
+    "direct": 9119
+  },
+  "ops_winner_counts": {
+    "interceptor": 235,
+    "intruder": 565
+  },
+  "baseline_winner_counts": {
+    "interceptor": 76,
+    "intruder": 724
+  },
+  "ops_reason_counts": {
+    "active_collision": 17,
+    "entered_big_circle": 545,
+    "entered_small_circle": 3,
+    "intercepted_before_small_circle": 232,
+    "intercepted_in_big_circle": 2,
+    "passive_intercept": 1
+  },
+  "baseline_reason_counts": {
+    "active_collision": 9,
+    "entered_big_circle": 708,
+    "entered_small_circle": 7,
+    "intercepted_before_small_circle": 76
+  },
+  "episode_reward_quantiles": {
+    "min": -154.78976690977814,
+    "q25": -122.73084893234073,
+    "median": -121.31583055377007,
+    "q75": 96.02053103275597,
+    "max": 119.62205621674656,
+    "std": 100.89907485398815
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -191.12122521281242,
+    "q25": -124.67583132892847,
+    "median": -122.1352129086852,
+    "q75": -120.95718264095485,
+    "max": 98.83498459368944,
+    "std": 67.19428068708349
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}

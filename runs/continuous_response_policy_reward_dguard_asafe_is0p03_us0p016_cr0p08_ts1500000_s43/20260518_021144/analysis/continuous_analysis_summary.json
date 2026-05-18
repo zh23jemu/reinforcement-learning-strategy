@@ -1,0 +1,70 @@
+{
+  "output_dir": "runs/continuous_response_policy_reward_dguard_asafe_is0p03_us0p016_cr0p08_ts1500000_s43/20260518_021144/analysis",
+  "episodes": 800,
+  "total_steps": 29074,
+  "baseline_total_steps": 41424,
+  "mean_episode_length": 36.3425,
+  "baseline_mean_episode_length": 51.78,
+  "mean_episode_reward": -55.85618975983741,
+  "baseline_mean_episode_reward": -129.94132772552538,
+  "reward_improvement": 74.08513796568798,
+  "interceptor_win_rate": 0.31625,
+  "baseline_interceptor_win_rate": 0.00875,
+  "win_rate_improvement": 0.3075,
+  "response_policy_accuracy": 0.9937745064318635,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.9937210499227997,
+    "direct": 0.9938518290808485
+  },
+  "intruder_policy_step_counts": {
+    "attack": 9600,
+    "detour": 9715,
+    "direct": 9759
+  },
+  "ops_winner_counts": {
+    "interceptor": 253,
+    "intruder": 547
+  },
+  "baseline_winner_counts": {
+    "interceptor": 7,
+    "intruder": 793
+  },
+  "ops_reason_counts": {
+    "active_collision": 9,
+    "entered_big_circle": 532,
+    "entered_small_circle": 6,
+    "intercepted_before_small_circle": 251,
+    "intercepted_in_big_circle": 2
+  },
+  "baseline_reason_counts": {
+    "active_collision": 43,
+    "entered_big_circle": 749,
+    "entered_small_circle": 1,
+    "intercepted_before_small_circle": 7
+  },
+  "episode_reward_quantiles": {
+    "min": -223.9757043996453,
+    "q25": -122.08264785647393,
+    "median": -121.12197455435992,
+    "q75": 96.33209395825864,
+    "max": 119.12146662035956,
+    "std": 104.98064287023227
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -280.2041882739961,
+    "q25": -124.3940371464193,
+    "median": -122.56038045331834,
+    "q75": -121.34235463008285,
+    "max": 98.61240667283535,
+    "std": 37.79563004306046
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}

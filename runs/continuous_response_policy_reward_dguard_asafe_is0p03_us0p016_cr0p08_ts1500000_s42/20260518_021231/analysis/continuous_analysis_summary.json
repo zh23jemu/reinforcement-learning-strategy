@@ -1,0 +1,70 @@
+{
+  "output_dir": "runs/continuous_response_policy_reward_dguard_asafe_is0p03_us0p016_cr0p08_ts1500000_s42/20260518_021231/analysis",
+  "episodes": 800,
+  "total_steps": 31351,
+  "baseline_total_steps": 49979,
+  "mean_episode_length": 39.18875,
+  "baseline_mean_episode_length": 62.47375,
+  "mean_episode_reward": -53.73959868870088,
+  "baseline_mean_episode_reward": -129.18982453125327,
+  "reward_improvement": 75.45022584255238,
+  "interceptor_win_rate": 0.32875,
+  "baseline_interceptor_win_rate": 0.00125,
+  "win_rate_improvement": 0.3275,
+  "response_policy_accuracy": 0.9937801027080476,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.9938394464979623
+  },
+  "intruder_policy_step_counts": {
+    "attack": 10400,
+    "detour": 10400,
+    "direct": 10551
+  },
+  "ops_winner_counts": {
+    "interceptor": 263,
+    "intruder": 537
+  },
+  "baseline_winner_counts": {
+    "interceptor": 1,
+    "intruder": 799
+  },
+  "ops_reason_counts": {
+    "active_collision": 19,
+    "entered_big_circle": 508,
+    "entered_small_circle": 10,
+    "intercepted_before_small_circle": 260,
+    "intercepted_in_big_circle": 3
+  },
+  "baseline_reason_counts": {
+    "active_collision": 21,
+    "entered_big_circle": 768,
+    "entered_small_circle": 10,
+    "intercepted_before_small_circle": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -225.88787389457227,
+    "q25": -122.72990318238736,
+    "median": -121.17728225052358,
+    "q75": 96.27932193033396,
+    "max": 119.62205621674656,
+    "std": 106.79183192542762
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -283.27527044355867,
+    "q25": -124.7480206412077,
+    "median": -122.46286443911492,
+    "q75": -121.28909589529037,
+    "max": 99.04460067689419,
+    "std": 25.498543853232064
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}
