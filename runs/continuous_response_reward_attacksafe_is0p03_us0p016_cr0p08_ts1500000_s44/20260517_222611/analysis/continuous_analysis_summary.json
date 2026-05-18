@@ -1,0 +1,71 @@
+{
+  "output_dir": "runs/continuous_response_reward_attacksafe_is0p03_us0p016_cr0p08_ts1500000_s44/20260517_222611/analysis",
+  "episodes": 800,
+  "total_steps": 32342,
+  "baseline_total_steps": 29523,
+  "mean_episode_length": 40.4275,
+  "baseline_mean_episode_length": 36.90375,
+  "mean_episode_reward": -60.6215421838446,
+  "baseline_mean_episode_reward": -96.3485576817421,
+  "reward_improvement": 35.72701549789749,
+  "interceptor_win_rate": 0.35375,
+  "baseline_interceptor_win_rate": 0.22,
+  "win_rate_improvement": 0.13375,
+  "response_policy_accuracy": 0.993754251437759,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.9936702969375407,
+    "direct": 0.9938413457119221
+  },
+  "intruder_policy_step_counts": {
+    "attack": 10720,
+    "detour": 10743,
+    "direct": 10879
+  },
+  "ops_winner_counts": {
+    "interceptor": 283,
+    "intruder": 517
+  },
+  "baseline_winner_counts": {
+    "interceptor": 176,
+    "intruder": 624
+  },
+  "ops_reason_counts": {
+    "active_collision": 10,
+    "entered_big_circle": 498,
+    "entered_small_circle": 9,
+    "intercepted_before_small_circle": 277,
+    "intercepted_in_big_circle": 4,
+    "passive_intercept": 2
+  },
+  "baseline_reason_counts": {
+    "active_collision": 25,
+    "entered_big_circle": 599,
+    "intercepted_before_small_circle": 175,
+    "passive_intercept": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -247.8448531916737,
+    "q25": -154.63866861954332,
+    "median": -152.12695916354656,
+    "q75": 115.13866824056954,
+    "max": 118.49671083070338,
+    "std": 130.73013000015473
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -226.02263363841922,
+    "q25": -154.42422364026308,
+    "median": -152.8455100911856,
+    "q75": -150.85232203185558,
+    "max": 119.01643066000193,
+    "std": 113.58213016877694
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}

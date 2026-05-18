@@ -1,0 +1,70 @@
+{
+  "output_dir": "runs/continuous_response_reward_guard_is0p03_us0p016_cr0p08_ts1500000_s42/20260517_222621/analysis",
+  "episodes": 800,
+  "total_steps": 35636,
+  "baseline_total_steps": 37032,
+  "mean_episode_length": 44.545,
+  "baseline_mean_episode_length": 46.29,
+  "mean_episode_reward": -65.9497487596539,
+  "baseline_mean_episode_reward": -129.8501344000593,
+  "reward_improvement": 63.90038564040539,
+  "interceptor_win_rate": 0.2375,
+  "baseline_interceptor_win_rate": 0.00125,
+  "win_rate_improvement": 0.23625,
+  "response_policy_accuracy": 0.993770344595353,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.9938106390097022
+  },
+  "intruder_policy_step_counts": {
+    "attack": 11840,
+    "detour": 11840,
+    "direct": 11956
+  },
+  "ops_winner_counts": {
+    "interceptor": 190,
+    "intruder": 610
+  },
+  "baseline_winner_counts": {
+    "interceptor": 1,
+    "intruder": 799
+  },
+  "ops_reason_counts": {
+    "active_collision": 29,
+    "entered_big_circle": 575,
+    "entered_small_circle": 6,
+    "intercepted_before_small_circle": 187,
+    "intercepted_in_big_circle": 3
+  },
+  "baseline_reason_counts": {
+    "active_collision": 68,
+    "entered_big_circle": 728,
+    "entered_small_circle": 3,
+    "intercepted_before_small_circle": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -173.19847101211548,
+    "q25": -122.62349864706397,
+    "median": -121.24466484904289,
+    "q75": -112.60808094859124,
+    "max": 125.50841265339405,
+    "std": 103.11502871136247
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -218.94722995400429,
+    "q25": -126.42227358639241,
+    "median": -123.33257251679896,
+    "q75": -121.6684768113494,
+    "max": 119.22991015031934,
+    "std": 22.051927729584275
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}

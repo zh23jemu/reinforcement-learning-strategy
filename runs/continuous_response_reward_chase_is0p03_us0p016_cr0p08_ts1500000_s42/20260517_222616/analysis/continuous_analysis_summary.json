@@ -1,0 +1,71 @@
+{
+  "output_dir": "runs/continuous_response_reward_chase_is0p03_us0p016_cr0p08_ts1500000_s42/20260517_222616/analysis",
+  "episodes": 800,
+  "total_steps": 27366,
+  "baseline_total_steps": 29907,
+  "mean_episode_length": 34.2075,
+  "baseline_mean_episode_length": 37.38375,
+  "mean_episode_reward": -58.67537385051713,
+  "baseline_mean_episode_reward": -80.43824291390912,
+  "reward_improvement": 21.76286906339199,
+  "interceptor_win_rate": 0.28375,
+  "baseline_interceptor_win_rate": 0.19125,
+  "win_rate_improvement": 0.0925,
+  "response_policy_accuracy": 0.9937513703135278,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.99375,
+    "direct": 0.9937541091387245
+  },
+  "intruder_policy_step_counts": {
+    "attack": 9120,
+    "detour": 9120,
+    "direct": 9126
+  },
+  "ops_winner_counts": {
+    "interceptor": 227,
+    "intruder": 573
+  },
+  "baseline_winner_counts": {
+    "interceptor": 153,
+    "intruder": 647
+  },
+  "ops_reason_counts": {
+    "active_collision": 23,
+    "entered_big_circle": 550,
+    "intercepted_before_small_circle": 223,
+    "intercepted_in_big_circle": 3,
+    "passive_intercept": 1
+  },
+  "baseline_reason_counts": {
+    "active_collision": 38,
+    "entered_big_circle": 604,
+    "entered_small_circle": 5,
+    "intercepted_before_small_circle": 151,
+    "passive_intercept": 2
+  },
+  "episode_reward_quantiles": {
+    "min": -165.84866439402094,
+    "q25": -126.6324430333078,
+    "median": -123.4452823342383,
+    "q75": 110.92834449195301,
+    "max": 117.45316197432578,
+    "std": 108.29383626317026
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -147.13200207442046,
+    "q25": -127.69384927257896,
+    "median": -124.34464403510094,
+    "q75": -121.46146887019276,
+    "max": 117.26457023084164,
+    "std": 93.99778559083853
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}

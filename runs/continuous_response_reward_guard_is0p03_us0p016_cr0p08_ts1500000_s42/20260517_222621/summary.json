@@ -1,0 +1,12 @@
+{
+  "episodes": 800,
+  "mean_episode_reward": -65.9497487596539,
+  "std_episode_reward": 103.11502871136247,
+  "interceptor_win_rate": 0.2375,
+  "response_policy_accuracy": 0.993770344595353,
+  "detector_method": "oracle",
+  "switch_count": 0,
+  "baseline_mean_episode_reward": -129.8501344000593,
+  "baseline_std_episode_reward": 22.051927729584275,
+  "baseline_interceptor_win_rate": 0.00125
+}
