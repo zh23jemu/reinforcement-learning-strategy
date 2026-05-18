@@ -1,0 +1,70 @@
+{
+  "output_dir": "runs/continuous_response_focus_da5000000_is0p03_us0p016_cr0p08_ts1500000_s44/20260517_081116/analysis",
+  "episodes": 800,
+  "total_steps": 31421,
+  "baseline_total_steps": 49476,
+  "mean_episode_length": 39.27625,
+  "baseline_mean_episode_length": 61.845,
+  "mean_episode_reward": -39.007106103485384,
+  "baseline_mean_episode_reward": -109.12202236779572,
+  "reward_improvement": 70.11491626431034,
+  "interceptor_win_rate": 0.32625,
+  "baseline_interceptor_win_rate": 0.005,
+  "win_rate_improvement": 0.32125,
+  "response_policy_accuracy": 0.9937621336049139,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.9936914547887593,
+    "direct": 0.9938441140259494
+  },
+  "intruder_policy_step_counts": {
+    "attack": 10400,
+    "detour": 10462,
+    "direct": 10559
+  },
+  "ops_winner_counts": {
+    "interceptor": 261,
+    "intruder": 539
+  },
+  "baseline_winner_counts": {
+    "interceptor": 4,
+    "intruder": 796
+  },
+  "ops_reason_counts": {
+    "active_collision": 14,
+    "entered_big_circle": 518,
+    "entered_small_circle": 7,
+    "intercepted_before_small_circle": 261
+  },
+  "baseline_reason_counts": {
+    "active_collision": 1,
+    "entered_big_circle": 768,
+    "entered_small_circle": 27,
+    "intercepted_before_small_circle": 2,
+    "intercepted_in_big_circle": 2
+  },
+  "episode_reward_quantiles": {
+    "min": -143.6866110128164,
+    "q25": -103.22902521580457,
+    "median": -101.68737795352936,
+    "q75": 96.29902990542352,
+    "max": 98.70304472088812,
+    "std": 94.74189506210084
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -192.62812611579895,
+    "q25": -105.14571768343448,
+    "median": -102.90562783181667,
+    "q75": -101.56117028534412,
+    "max": 97.5587364307046,
+    "std": 24.104218696186418
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}

@@ -1,0 +1,4 @@
+ops_final_intruder_policy,episodes,ops_win_rate,baseline_win_rate,mean_reward_gap,baseline_only_wins,ops_only_wins
+attack,13,0.0,0.307692,-65.645607,4,0
+direct,537,0.005587,0.182495,-37.494489,98,3
+detour,250,1.0,0.344,130.897026,0,164
