@@ -57,7 +57,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--attack-reward-profile",
-        choices=("none", "chase", "attacksafe", "attacksafe_strong"),
+        choices=(
+            "none",
+            "chase",
+            "attacksafe",
+            "attacksafe_strong",
+            "attack_chase_light",
+            "attack_guard",
+            "attack_guard_safe",
+            "attack_balanced",
+        ),
         default="none",
         help="只覆盖 attack 入侵策略下的奖励塑形 profile",
     )
@@ -262,6 +271,38 @@ def _build_policy_reward_overrides(args: argparse.Namespace) -> dict[str, dict[s
             "agent_distance_weight": -0.25,
             "intruder_distance_weight": 0.12,
             "active_collision_loss_reward": -300.0,
+        }
+    elif attack_profile == "attack_chase_light":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.28,
+            "intruder_distance_weight": 0.04,
+            "active_collision_loss_reward": -140.0,
+        }
+    elif attack_profile == "attack_guard":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.20,
+            "intruder_distance_weight": 0.14,
+            "active_collision_loss_reward": -160.0,
+        }
+    elif attack_profile == "attack_guard_safe":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -140.0,
+            "agent_distance_weight": -0.22,
+            "intruder_distance_weight": 0.12,
+            "active_collision_loss_reward": -220.0,
+        }
+    elif attack_profile == "attack_balanced":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -130.0,
+            "agent_distance_weight": -0.26,
+            "intruder_distance_weight": 0.08,
+            "active_collision_loss_reward": -180.0,
         }
     return profiles
 

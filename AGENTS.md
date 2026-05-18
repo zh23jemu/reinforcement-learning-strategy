@@ -46,11 +46,13 @@
 - 已给连续环境增加可配置奖励权重，并新增 `slurm/response_reward_sweep_continuous_plcyf.sbatch`，用于扫描 `base/chase/guard/attacksafe` 四组奖励塑形。
 - `continuous_response_reward_*` 已完成：`guard` 全局奖励塑形三 seed 平均最好，seed 43 也明显改善，但 `direct/attack` 分策略仍未反超 baseline。
 - 已新增按入侵策略覆盖奖励的入口和 `slurm/response_policy_reward_continuous_plcyf.sbatch`，用于只给 `direct/attack` 使用定向 profile，`detour` 保持原始奖励。
+- `continuous_response_policy_reward_*` 已完成：按策略奖励 profile 明显优于全局塑形，`direct` 基本已从负 gap 修复为正 gap；残留短板集中在 `attack`。
+- 已新增 `slurm/response_attack_reward_continuous_plcyf.sbatch` 和 `continuous_response_attack_reward` 聚合前缀，用于固定 `direct=guard` 后只细扫 attack profile。
 
 ## TODO
 
 - 优先诊断并补强连续 response policy 的 `direct` 和 `attack` 控制质量。
-- 下一轮优先运行 `response_policy_reward_continuous_plcyf.sbatch`，验证按策略奖励 profile 是否能进一步缩小 seed 43 的 `direct/attack` 分策略 gap。
+- 下一轮优先运行 `response_attack_reward_continuous_plcyf.sbatch`，验证更窄的 attack profile 是否能修复 seed 44/attack 的残留负 gap。
 - 若 `direct/attack` 响应策略补强后不再系统性弱于 baseline，再继续做 SAM 参数微调或更大规模 confirm。
 - 后续结果继续写入 `docs/continuous_confirm_results.md`、`docs/continuous_acceptance_checklist.md` 和 `.recallloom/`。
 
@@ -62,7 +64,7 @@
 
 ## Current Status
 
-- 本地最新进展已包含 response reward 全局塑形结果：`guard` 整体最好并改善 seed 43，但 `direct/attack` 分策略仍未反超 baseline，下一步转向按策略奖励 profile 扫描。
+- 本地最新进展已包含 response policy reward 按策略塑形结果：`direct` 已基本修复，`attack` 仍是残留短板，下一步转向 attack-only profile 扫描。
 
 ## Recent Changes
 
@@ -75,15 +77,17 @@
 - 新增连续奖励权重配置入口、oracle runner 奖励覆盖参数、`continuous_response_reward` 聚合前缀和 reward sweep Slurm 脚本。
 - pull 回并分析 `continuous_response_reward_*`，确认 `guard` 全局塑形最佳但仍未根治 `direct/attack`。
 - 新增 `reward_overrides_by_policy`、`--direct-reward-profile` / `--attack-reward-profile` 和 `continuous_response_policy_reward` Slurm/聚合入口。
+- pull 回并分析 `continuous_response_policy_reward_*`，确认 `dstrong_asafe` 平均回报最高、`dguard_asafe` 胜率稳定、`dguard_achase` 的 attack gap 最接近修复。
+- 新增 attack-only profile：`attack_chase_light`、`attack_guard`、`attack_guard_safe`、`attack_balanced`，并新增 attack reward 窄范围 Slurm 脚本。
 
 ## Next TODO
 
-- 在服务器 `defq` 分区运行 `sbatch --partition=defq --array=0-17 --export=ALL,TIMESTEPS=1500000,EPISODES=800 slurm/response_policy_reward_continuous_plcyf.sbatch`，完成后聚合并分析 `continuous_response_policy_reward_*`。
+- 在服务器 `defq` 分区运行 `sbatch --partition=defq --array=0-11 --export=ALL,TIMESTEPS=1500000,EPISODES=800 slurm/response_attack_reward_continuous_plcyf.sbatch`，完成后聚合并分析 `continuous_response_attack_reward_*`。
 - 长训继续沿用现有 Slurm 风格并提交到 `defq` 分区。
 
 ## Open Issues
 
-- seed 43 的 `direct/attack` response policy 在 oracle 条件下仍弱于 baseline；更长训练步数不是充分解，根因更可能涉及奖励形状、策略入口选择或环境随机性。
+- `direct` response policy 的 reward gap 已明显改善；`attack` 仍未稳定修复，尤其 seed 44 在较优组合下仍有负 gap。
 - 当前验收阈值仍混用了 oracle 策略识别口径和 SAM 检测口径，最终报告需要明确解释。
 
 ## Architecture Decisions

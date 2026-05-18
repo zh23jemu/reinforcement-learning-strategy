@@ -227,3 +227,42 @@ def test_oracle_compare_can_override_policy_reward_profiles():
     assert overrides["direct"]["intruder_distance_weight"] == 0.12
     assert overrides["attack"]["active_collision_loss_reward"] == -220.0
     assert "detour" not in overrides
+
+
+def test_oracle_compare_supports_attack_reward_narrow_profiles():
+    """attack-only 窄范围扫描需要能写入新的 attack profile。"""
+
+    config = {
+        "experiment": {"name": "base", "seed": 1, "artifact_dir": "artifacts/continuous"},
+        "environment": {
+            "interceptor_max_speed": 0.022,
+            "intruder_max_speed": 0.018,
+            "collision_radius": 0.08,
+        },
+        "ppo": {"total_timesteps": 1500000},
+        "evaluation": {"episodes": 10},
+        "detector": {"method": "sam", "initial_policy": "direct"},
+    }
+    args = Namespace(
+        interceptor_speed=0.03,
+        intruder_speed=0.016,
+        collision_radius=0.08,
+        direct_reward_profile="guard",
+        attack_reward_profile="attack_balanced",
+        timesteps=1500000,
+        response_direct_timesteps=None,
+        response_detour_timesteps=None,
+        response_attack_timesteps=None,
+        baseline_timesteps=1500000,
+        seed=44,
+        episodes=800,
+        artifact_dir=None,
+    )
+
+    _apply_overrides(config, args, "continuous_response_attack_reward_dguard_abalanced_s44")
+
+    overrides = config["environment"]["reward_overrides_by_policy"]
+    assert overrides["direct"]["intruder_distance_weight"] == 0.12
+    assert overrides["attack"]["agent_distance_weight"] == -0.26
+    assert overrides["attack"]["intruder_distance_weight"] == 0.08
+    assert overrides["attack"]["active_collision_loss_reward"] == -180.0

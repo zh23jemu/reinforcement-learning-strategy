@@ -234,6 +234,15 @@ sbatch --partition=defq --export=ALL slurm/aggregate_continuous_plcyf.sbatch
 
 `response_policy_reward_continuous_plcyf.sbatch` 默认覆盖 6 组 direct/attack profile 组合，每组 seeds `42/43/44`，输出前缀为 `continuous_response_policy_reward_*`。
 
+按策略 reward profile 扫描已完成：`dstrong_asafe` 平均回报提升最高，`dguard_asafe` 胜率最稳；seed 43 的 `direct` 分策略已经从负 gap 修复为正 gap。剩余短板主要是 `attack`：`dguard_achase` 是唯一让 seed 42/43 attack gap 略正的组合，但 seed 44 attack 仍为负。下一轮固定 `direct=guard`，只细扫 attack profile：
+
+```bash
+sbatch --partition=defq --array=0-11 --export=ALL,TIMESTEPS=1500000,EPISODES=800 slurm/response_attack_reward_continuous_plcyf.sbatch
+sbatch --partition=defq --export=ALL slurm/aggregate_continuous_plcyf.sbatch
+```
+
+`response_attack_reward_continuous_plcyf.sbatch` 默认覆盖 4 组 attack profile × seeds `42/43/44`，输出前缀为 `continuous_response_attack_reward_*`。
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`

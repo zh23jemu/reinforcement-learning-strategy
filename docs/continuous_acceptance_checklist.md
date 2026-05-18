@@ -80,4 +80,5 @@ SAM 原文检测版本结论是：
 - 已新增 `slurm/response_focus_continuous_plcyf.sbatch`，用于只加训 `direct/attack` response policy 并继续用 oracle 对照评估；默认比较 `3M` 与 `5M` 两档 direct/attack 训练步数，`detour` 和 baseline 保持基础步数。
 - `continuous_response_focus_*` 已完成：`3M` 与 `5M` 两档整体仍全部通过，但 seed 43 的 `direct/attack` 分策略仍弱于 baseline，说明单纯增加训练步数不足以修复短板。下一步使用 `slurm/response_reward_sweep_continuous_plcyf.sbatch` 扫描 `base/chase/guard/attacksafe` 四组奖励塑形。
 - `continuous_response_reward_*` 已完成：`guard` 全局奖励塑形整体最佳，seed 43 明显改善，但 `direct/attack` 分策略仍未反超 baseline。下一步使用 `slurm/response_policy_reward_continuous_plcyf.sbatch` 只给 `direct/attack` 使用定向奖励 profile，`detour` 保持原始奖励。
+- `continuous_response_policy_reward_*` 已完成：按策略奖励 profile 明显优于全局塑形，`direct` 分策略基本修复为正 gap；残留短板集中在 `attack`。下一步运行 `slurm/response_attack_reward_continuous_plcyf.sbatch`，固定 `direct=guard` 并只细扫 attack profile。
 - 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py`、`scripts/diagnose_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。

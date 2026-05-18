@@ -287,3 +287,29 @@ seed 43 分策略仍未完全修复：
 | `attacksafe` | `direct` | 534 | 0.00% | 17.42% | -47.09 | 仍弱 |
 
 下一步应避免继续用同一套全局奖励同时影响 `direct/detour/attack`。已新增按入侵策略覆盖奖励的入口和 `slurm/response_policy_reward_continuous_plcyf.sbatch`，下一轮只给 `direct` 和 `attack` 使用不同 profile，`detour` 保持原始奖励，以验证定向塑形是否能进一步缩小 seed 43 的分策略 gap。
+
+## response policy 按策略奖励扫描结果
+
+2026-05-18 已 pull 回 `continuous_response_policy_reward_*` 结果。本轮固定 detour 原始奖励，只给 direct 和 attack 使用不同 profile。整体上按策略塑形明显优于全局奖励塑形：
+
+| profile 组合 | 平均回报提升 | 平均胜率提升 | 最小回报提升 | seed 43 回报提升 | seed 43 胜率提升 | 判断 |
+|---|---:|---:|---:|---:|---:|---|
+| `dstrong_asafe` | 82.52 | 31.79 pp | 78.25 | 78.25 | 30.25 pp | 平均回报最高 |
+| `dstrong_astrong` | 79.55 | 31.12 pp | 76.08 | 76.08 | 30.12 pp | 稳定但 attack gap 偏负 |
+| `dguard_asafe` | 77.42 | 32.50 pp | 74.09 | 74.09 | 30.75 pp | 胜率最高且稳定 |
+| `dguard_astrong` | 74.89 | 32.75 pp | 72.47 | 75.80 | 33.00 pp | seed 43 胜率最高 |
+| `dchase_asafe` | 61.02 | 26.08 pp | 29.74 | 76.16 | 31.75 pp | seed 44 较弱 |
+| `dguard_achase` | 46.62 | 20.00 pp | 17.95 | 74.58 | 31.00 pp | attack gap 最接近修复 |
+
+seed 43 上，direct 已经基本从短板修复为正 gap：
+
+| profile 组合 | `direct` reward gap | `attack` reward gap | `detour` reward gap | 结论 |
+|---|---:|---:|---:|---|
+| `dchase_asafe` | 7.23 | -51.40 | 227.34 | direct 已正，attack 仍负 |
+| `dguard_achase` | 5.01 | 0.81 | 224.90 | seed 43 attack 也略正 |
+| `dguard_asafe` | 4.71 | -68.42 | 230.20 | direct 已正，attack 仍负 |
+| `dguard_astrong` | 9.26 | -148.58 | 230.01 | direct 强，attack 变差 |
+| `dstrong_asafe` | 6.41 | -37.12 | 246.95 | 平均回报最高，attack 仍负 |
+| `dstrong_astrong` | 9.87 | -125.53 | 246.63 | direct 强，attack 变差 |
+
+跨 seed 的 attack 拆分显示，`dguard_achase` 是唯一让 attack 平均 gap 接近 0 的组合：seed 42 attack gap `+2.34`、seed 43 `+0.81`、seed 44 `-44.65`，三 seed 平均约 `-13.83`。其它组合的 attack 平均 gap 多数仍明显为负。因此下一轮应固定 `direct=guard`，只做更窄的 attack reward profile 扫描，围绕 chase/guard/balanced 与较温和主动碰撞惩罚寻找 seed 44 也不崩的设置。
