@@ -1,0 +1,69 @@
+{
+  "output_dir": "runs/continuous_response_attack_reward_dguard_aguard_safe_is0p03_us0p016_cr0p08_ts1500000_s43/20260518_034531/analysis",
+  "episodes": 800,
+  "total_steps": 30417,
+  "baseline_total_steps": 41863,
+  "mean_episode_length": 38.02125,
+  "baseline_mean_episode_length": 52.32875,
+  "mean_episode_reward": -50.77360009784721,
+  "baseline_mean_episode_reward": -133.55965332320378,
+  "reward_improvement": 82.78605322535657,
+  "interceptor_win_rate": 0.32875,
+  "baseline_interceptor_win_rate": 0.0,
+  "win_rate_improvement": 0.32875,
+  "response_policy_accuracy": 0.9937534931124042,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.99375,
+    "detour": 0.9936621113091701,
+    "direct": 0.9938470553765016
+  },
+  "intruder_policy_step_counts": {
+    "attack": 10080,
+    "detour": 10098,
+    "direct": 10239
+  },
+  "ops_winner_counts": {
+    "interceptor": 263,
+    "intruder": 537
+  },
+  "baseline_winner_counts": {
+    "intruder": 800
+  },
+  "ops_reason_counts": {
+    "active_collision": 5,
+    "entered_big_circle": 531,
+    "entered_small_circle": 1,
+    "intercepted_before_small_circle": 260,
+    "intercepted_in_big_circle": 1,
+    "passive_intercept": 2
+  },
+  "baseline_reason_counts": {
+    "active_collision": 38,
+    "entered_big_circle": 761,
+    "entered_small_circle": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -223.4817415672541,
+    "q25": -121.95357407979668,
+    "median": -120.94008192062378,
+    "q75": 96.57531589001418,
+    "max": 118.27129245102404,
+    "std": 104.02753213818043
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -295.85682120889425,
+    "q25": -125.73941483527422,
+    "median": -123.32426580667496,
+    "q75": -121.622791608572,
+    "max": -120.27435736477375,
+    "std": 34.62141804083982
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}

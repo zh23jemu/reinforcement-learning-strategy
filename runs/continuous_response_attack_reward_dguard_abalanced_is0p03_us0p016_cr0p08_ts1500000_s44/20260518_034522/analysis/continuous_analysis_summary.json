@@ -1,0 +1,70 @@
+{
+  "output_dir": "runs/continuous_response_attack_reward_dguard_abalanced_is0p03_us0p016_cr0p08_ts1500000_s44/20260518_034522/analysis",
+  "episodes": 800,
+  "total_steps": 29603,
+  "baseline_total_steps": 43740,
+  "mean_episode_length": 37.00375,
+  "baseline_mean_episode_length": 54.675,
+  "mean_episode_reward": -57.872771645025566,
+  "baseline_mean_episode_reward": -126.60972257242474,
+  "reward_improvement": 68.73695092739918,
+  "interceptor_win_rate": 0.3075,
+  "baseline_interceptor_win_rate": 0.0125,
+  "win_rate_improvement": 0.295,
+  "response_policy_accuracy": 0.9937506333817518,
+  "switch_count": 0,
+  "accuracy_by_intruder_policy": {
+    "attack": 0.993650143383859,
+    "detour": 0.99375,
+    "direct": 0.993850186510737
+  },
+  "intruder_policy_step_counts": {
+    "attack": 9764,
+    "detour": 9920,
+    "direct": 9919
+  },
+  "ops_winner_counts": {
+    "interceptor": 246,
+    "intruder": 554
+  },
+  "baseline_winner_counts": {
+    "interceptor": 10,
+    "intruder": 790
+  },
+  "ops_reason_counts": {
+    "active_collision": 16,
+    "entered_big_circle": 538,
+    "intercepted_before_small_circle": 243,
+    "intercepted_in_big_circle": 3
+  },
+  "baseline_reason_counts": {
+    "active_collision": 40,
+    "entered_big_circle": 748,
+    "entered_small_circle": 2,
+    "intercepted_before_small_circle": 9,
+    "intercepted_in_big_circle": 1
+  },
+  "episode_reward_quantiles": {
+    "min": -183.78550046533343,
+    "q25": -122.3574911787361,
+    "median": -121.2764830097556,
+    "q75": 96.1621646945551,
+    "max": 119.58712573919443,
+    "std": 103.97961067493083
+  },
+  "baseline_episode_reward_quantiles": {
+    "min": -239.32986550226806,
+    "q25": -123.7384702669084,
+    "median": -122.03585476726295,
+    "q75": -121.17684112370014,
+    "max": 118.81025524057448,
+    "std": 32.28929791514281
+  },
+  "acceptance": {
+    "process_pass": true,
+    "engineering_pass": true,
+    "paper_like_pass": true,
+    "judgement": "达到接近论文效果的候选标准，可继续做多 seed 与参数敏感性验证。"
+  },
+  "figures": []
+}

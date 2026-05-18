@@ -1,0 +1,6 @@
+reason,ops_count,baseline_count,ops_minus_baseline
+entered_big_circle,532,731,-199
+active_collision,13,41,-28
+entered_small_circle,0,28,-28
+intercepted_in_big_circle,1,0,1
+intercepted_before_small_circle,254,0,254
