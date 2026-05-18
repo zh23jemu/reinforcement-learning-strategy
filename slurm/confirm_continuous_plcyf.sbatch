@@ -45,6 +45,8 @@ SAM_NOISE_VARIANCE="${SAM_NOISE_VARIANCE:-}"
 SAM_MAX_NORMALIZED_ERROR="${SAM_MAX_NORMALIZED_ERROR:-}"
 SAM_FEATURE_MODE="${SAM_FEATURE_MODE:-}"
 SAM_ONLINE_UPDATES="${SAM_ONLINE_UPDATES:-}"
+DIRECT_REWARD_PROFILE="${DIRECT_REWARD_PROFILE:-none}"
+ATTACK_REWARD_PROFILE="${ATTACK_REWARD_PROFILE:-none}"
 
 if [ ! -x "${PYTHON_BIN}" ]; then
   echo "错误：找不到可执行 Python：${PYTHON_BIN}"
@@ -100,6 +102,8 @@ echo "SAM cooldown:      ${SAM_COOLDOWN_STEPS:-<config>}"
 echo "SAM margin:        ${SAM_SWITCH_MARGIN:-<config>}"
 echo "SAM noise:         ${SAM_NOISE_VARIANCE:-<config>}"
 echo "SAM feature mode:  ${SAM_FEATURE_MODE:-<config>}"
+echo "Direct reward:     ${DIRECT_REWARD_PROFILE}"
+echo "Attack reward:     ${ATTACK_REWARD_PROFILE}"
 echo "Start time:        $(date '+%Y-%m-%d %H:%M:%S')"
 echo "============================================================"
 
@@ -136,6 +140,12 @@ if [ -n "${SAM_FEATURE_MODE}" ]; then
 fi
 if [ -n "${SAM_ONLINE_UPDATES}" ]; then
   SAM_ARGS+=(--sam-online-updates "${SAM_ONLINE_UPDATES}")
+fi
+if [ "${DIRECT_REWARD_PROFILE}" != "none" ]; then
+  SAM_ARGS+=(--direct-reward-profile "${DIRECT_REWARD_PROFILE}")
+fi
+if [ "${ATTACK_REWARD_PROFILE}" != "none" ]; then
+  SAM_ARGS+=(--attack-reward-profile "${ATTACK_REWARD_PROFILE}")
 fi
 
 "${PYTHON_BIN}" scripts/run_continuous_sweep.py \

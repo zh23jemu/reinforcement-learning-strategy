@@ -52,6 +52,27 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--sam-sample-steps", type=int, default=None, help="覆盖 sam.sample_steps")
     parser.add_argument("--sam-epochs", type=int, default=None, help="覆盖 sam.epochs")
     parser.add_argument(
+        "--direct-reward-profile",
+        choices=("none", "chase", "guard", "guard_strong"),
+        default="none",
+        help="只覆盖 direct 响应策略训练时的奖励塑形 profile",
+    )
+    parser.add_argument(
+        "--attack-reward-profile",
+        choices=(
+            "none",
+            "chase",
+            "attacksafe",
+            "attacksafe_strong",
+            "attack_chase_light",
+            "attack_guard",
+            "attack_guard_safe",
+            "attack_balanced",
+        ),
+        default="none",
+        help="只覆盖 attack 响应策略训练时的奖励塑形 profile",
+    )
+    parser.add_argument(
         "--sam-feature-mode",
         choices=("raw", "geometry"),
         default=None,
@@ -91,6 +112,7 @@ def main() -> None:
     config["ppo"]["total_timesteps"] = args.timesteps
     if args.episodes is not None:
         config["evaluation"]["episodes"] = args.episodes
+    _apply_policy_reward_overrides(config, args)
     _apply_sam_overrides(config, args)
 
     print("============================================================")
@@ -160,6 +182,103 @@ def _apply_sam_overrides(config: dict[str, Any], args: argparse.Namespace) -> No
         sam["online_updates"] = args.sam_online_updates == "true"
 
 
+def _apply_policy_reward_overrides(config: dict[str, Any], args: argparse.Namespace) -> None:
+    """按入侵策略覆盖 response policy 的训练奖励。
+
+    该入口复用 oracle 对照阶段筛出的奖励 profile，但不改变检测器逻辑；真实 SAM
+    confirm 仍然通过 MC dropout normalized error 做策略识别，只是在训练 response
+    policy 库时给 direct/attack 使用更合适的奖励塑形。
+    """
+
+    profiles = _build_policy_reward_overrides(args)
+    if profiles:
+        config["environment"]["reward_overrides_by_policy"] = profiles
+
+
+def _build_policy_reward_overrides(args: argparse.Namespace) -> dict[str, dict[str, float]]:
+    """根据命令行 profile 构造按策略奖励覆盖表。"""
+
+    profiles: dict[str, dict[str, float]] = {}
+    if args.direct_reward_profile == "chase":
+        profiles["direct"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.35,
+            "intruder_distance_weight": 0.05,
+        }
+    elif args.direct_reward_profile == "guard":
+        profiles["direct"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.25,
+            "intruder_distance_weight": 0.12,
+        }
+    elif args.direct_reward_profile == "guard_strong":
+        profiles["direct"] = {
+            "win_reward": 140.0,
+            "loss_reward": -140.0,
+            "agent_distance_weight": -0.20,
+            "intruder_distance_weight": 0.18,
+        }
+
+    if args.attack_reward_profile == "chase":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.35,
+            "intruder_distance_weight": 0.05,
+        }
+    elif args.attack_reward_profile == "attacksafe":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -150.0,
+            "agent_distance_weight": -0.30,
+            "intruder_distance_weight": 0.08,
+            "active_collision_loss_reward": -220.0,
+        }
+    elif args.attack_reward_profile == "attacksafe_strong":
+        profiles["attack"] = {
+            "win_reward": 140.0,
+            "loss_reward": -180.0,
+            "agent_distance_weight": -0.25,
+            "intruder_distance_weight": 0.12,
+            "active_collision_loss_reward": -300.0,
+        }
+    elif args.attack_reward_profile == "attack_chase_light":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.28,
+            "intruder_distance_weight": 0.04,
+            "active_collision_loss_reward": -140.0,
+        }
+    elif args.attack_reward_profile == "attack_guard":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.20,
+            "intruder_distance_weight": 0.14,
+            "active_collision_loss_reward": -160.0,
+        }
+    elif args.attack_reward_profile == "attack_guard_safe":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -140.0,
+            "agent_distance_weight": -0.22,
+            "intruder_distance_weight": 0.12,
+            "active_collision_loss_reward": -220.0,
+        }
+    elif args.attack_reward_profile == "attack_balanced":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -130.0,
+            "agent_distance_weight": -0.26,
+            "intruder_distance_weight": 0.08,
+            "active_collision_loss_reward": -180.0,
+        }
+    return profiles
+
+
 def _slug_float(value: float) -> str:
     """把小数转成目录友好的短字符串，例如 0.026 -> 0p026。"""
 
@@ -188,6 +307,10 @@ def _build_sam_suffix(args: argparse.Namespace) -> str:
         parts.append(f"fm{args.sam_feature_mode}")
     if args.sam_online_updates is not None:
         parts.append(f"ou{args.sam_online_updates}")
+    if args.direct_reward_profile != "none":
+        parts.append(f"dr{args.direct_reward_profile}")
+    if args.attack_reward_profile != "none":
+        parts.append(f"ar{args.attack_reward_profile}")
     return "" if not parts else "_sam" + "_".join(parts)
 
 
@@ -214,6 +337,8 @@ def _sweep_metadata(args: argparse.Namespace, experiment_name: str) -> dict[str,
         "sam_epochs": args.sam_epochs,
         "sam_feature_mode": args.sam_feature_mode,
         "sam_online_updates": args.sam_online_updates,
+        "direct_reward_profile": args.direct_reward_profile,
+        "attack_reward_profile": args.attack_reward_profile,
     }
 
 
