@@ -50,11 +50,14 @@
 - 已新增 `slurm/response_attack_reward_continuous_plcyf.sbatch` 和 `continuous_response_attack_reward` 聚合前缀，用于固定 `direct=guard` 后只细扫 attack profile。
 - `continuous_response_attack_reward_*` 已完成：整体最强为 `attack_guard_safe`，三 seed 平均回报提升约 `77.81`、平均胜率提升约 `31.92 pp`，但 attack 分策略本身仍未修复；attack-only gap 最好的 `attack_chase_light` 平均仍约 `-25.46`，seed 44 仍约 `-39.61`。
 - `scripts/run_continuous_sweep.py` 和 `slurm/confirm_continuous_plcyf.sbatch` 已支持在真实 SAM confirm 中传入 `--direct-reward-profile` / `--attack-reward-profile`，可验证 oracle 里表现最强的 response reward 库落到 SAM 检测链路后的收益。
+- `continuous_sam_geometry_reward_confirm_*` 已完成：`direct=guard, attack=attack_guard_safe` 在真实 SAM 检测链路下三 seed 平均回报提升约 `48.03`，平均胜率提升约 `21.25 pp`，较前一轮 geometry confirm 整体明显更强；但平均响应准确率仍约 `58.02%`，仍未达到工程验收阈值。
+- 已新增 `slurm/sam_geometry_reward_tune_continuous_plcyf.sbatch`，用于在固定 `direct=guard, attack=attack_guard_safe` 的 response reward profile 下细扫更保守的 SAM 检测参数。
+- `scripts/aggregate_continuous_sweep.py` 已纳入 `continuous_sam_geometry_reward_confirm` 与 `continuous_sam_geometry_reward_tune` 前缀，后续聚合总表会自动收录 reward confirm / tune 结果。
 
 ## TODO
 
 - 优先诊断并补强连续 response policy 的 `direct` 和 `attack` 控制质量。
-- 下一轮优先用真实 SAM confirm 验证 `DIRECT_REWARD_PROFILE=guard`、`ATTACK_REWARD_PROFILE=attack_guard_safe`，同时单独诊断 attack response policy 为什么在 attack-only 分组里持续弱于 baseline。
+- 下一轮优先运行 `sam_geometry_reward_tune_continuous_plcyf.sbatch`，在 `direct=guard, attack=attack_guard_safe` response 库基础上细扫更保守的 SAM 检测参数，目标是提高响应准确率并降低无效切换；同时单独诊断 attack response policy 为什么在 attack-only 分组里持续弱于 baseline。
 - 若 `direct/attack` 响应策略补强后不再系统性弱于 baseline，再继续做 SAM 参数微调或更大规模 confirm。
 - 后续结果继续写入 `docs/continuous_confirm_results.md`、`docs/continuous_acceptance_checklist.md` 和 `.recallloom/`。
 
@@ -66,7 +69,7 @@
 
 ## Current Status
 
-- 本地最新进展已包含 attack reward 窄范围扫描结果，并已把按策略 reward profile 接入真实 SAM confirm；下一步可在服务器验证 `direct=guard, attack=attack_guard_safe` 的 SAM 检测版效果。
+- 本地最新进展已包含真实 SAM reward confirm 结果：`direct=guard, attack=attack_guard_safe` 让三 seed 平均回报提升到约 `48.03`、胜率提升到约 `21.25 pp`，但响应准确率仍只有约 `58.02%`。
 
 ## Recent Changes
 
@@ -83,16 +86,20 @@
 - 新增 attack-only profile：`attack_chase_light`、`attack_guard`、`attack_guard_safe`、`attack_balanced`，并新增 attack reward 窄范围 Slurm 脚本。
 - pull 回并分析 `continuous_response_attack_reward_*`：`attack_guard_safe` 整体收益最高且 `direct/detour` 稳定，但 attack-only 仍为负；`attack_chase_light` 的 attack-only gap 最小但会拖累 `direct`。
 - 给 `run_continuous_sweep.py` 和 `confirm_continuous_plcyf.sbatch` 增加按策略 reward profile 参数透传；本地 `.venv\Scripts\python.exe -m pytest` 通过，`27 passed`。
+- pull 回并分析 `continuous_sam_geometry_reward_confirm_*`：seed 42/43/44 回报提升分别约 `45.10/54.48/44.52`，胜率提升约 `20.00/23.00/20.75 pp`，响应准确率约 `53.38/62.49/58.19%`。
+- Windows 本地 pull 首次因长路径失败，已在仓库设置 `core.longpaths=true`，并把首次失败留下的半成品文件非破坏性移动到 `C:\Coding\reinforcement-learning-strategy_pull_backup_20260518_174728` 后完成 pull。
+- 新增 reward-profile 版 SAM 检测细扫 Slurm 脚本，并更新聚合前缀；本地 `.venv\Scripts\python.exe -m pytest` 通过，`27 passed`；聚合 smoke 汇总 `188` 条连续结果。
 
 ## Next TODO
 
-- 服务器下一步运行真实 SAM confirm：`NAME_PREFIX=continuous_sam_geometry_reward_confirm,DIRECT_REWARD_PROFILE=guard,ATTACK_REWARD_PROFILE=attack_guard_safe`，确认整体 oracle 最优 response 库在 SAM 检测口径下是否改善。
+- 服务器下一步运行 `sbatch --partition=defq --array=0-17 --export=ALL,TIMESTEPS=300000,EPISODES=300 slurm/sam_geometry_reward_tune_continuous_plcyf.sbatch`，完成后聚合并分析 `continuous_sam_geometry_reward_tune_*`。
 - 同时准备 attack policy 专项诊断，检查 attack 任务是否存在奖励定义、起始状态分布、策略动作约束或 baseline 对照偏置问题；不建议继续盲目只扫当前四类 attack reward 权重。
 - 长训继续沿用现有 Slurm 风格并提交到 `defq` 分区。
 
 ## Open Issues
 
 - `direct` response policy 的 reward gap 已明显改善；`attack` 在 attack-only 窄扫后仍未稳定修复，说明问题可能不是单纯奖励权重强弱，而是 attack 训练任务定义或对照口径本身。
+- 真实 SAM reward confirm 虽然整体收益变强，但 `response_policy_accuracy` 仍明显不足，下一步不能只看 reward improvement，需要继续提升检测选择质量。
 - 当前验收阈值仍混用了 oracle 策略识别口径和 SAM 检测口径，最终报告需要明确解释。
 
 ## Architecture Decisions
