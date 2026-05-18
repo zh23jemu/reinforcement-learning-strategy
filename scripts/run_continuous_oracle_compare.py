@@ -49,6 +49,18 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="覆盖 attack 主动碰撞失败的专用终局惩罚",
     )
+    parser.add_argument(
+        "--direct-reward-profile",
+        choices=("none", "chase", "guard", "guard_strong"),
+        default="none",
+        help="只覆盖 direct 入侵策略下的奖励塑形 profile",
+    )
+    parser.add_argument(
+        "--attack-reward-profile",
+        choices=("none", "chase", "attacksafe", "attacksafe_strong"),
+        default="none",
+        help="只覆盖 attack 入侵策略下的奖励塑形 profile",
+    )
     parser.add_argument("--timesteps", type=int, required=True, help="每个 PPO 模型训练步数")
     parser.add_argument(
         "--response-direct-timesteps",
@@ -166,6 +178,9 @@ def _apply_overrides(config: dict[str, Any], args: argparse.Namespace, experimen
     for key, value in reward_overrides.items():
         if value is not None:
             config["environment"][key] = float(value)
+    policy_reward_overrides = _build_policy_reward_overrides(args)
+    if policy_reward_overrides:
+        config["environment"]["reward_overrides_by_policy"] = policy_reward_overrides
     config["ppo"]["total_timesteps"] = args.timesteps
     response_timesteps = {
         "direct": getattr(args, "response_direct_timesteps", None),
@@ -190,6 +205,65 @@ def _apply_overrides(config: dict[str, Any], args: argparse.Namespace, experimen
     detector = config.setdefault("detector", {})
     detector["method"] = "oracle"
     detector.setdefault("initial_policy", "direct")
+
+
+def _build_policy_reward_overrides(args: argparse.Namespace) -> dict[str, dict[str, float]]:
+    """根据命令行 profile 生成按策略奖励覆盖。
+
+    全局 reward sweep 已经证明“统一改所有策略奖励”只能缓解 seed 43。这里把 direct
+    和 attack 的奖励塑形拆开，让 detour 保持原始奖励，便于判断短板是否来自某类
+    response policy 的专用训练信号不足。
+    """
+
+    profiles: dict[str, dict[str, float]] = {}
+    direct_profile = getattr(args, "direct_reward_profile", "none")
+    attack_profile = getattr(args, "attack_reward_profile", "none")
+    if direct_profile == "chase":
+        profiles["direct"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.35,
+            "intruder_distance_weight": 0.05,
+        }
+    elif direct_profile == "guard":
+        profiles["direct"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.25,
+            "intruder_distance_weight": 0.12,
+        }
+    elif direct_profile == "guard_strong":
+        profiles["direct"] = {
+            "win_reward": 140.0,
+            "loss_reward": -140.0,
+            "agent_distance_weight": -0.20,
+            "intruder_distance_weight": 0.18,
+        }
+
+    if attack_profile == "chase":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -120.0,
+            "agent_distance_weight": -0.35,
+            "intruder_distance_weight": 0.05,
+        }
+    elif attack_profile == "attacksafe":
+        profiles["attack"] = {
+            "win_reward": 120.0,
+            "loss_reward": -150.0,
+            "agent_distance_weight": -0.30,
+            "intruder_distance_weight": 0.08,
+            "active_collision_loss_reward": -220.0,
+        }
+    elif attack_profile == "attacksafe_strong":
+        profiles["attack"] = {
+            "win_reward": 140.0,
+            "loss_reward": -180.0,
+            "agent_distance_weight": -0.25,
+            "intruder_distance_weight": 0.12,
+            "active_collision_loss_reward": -300.0,
+        }
+    return profiles
 
 
 def _require_oracle_artifacts(artifact_dir: Path) -> None:
@@ -253,6 +327,8 @@ def _metadata(args: argparse.Namespace, experiment_name: str) -> dict[str, Any]:
         "agent_distance_weight": getattr(args, "agent_distance_weight", None),
         "intruder_distance_weight": getattr(args, "intruder_distance_weight", None),
         "active_collision_loss_reward": getattr(args, "active_collision_loss_reward", None),
+        "direct_reward_profile": getattr(args, "direct_reward_profile", "none"),
+        "attack_reward_profile": getattr(args, "attack_reward_profile", "none"),
         "seed": args.seed,
         "episodes": args.episodes,
         "detector_method": "oracle",

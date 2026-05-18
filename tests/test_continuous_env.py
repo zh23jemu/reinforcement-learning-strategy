@@ -67,3 +67,27 @@ def test_continuous_policy_switch_cycles_three_intruder_modes():
     assert second["intruder_policy"] == "attack"
     assert third["intruder_policy"] == "direct"
 
+
+def test_reward_overrides_can_target_single_intruder_policy():
+    """按策略奖励覆盖应只影响指定入侵策略，避免把 detour 原始奖励一起改掉。"""
+
+    env = ContinuousInterceptEnv(
+        seed=5,
+        intruder_policy="direct",
+        reward_overrides_by_policy={
+            "direct": {"win_reward": 140.0, "agent_distance_weight": -0.4},
+            "attack": {"active_collision_loss_reward": -250.0},
+        },
+    )
+
+    direct_config = env._reward_config_for_current_policy()
+    env.intruder_policy = "detour"
+    detour_config = env._reward_config_for_current_policy()
+    env.intruder_policy = "attack"
+    attack_config = env._reward_config_for_current_policy()
+
+    assert direct_config["win_reward"] == 140.0
+    assert direct_config["agent_distance_weight"] == -0.4
+    assert detour_config["win_reward"] == 100.0
+    assert detour_config["agent_distance_weight"] == -0.2
+    assert attack_config["active_collision_loss_reward"] == -250.0

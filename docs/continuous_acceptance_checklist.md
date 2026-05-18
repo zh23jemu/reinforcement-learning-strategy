@@ -79,4 +79,5 @@ SAM 原文检测版本结论是：
 - `continuous_oracle_compare_*` 已完成 1.5M / 800 episodes / 3 seed 对照，三 seed 全部 `engineering_pass=True` 且 `paper_like_pass=True`，说明 response policy 库整体上限足够；但 seed 43 下 `direct` 与 `attack` 在 oracle 条件下仍弱于 baseline，下一轮应优先改这两类 response policy 的训练和奖励设计，而不是继续调 SAM 检测参数。
 - 已新增 `slurm/response_focus_continuous_plcyf.sbatch`，用于只加训 `direct/attack` response policy 并继续用 oracle 对照评估；默认比较 `3M` 与 `5M` 两档 direct/attack 训练步数，`detour` 和 baseline 保持基础步数。
 - `continuous_response_focus_*` 已完成：`3M` 与 `5M` 两档整体仍全部通过，但 seed 43 的 `direct/attack` 分策略仍弱于 baseline，说明单纯增加训练步数不足以修复短板。下一步使用 `slurm/response_reward_sweep_continuous_plcyf.sbatch` 扫描 `base/chase/guard/attacksafe` 四组奖励塑形。
+- `continuous_response_reward_*` 已完成：`guard` 全局奖励塑形整体最佳，seed 43 明显改善，但 `direct/attack` 分策略仍未反超 baseline。下一步使用 `slurm/response_policy_reward_continuous_plcyf.sbatch` 只给 `direct/attack` 使用定向奖励 profile，`detour` 保持原始奖励。
 - 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py`、`scripts/diagnose_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。

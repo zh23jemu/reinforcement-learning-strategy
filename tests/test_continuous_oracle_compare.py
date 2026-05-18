@@ -188,3 +188,42 @@ def test_oracle_compare_can_override_reward_shaping():
     assert config["environment"]["agent_distance_weight"] == -0.35
     assert config["environment"]["intruder_distance_weight"] == 0.12
     assert config["environment"]["active_collision_loss_reward"] == -220.0
+
+
+def test_oracle_compare_can_override_policy_reward_profiles():
+    """按策略奖励 profile 应写入 direct/attack 覆盖且保留 detour 默认奖励。"""
+
+    config = {
+        "experiment": {"name": "base", "seed": 1, "artifact_dir": "artifacts/continuous"},
+        "environment": {
+            "interceptor_max_speed": 0.022,
+            "intruder_max_speed": 0.018,
+            "collision_radius": 0.08,
+        },
+        "ppo": {"total_timesteps": 1500000},
+        "evaluation": {"episodes": 10},
+        "detector": {"method": "sam", "initial_policy": "direct"},
+    }
+    args = Namespace(
+        interceptor_speed=0.03,
+        intruder_speed=0.016,
+        collision_radius=0.08,
+        direct_reward_profile="guard",
+        attack_reward_profile="attacksafe",
+        timesteps=1500000,
+        response_direct_timesteps=None,
+        response_detour_timesteps=None,
+        response_attack_timesteps=None,
+        baseline_timesteps=1500000,
+        seed=43,
+        episodes=800,
+        artifact_dir=None,
+    )
+
+    _apply_overrides(config, args, "continuous_response_policy_reward_dguard_asafe_s43")
+
+    overrides = config["environment"]["reward_overrides_by_policy"]
+    assert set(overrides) == {"direct", "attack"}
+    assert overrides["direct"]["intruder_distance_weight"] == 0.12
+    assert overrides["attack"]["active_collision_loss_reward"] == -220.0
+    assert "detour" not in overrides

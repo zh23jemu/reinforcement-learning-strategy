@@ -27,6 +27,7 @@ DEFAULT_RUN_PREFIXES = (
     "continuous_oracle_compare",
     "continuous_response_focus",
     "continuous_response_reward",
+    "continuous_response_policy_reward",
 )
 
 
@@ -61,7 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
             "continuous_sam_multiseed_tune、continuous_sam_geometry_narrow_tune、"
             "continuous_sam_confirm、continuous_sam_geometry_confirm、"
             "continuous_oracle_compare、continuous_response_focus 和 "
-            "continuous_response_reward。"
+            "continuous_response_reward、continuous_response_policy_reward。"
         ),
     )
     return parser

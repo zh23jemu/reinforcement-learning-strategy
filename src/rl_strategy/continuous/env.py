@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Mapping
 
 import gymnasium as gym
 import numpy as np
@@ -55,6 +55,7 @@ class ContinuousInterceptEnv(gym.Env):
         agent_distance_weight: float = -0.2,
         intruder_distance_weight: float = 0.05,
         active_collision_loss_reward: float | None = None,
+        reward_overrides_by_policy: Mapping[str, Mapping[str, float | None]] | None = None,
         seed: int | None = None,
     ) -> None:
         """初始化连续拦截环境。
@@ -78,6 +79,9 @@ class ContinuousInterceptEnv(gym.Env):
             active_collision_loss_reward: attack 策略主动碰撞造成失败时的专用惩罚；
                 为空时沿用 loss_reward。该参数用于专项检查 attack response policy 是否需要
                 更强的避让/诱导塑形，不改变默认实验口径。
+            reward_overrides_by_policy: 按入侵策略覆盖的奖励权重。键为 `direct`、`detour`
+                或 `attack`，值只需要包含要覆盖的奖励字段。该入口用于下一轮只改
+                direct/attack 训练奖励、保留 detour 原始奖励的诊断实验。
             seed: 随机种子。
         """
 
@@ -105,6 +109,13 @@ class ContinuousInterceptEnv(gym.Env):
         self.active_collision_loss_reward = (
             None if active_collision_loss_reward is None else float(active_collision_loss_reward)
         )
+        self.reward_overrides_by_policy = {
+            str(policy_name): {
+                str(key): None if value is None else float(value)
+                for key, value in overrides.items()
+            }
+            for policy_name, overrides in (reward_overrides_by_policy or {}).items()
+        }
         self.rng = np.random.default_rng(seed)
         self.global_step = 0
         self.episode_step = 0
@@ -216,21 +227,45 @@ class ContinuousInterceptEnv(gym.Env):
     def _reward(self, outcome: dict[str, Any]) -> float:
         """拦截者视角奖励函数，兼顾胜负终局和过程塑形。"""
 
+        reward_config = self._reward_config_for_current_policy()
         if outcome["winner"] == "interceptor":
-            return self.win_reward
+            return float(reward_config["win_reward"])
         if outcome["winner"] == "intruder":
-            if outcome.get("reason") == "active_collision" and self.active_collision_loss_reward is not None:
-                return self.active_collision_loss_reward
-            return self.loss_reward
+            active_collision_loss_reward = reward_config["active_collision_loss_reward"]
+            if outcome.get("reason") == "active_collision" and active_collision_loss_reward is not None:
+                return float(active_collision_loss_reward)
+            return float(reward_config["loss_reward"])
         intruder_distance = self._distance_to_target(self.state.intruder_position)
         agent_distance = self._agent_distance()
         # 过程奖励默认保持原有口径；专项实验可通过配置调大靠近入侵者或挡在外圈的信号，
         # 用来判断 direct/attack 响应策略短板是否来自奖励塑形不足。
         return (
-            self.step_penalty
-            + self.agent_distance_weight * agent_distance
-            + self.intruder_distance_weight * intruder_distance
+            float(reward_config["step_penalty"])
+            + float(reward_config["agent_distance_weight"]) * agent_distance
+            + float(reward_config["intruder_distance_weight"]) * intruder_distance
         )
+
+    def _reward_config_for_current_policy(self) -> dict[str, float | None]:
+        """合并默认奖励权重和当前入侵策略的专用覆盖。
+
+        训练固定 response policy 时，环境中的 `intruder_policy` 不会切换；评估 oracle
+        或 SAM 时则会随 episode 进程切换。按当前真实策略动态取配置，可以让下一轮
+        实验只强化 direct/attack，而不牺牲 detour 已经很强的原始奖励设定。
+        """
+
+        base: dict[str, float | None] = {
+            "win_reward": self.win_reward,
+            "loss_reward": self.loss_reward,
+            "step_penalty": self.step_penalty,
+            "agent_distance_weight": self.agent_distance_weight,
+            "intruder_distance_weight": self.intruder_distance_weight,
+            "active_collision_loss_reward": self.active_collision_loss_reward,
+        }
+        overrides = self.reward_overrides_by_policy.get(self.intruder_policy, {})
+        for key, value in overrides.items():
+            if key in base:
+                base[key] = value
+        return base
 
     def _active_intruder_collision(self) -> bool:
         """判断攻击型碰撞是否由入侵者主动朝拦截者冲撞造成。"""

@@ -284,6 +284,7 @@ def _make_env(
         agent_distance_weight=float(environment.get("agent_distance_weight", -0.2)),
         intruder_distance_weight=float(environment.get("intruder_distance_weight", 0.05)),
         active_collision_loss_reward=_optional_float(environment.get("active_collision_loss_reward")),
+        reward_overrides_by_policy=_reward_overrides_by_policy(environment.get("reward_overrides_by_policy")),
         seed=int(config["experiment"]["seed"]),
     )
 
@@ -298,6 +299,26 @@ def _optional_float(value: Any) -> float | None:
     if value is None:
         return None
     return float(value)
+
+
+def _reward_overrides_by_policy(value: Any) -> dict[str, dict[str, float | None]]:
+    """解析按入侵策略覆盖的奖励配置。
+
+    配置文件或命令行包装脚本可以只给 `direct`、`attack` 中某几个字段传覆盖值。
+    这里统一转成环境可直接消费的浮点数字典，并保留 None 表示“该字段不覆盖”。
+    """
+
+    if not isinstance(value, dict):
+        return {}
+    result: dict[str, dict[str, float | None]] = {}
+    for policy_name, overrides in value.items():
+        if not isinstance(overrides, dict):
+            continue
+        result[str(policy_name)] = {
+            str(key): _optional_float(override_value)
+            for key, override_value in overrides.items()
+        }
+    return result
 
 
 def _train_sam_opponent_model(config: dict[str, Any], policy_name: str, artifact_dir: Path) -> None:

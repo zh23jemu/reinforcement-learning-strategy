@@ -225,6 +225,15 @@ sbatch --partition=defq --export=ALL slurm/aggregate_continuous_plcyf.sbatch
 
 `response_reward_sweep_continuous_plcyf.sbatch` 默认覆盖 `base/chase/guard/attacksafe` 四组奖励，每组 seeds `42/43/44`。其中 `base` 复刻当前奖励，`chase` 强化靠近入侵者，`guard` 强化把入侵者挡在目标外侧，`attacksafe` 对 attack 主动碰撞失败给更大惩罚。
 
+全局 reward sweep 已完成：`guard` 是当前最佳折中，三 seed 平均回报提升约 `64.02`、平均胜率提升约 `24.67` 个百分点，seed 43 也提升到约 `38.89 / 16.75 pp`。但 seed 43 的 `direct/attack` 分策略仍未反超 baseline，只是 gap 缩小。下一轮改为按策略覆盖奖励：只给 `direct` 和 `attack` 使用不同 profile，`detour` 保持原始奖励。
+
+```bash
+sbatch --partition=defq --array=0-17 --export=ALL,TIMESTEPS=1500000,EPISODES=800 slurm/response_policy_reward_continuous_plcyf.sbatch
+sbatch --partition=defq --export=ALL slurm/aggregate_continuous_plcyf.sbatch
+```
+
+`response_policy_reward_continuous_plcyf.sbatch` 默认覆盖 6 组 direct/attack profile 组合，每组 seeds `42/43/44`，输出前缀为 `continuous_response_policy_reward_*`。
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`
