@@ -278,8 +278,26 @@ def _make_env(
         interceptor_max_speed=float(environment["interceptor_max_speed"]),
         world_radius=float(environment["world_radius"]),
         detour_safe_distance=float(environment["detour_safe_distance"]),
+        win_reward=float(environment.get("win_reward", 100.0)),
+        loss_reward=float(environment.get("loss_reward", -100.0)),
+        step_penalty=float(environment.get("step_penalty", -0.01)),
+        agent_distance_weight=float(environment.get("agent_distance_weight", -0.2)),
+        intruder_distance_weight=float(environment.get("intruder_distance_weight", 0.05)),
+        active_collision_loss_reward=_optional_float(environment.get("active_collision_loss_reward")),
         seed=int(config["experiment"]["seed"]),
     )
+
+
+def _optional_float(value: Any) -> float | None:
+    """把可选配置值转换为浮点数，缺省时保留 None。
+
+    Slurm sweep 会通过命令行把奖励权重写入配置；其中 attack 主动碰撞惩罚是可选项。
+    这里集中处理空值，避免环境构造处混入字符串判断。
+    """
+
+    if value is None:
+        return None
+    return float(value)
 
 
 def _train_sam_opponent_model(config: dict[str, Any], policy_name: str, artifact_dir: Path) -> None:

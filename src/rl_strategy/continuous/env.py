@@ -49,6 +49,12 @@ class ContinuousInterceptEnv(gym.Env):
         interceptor_max_speed: float = 0.022,
         world_radius: float = 1.5,
         detour_safe_distance: float = 0.35,
+        win_reward: float = 100.0,
+        loss_reward: float = -100.0,
+        step_penalty: float = -0.01,
+        agent_distance_weight: float = -0.2,
+        intruder_distance_weight: float = 0.05,
+        active_collision_loss_reward: float | None = None,
         seed: int | None = None,
     ) -> None:
         """初始化连续拦截环境。
@@ -64,6 +70,14 @@ class ContinuousInterceptEnv(gym.Env):
             interceptor_max_speed: 拦截者最大速度，也是动作向量裁剪上限。
             world_radius: 观测归一化和初始采样使用的世界半径。
             detour_safe_distance: 迂回策略尝试维持的安全距离。
+            win_reward: 拦截者获胜时的终局奖励。
+            loss_reward: 入侵者获胜时的默认终局惩罚。
+            step_penalty: 每个未终止 step 的基础惩罚。
+            agent_distance_weight: 未终止时，双方距离的塑形权重；负值鼓励靠近入侵者。
+            intruder_distance_weight: 未终止时，入侵者到目标距离的塑形权重；正值鼓励把入侵者挡在外侧。
+            active_collision_loss_reward: attack 策略主动碰撞造成失败时的专用惩罚；
+                为空时沿用 loss_reward。该参数用于专项检查 attack response policy 是否需要
+                更强的避让/诱导塑形，不改变默认实验口径。
             seed: 随机种子。
         """
 
@@ -83,6 +97,14 @@ class ContinuousInterceptEnv(gym.Env):
         self.interceptor_max_speed = float(interceptor_max_speed)
         self.world_radius = float(world_radius)
         self.detour_safe_distance = float(detour_safe_distance)
+        self.win_reward = float(win_reward)
+        self.loss_reward = float(loss_reward)
+        self.step_penalty = float(step_penalty)
+        self.agent_distance_weight = float(agent_distance_weight)
+        self.intruder_distance_weight = float(intruder_distance_weight)
+        self.active_collision_loss_reward = (
+            None if active_collision_loss_reward is None else float(active_collision_loss_reward)
+        )
         self.rng = np.random.default_rng(seed)
         self.global_step = 0
         self.episode_step = 0
@@ -195,13 +217,20 @@ class ContinuousInterceptEnv(gym.Env):
         """拦截者视角奖励函数，兼顾胜负终局和过程塑形。"""
 
         if outcome["winner"] == "interceptor":
-            return 100.0
+            return self.win_reward
         if outcome["winner"] == "intruder":
-            return -100.0
+            if outcome.get("reason") == "active_collision" and self.active_collision_loss_reward is not None:
+                return self.active_collision_loss_reward
+            return self.loss_reward
         intruder_distance = self._distance_to_target(self.state.intruder_position)
         agent_distance = self._agent_distance()
-        # 过程奖励鼓励拦截者靠近入侵者，并轻微惩罚入侵者逼近目标。
-        return -0.01 - 0.2 * agent_distance + 0.05 * intruder_distance
+        # 过程奖励默认保持原有口径；专项实验可通过配置调大靠近入侵者或挡在外圈的信号，
+        # 用来判断 direct/attack 响应策略短板是否来自奖励塑形不足。
+        return (
+            self.step_penalty
+            + self.agent_distance_weight * agent_distance
+            + self.intruder_distance_weight * intruder_distance
+        )
 
     def _active_intruder_collision(self) -> bool:
         """判断攻击型碰撞是否由入侵者主动朝拦截者冲撞造成。"""

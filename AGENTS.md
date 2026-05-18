@@ -42,11 +42,13 @@
 - 已新增 `scripts/run_continuous_oracle_compare.py` 与 `slurm/oracle_compare_continuous_plcyf.sbatch`，可在 detector 完全正确的 oracle 条件下比较 response policy 库与 baseline，用于隔离 `direct/attack` 短板是否来自响应策略本身。
 - `continuous_oracle_compare_*` 已完成 1.5M / 800 episodes / 3 seed 对照：seed 42/43/44 全部 `engineering_pass=True` 且 `paper_like_pass=True`，但 seed 43 的分策略诊断仍显示 `direct` 和 `attack` 弱于 baseline，`detour` 显著强于 baseline。
 - 已新增 `slurm/response_focus_continuous_plcyf.sbatch`，默认比较 direct/attack response policy 加训到 `3M` 与 `5M` 两档，`detour` 和 baseline 保持基础步数，并继续用 oracle 对照评估。
+- `continuous_response_focus_*` 已完成：`3M` 与 `5M` 两档整体仍通过验收，但 seed 43 的 `direct/attack` 分策略短板没有根治，`5M` 未优于 `3M`。
+- 已给连续环境增加可配置奖励权重，并新增 `slurm/response_reward_sweep_continuous_plcyf.sbatch`，用于扫描 `base/chase/guard/attacksafe` 四组奖励塑形。
 
 ## TODO
 
 - 优先诊断并补强连续 response policy 的 `direct` 和 `attack` 控制质量。
-- 下一轮优先运行 `response_focus_continuous_plcyf.sbatch`，先验证更长 direct/attack 训练步数是否能修复 seed 43 分策略短板。
+- 下一轮优先运行 `response_reward_sweep_continuous_plcyf.sbatch`，验证奖励塑形是否能修复 seed 43 的 `direct/attack` 分策略短板。
 - 若 `direct/attack` 响应策略补强后不再系统性弱于 baseline，再继续做 SAM 参数微调或更大规模 confirm。
 - 后续结果继续写入 `docs/continuous_confirm_results.md`、`docs/continuous_acceptance_checklist.md` 和 `.recallloom/`。
 
@@ -58,8 +60,7 @@
 
 ## Current Status
 
-- 本地最新进展已包含 oracle 对照结果：整体 oracle 上限通过验收，但 seed 43 的 `direct/attack` response policy 在分策略上仍弱于 baseline，工作重心转向这两类响应策略专项补强。
-- 本地仅剩的未跟踪内容是 oracle 对照与 response focus 脚本的 smoke 验证产物，本轮准备入库以保持工作区干净。
+- 本地最新进展已包含 response focus 加训结果：只把 `direct/attack` 加训到 `3M/5M` 不能根治 seed 43 分策略短板，下一步转向奖励塑形扫描。
 
 ## Recent Changes
 
@@ -68,15 +69,17 @@
 - 创建项目级 `AGENTS.md`，记录长期代理上下文和当前下一步。
 - pull 回并分析 `continuous_oracle_compare_*` 三 seed 结果，确认 oracle 整体通过验收但 seed 43 `direct/attack` 仍需补强。
 - 准备提交 `continuous_oracle_smoke_*` 与 `continuous_response_focus_smoke_*` 的本地 smoke 验证产物，保留脚本可运行证据。
+- pull 回并分析 `continuous_response_focus_*`，确认 `3M/5M` 加训整体通过但分策略短板仍在。
+- 新增连续奖励权重配置入口、oracle runner 奖励覆盖参数、`continuous_response_reward` 聚合前缀和 reward sweep Slurm 脚本。
 
 ## Next TODO
 
-- 在服务器 `defq` 分区运行 `sbatch --partition=defq --array=0-5 --export=ALL,BASE_TIMESTEPS=1500000,EPISODES=800 slurm/response_focus_continuous_plcyf.sbatch`，完成后聚合并分析 `continuous_response_focus_*`。
+- 在服务器 `defq` 分区运行 `sbatch --partition=defq --array=0-11 --export=ALL,TIMESTEPS=1500000,EPISODES=800 slurm/response_reward_sweep_continuous_plcyf.sbatch`，完成后聚合并分析 `continuous_response_reward_*`。
 - 长训继续沿用现有 Slurm 风格并提交到 `defq` 分区。
 
 ## Open Issues
 
-- seed 43 的 `direct/attack` response policy 在 oracle 条件下仍弱于 baseline，根因尚未定位到训练不足、奖励形状、策略入口选择还是环境随机性。
+- seed 43 的 `direct/attack` response policy 在 oracle 条件下仍弱于 baseline；更长训练步数不是充分解，根因更可能涉及奖励形状、策略入口选择或环境随机性。
 - 当前验收阈值仍混用了 oracle 策略识别口径和 SAM 检测口径，最终报告需要明确解释。
 
 ## Architecture Decisions

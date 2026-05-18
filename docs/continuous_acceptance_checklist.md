@@ -78,4 +78,5 @@ SAM 原文检测版本结论是：
 - seed 43 的 episode 级诊断显示，`detour` 响应策略显著优于 baseline，但 `direct` 和 `attack` 响应策略系统性弱于 baseline。下一阶段应从继续微调 SAM threshold/cooldown/margin，转向补强 continuous response policy 的 `direct/attack` 控制质量，或先做 response policy 与 baseline 的 oracle 对照来确认策略库上限。
 - `continuous_oracle_compare_*` 已完成 1.5M / 800 episodes / 3 seed 对照，三 seed 全部 `engineering_pass=True` 且 `paper_like_pass=True`，说明 response policy 库整体上限足够；但 seed 43 下 `direct` 与 `attack` 在 oracle 条件下仍弱于 baseline，下一轮应优先改这两类 response policy 的训练和奖励设计，而不是继续调 SAM 检测参数。
 - 已新增 `slurm/response_focus_continuous_plcyf.sbatch`，用于只加训 `direct/attack` response policy 并继续用 oracle 对照评估；默认比较 `3M` 与 `5M` 两档 direct/attack 训练步数，`detour` 和 baseline 保持基础步数。
+- `continuous_response_focus_*` 已完成：`3M` 与 `5M` 两档整体仍全部通过，但 seed 43 的 `direct/attack` 分策略仍弱于 baseline，说明单纯增加训练步数不足以修复短板。下一步使用 `slurm/response_reward_sweep_continuous_plcyf.sbatch` 扫描 `base/chase/guard/attacksafe` 四组奖励塑形。
 - 如需做新的参数实验，继续使用 `scripts/analyze_continuous_run.py`、`scripts/diagnose_continuous_run.py` 和 `scripts/aggregate_continuous_sweep.py` 固化诊断指标。

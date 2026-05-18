@@ -216,6 +216,15 @@ sbatch --partition=defq --export=ALL slurm/aggregate_continuous_plcyf.sbatch
 
 该脚本默认跑 2 档 direct/attack 训练步数 `3M` 和 `5M`，每档覆盖 seeds `42/43/44`；`detour` 与 baseline 保持 `BASE_TIMESTEPS`，便于隔离 direct/attack 加训是否有效。
 
+该加训对照已完成：`3M` 与 `5M` 两档都保持三 seed 整体通过，但 seed 43 的 `direct/attack` 分策略仍弱于 baseline，且 `5M` 没有优于 `3M`。下一步改为扫描 response policy 奖励塑形，而不是继续单纯增加 timesteps：
+
+```bash
+sbatch --partition=defq --array=0-11 --export=ALL,TIMESTEPS=1500000,EPISODES=800 slurm/response_reward_sweep_continuous_plcyf.sbatch
+sbatch --partition=defq --export=ALL slurm/aggregate_continuous_plcyf.sbatch
+```
+
+`response_reward_sweep_continuous_plcyf.sbatch` 默认覆盖 `base/chase/guard/attacksafe` 四组奖励，每组 seeds `42/43/44`。其中 `base` 复刻当前奖励，`chase` 强化靠近入侵者，`guard` 强化把入侵者挡在目标外侧，`attacksafe` 对 attack 主动碰撞失败给更大惩罚。
+
 当前 300k sweep 中推荐进入 1M+ 确认的候选参数为：
 
 - `interceptor_max_speed=0.030`、`intruder_max_speed=0.016`、`collision_radius=0.08`

@@ -38,6 +38,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--interceptor-speed", type=float, default=0.030, help="拦截者最大速度")
     parser.add_argument("--intruder-speed", type=float, default=0.016, help="入侵者最大速度")
     parser.add_argument("--collision-radius", type=float, default=0.08, help="主动碰撞半径")
+    parser.add_argument("--win-reward", type=float, default=None, help="覆盖拦截者获胜终局奖励")
+    parser.add_argument("--loss-reward", type=float, default=None, help="覆盖入侵者获胜默认终局惩罚")
+    parser.add_argument("--step-penalty", type=float, default=None, help="覆盖未终止 step 的基础惩罚")
+    parser.add_argument("--agent-distance-weight", type=float, default=None, help="覆盖双方距离塑形权重")
+    parser.add_argument("--intruder-distance-weight", type=float, default=None, help="覆盖入侵者到目标距离塑形权重")
+    parser.add_argument(
+        "--active-collision-loss-reward",
+        type=float,
+        default=None,
+        help="覆盖 attack 主动碰撞失败的专用终局惩罚",
+    )
     parser.add_argument("--timesteps", type=int, required=True, help="每个 PPO 模型训练步数")
     parser.add_argument(
         "--response-direct-timesteps",
@@ -144,6 +155,17 @@ def _apply_overrides(config: dict[str, Any], args: argparse.Namespace, experimen
     config["environment"]["interceptor_max_speed"] = args.interceptor_speed
     config["environment"]["intruder_max_speed"] = args.intruder_speed
     config["environment"]["collision_radius"] = args.collision_radius
+    reward_overrides = {
+        "win_reward": getattr(args, "win_reward", None),
+        "loss_reward": getattr(args, "loss_reward", None),
+        "step_penalty": getattr(args, "step_penalty", None),
+        "agent_distance_weight": getattr(args, "agent_distance_weight", None),
+        "intruder_distance_weight": getattr(args, "intruder_distance_weight", None),
+        "active_collision_loss_reward": getattr(args, "active_collision_loss_reward", None),
+    }
+    for key, value in reward_overrides.items():
+        if value is not None:
+            config["environment"][key] = float(value)
     config["ppo"]["total_timesteps"] = args.timesteps
     response_timesteps = {
         "direct": getattr(args, "response_direct_timesteps", None),
@@ -225,6 +247,12 @@ def _metadata(args: argparse.Namespace, experiment_name: str) -> dict[str, Any]:
         "response_detour_timesteps": args.response_detour_timesteps,
         "response_attack_timesteps": args.response_attack_timesteps,
         "baseline_timesteps": args.baseline_timesteps,
+        "win_reward": getattr(args, "win_reward", None),
+        "loss_reward": getattr(args, "loss_reward", None),
+        "step_penalty": getattr(args, "step_penalty", None),
+        "agent_distance_weight": getattr(args, "agent_distance_weight", None),
+        "intruder_distance_weight": getattr(args, "intruder_distance_weight", None),
+        "active_collision_loss_reward": getattr(args, "active_collision_loss_reward", None),
         "seed": args.seed,
         "episodes": args.episodes,
         "detector_method": "oracle",
